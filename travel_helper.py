@@ -76,7 +76,15 @@ except ImportError:
 # GeoTemp Travel MCP (optional: weather + attractions per destination)
 try:
     from mcp.client.sse import sse_client
-    from geotemp_fetch_mcp import GEOTEMP_MCP_URL, get_attractions, get_weather
+    from geotemp_fetch_mcp import (
+    GEOTEMP_MCP_URL,
+    find_best_month,
+    find_similar_cities,
+    get_attractions,
+    get_city_profile,
+    get_seasonal_calendar,
+    get_weather,
+)
 
     GEOTEMP_AVAILABLE = True
 except ImportError:
@@ -84,6 +92,10 @@ except ImportError:
     sse_client = None
     get_weather = None
     get_attractions = None
+    get_city_profile = None
+    find_best_month = None
+    find_similar_cities = None
+    get_seasonal_calendar = None
     GEOTEMP_MCP_URL = None
 
 # --------------- Config: Weeze + Köln, Thu eve / Fri late outbound, 3–4 nights ---------------
@@ -291,8 +303,8 @@ async def _fetch_geotemp_for_trips(
     cheapest_flights: list[tuple[object, object, float]],
     hotel_results: list[dict],
 ) -> dict | None:
-    """Fetch weather (per trip date range) and attractions (per destination) from GeoTemp MCP.
-    Returns {'weather': {(dest, start_date, end_date): list}, 'attractions': {dest: list}} or None on error.
+    """Fetch weather, attractions, city profile and best months per destination from GeoTemp MCP.
+    Returns {'weather': ..., 'attractions': ..., 'city_profiles': {dest: dict}, 'best_months': {dest: dict}} or None on error.
     """
     if not GEOTEMP_AVAILABLE or not sse_client:
         return None
@@ -317,6 +329,10 @@ async def _fetch_geotemp_for_trips(
         return None
     weather_by_key: dict[tuple[str, str, str], list] = {}
     attractions_by_dest: dict[str, list] = {}
+    city_profiles_by_dest: dict[str, dict] = {}
+    best_months_by_dest: dict[str, dict] = {}
+    similar_cities_by_dest: dict[str, dict] = {}
+    seasonal_calendar_by_dest: dict[str, dict] = {}
     try:
         async with sse_client(GEOTEMP_MCP_URL) as (read, write):
             async with ClientSession(read, write) as session:
@@ -339,10 +355,33 @@ async def _fetch_geotemp_for_trips(
                         dest_api = _city_name_for_api(dest)
                         a = await get_attractions(session, dest_api, limit=10)
                         attractions_by_dest[dest] = a if isinstance(a, list) else ([] if not a else [a])
+                    if dest not in city_profiles_by_dest and get_city_profile:
+                        dest_api = _city_name_for_api(dest)
+                        profile = await get_city_profile(session, dest_api)
+                        city_profiles_by_dest[dest] = profile or {}
+                    if dest not in best_months_by_dest and find_best_month:
+                        dest_api = _city_name_for_api(dest)
+                        best = await find_best_month(session, dest_api, prefer_warm=True)
+                        best_months_by_dest[dest] = best or {}
+                    if dest not in similar_cities_by_dest and find_similar_cities:
+                        dest_api = _city_name_for_api(dest)
+                        sim = await find_similar_cities(session, dest_api, limit=5)
+                        similar_cities_by_dest[dest] = sim or {}
+                    if dest not in seasonal_calendar_by_dest and get_seasonal_calendar:
+                        dest_api = _city_name_for_api(dest)
+                        cal = await get_seasonal_calendar(session, dest_api)
+                        seasonal_calendar_by_dest[dest] = cal or {}
     except Exception as e:
         print(f"GeoTemp MCP unavailable: {e}", file=sys.stderr)
         return None
-    return {"weather": weather_by_key, "attractions": attractions_by_dest}
+    return {
+        "weather": weather_by_key,
+        "attractions": attractions_by_dest,
+        "city_profiles": city_profiles_by_dest,
+        "best_months": best_months_by_dest,
+        "similar_cities": similar_cities_by_dest,
+        "seasonal_calendar": seasonal_calendar_by_dest,
+    }
 
 
 def _format_weather_item(item: dict) -> str | None:
@@ -395,23 +434,156 @@ def _format_attraction_item(item: dict) -> str:
     return str(name)
 
 
+def _format_city_profile(profile: dict) -> list[str]:
+    """Format city profile dict into readable lines. Returns list of strings (empty if no useful data)."""
+    if not profile or not isinstance(profile, dict):
+        return []
+    city = profile.get("city") if isinstance(profile.get("city"), dict) else {}
+    if not city:
+        return []
+    parts = []
+    country = city.get("country")
+    continent = city.get("continent")
+    if country or continent:
+        parts.append(", ".join(str(x) for x in (country, continent) if x))
+    safety = city.get("safety_score")
+    if safety is not None:
+        parts.append(f"Safety {safety}/5")
+    budget = city.get("daily_budget_usd")
+    if budget is not None:
+        parts.append(f"~${int(budget)}/day")
+    if city.get("is_coastal"):
+        parts.append("Coastal")
+    climate = city.get("climate_zone")
+    if climate:
+        parts.append(f"Climate {climate}")
+    if not parts:
+        return []
+    return [" · ".join(parts)]
+
+
+def _format_best_months(best_data: dict) -> list[str]:
+    """Format find_best_month result into readable lines. Returns list of strings."""
+    if not best_data or not isinstance(best_data, dict):
+        return []
+    rankings = best_data.get("rankings")
+    if not isinstance(rankings, list) or len(rankings) == 0:
+        return []
+    lines = []
+    for r in rankings[:5]:
+        if not isinstance(r, dict):
+            continue
+        month_name = r.get("month_name") or r.get("month") or "—"
+        avg_temp = r.get("avg_temp")
+        precip = r.get("precipitation")
+        score = r.get("score")
+        part = month_name
+        if avg_temp is not None:
+            part += f" {avg_temp}°C"
+        if precip is not None:
+            part += f", {precip} mm rain"
+        if score is not None:
+            part += f" (score {score})"
+        lines.append(part)
+    return lines if lines else []
+
+
+def _format_similar_cities(similar_data: dict) -> list[str]:
+    """Format find_similar_cities result. Returns list of 'City (Country) score%' lines."""
+    if not similar_data or not isinstance(similar_data, dict):
+        return []
+    destinations = similar_data.get("similar_destinations")
+    if not isinstance(destinations, list):
+        return []
+    lines = []
+    for d in destinations[:8]:
+        if not isinstance(d, dict):
+            continue
+        city = d.get("city") or d.get("name") or "—"
+        country = d.get("country") or ""
+        score = d.get("similarity_score") or d.get("score")
+        part = f"{city}"
+        if country:
+            part += f" ({country})"
+        if score is not None:
+            part += f" {int(score)}%"
+        lines.append(part)
+    return lines
+
+
+def _format_seasonal_calendar(cal_data: dict) -> list[str]:
+    """Format get_seasonal_calendar into compact lines: month, avg temp, top activity."""
+    if not cal_data or not isinstance(cal_data, dict):
+        return []
+    calendar = cal_data.get("calendar")
+    if not isinstance(calendar, list) or len(calendar) == 0:
+        return []
+    lines = []
+    for entry in calendar[:12]:
+        if not isinstance(entry, dict):
+            continue
+        month_name = entry.get("month_name") or entry.get("month") or "—"
+        weather = entry.get("weather") if isinstance(entry.get("weather"), dict) else {}
+        avg_temp = weather.get("avg_temp") or weather.get("temperature_mean")
+        top_activities = entry.get("top_activities") or []
+        first_activity = top_activities[0] if top_activities and isinstance(top_activities[0], dict) else None
+        activity_name = first_activity.get("activity") if first_activity else None
+        part = month_name
+        if avg_temp is not None and isinstance(avg_temp, (int, float)):
+            part += f" {avg_temp}°C"
+        elif isinstance(weather.get("total_precipitation_mm"), (int, float)):
+            part += f" {weather.get('total_precipitation_mm')} mm"
+        if activity_name:
+            part += f" — {activity_name}"
+        lines.append(part)
+    return lines
+
+
 def _print_weather_attractions_text(
     dest_city: str,
     out_date: object,
     ret_date: object,
     weather_by_key: dict,
     attractions_by_dest: dict,
+    city_profiles_by_dest: dict | None = None,
+    best_months_by_dest: dict | None = None,
+    similar_cities_by_dest: dict | None = None,
+    seasonal_calendar_by_dest: dict | None = None,
 ) -> None:
-    """Print weather and attractions for one trip (human-readable)."""
+    """Print destination info, weather, best months, similar cities, seasonal calendar and attractions for one trip."""
     start_iso = out_date.isoformat() if hasattr(out_date, "isoformat") else str(out_date)
     end_iso = ret_date.isoformat() if hasattr(ret_date, "isoformat") else str(ret_date)
     key = (dest_city, start_iso, end_iso)
     weather_list = weather_by_key.get(key) or []
     att_list = attractions_by_dest.get(dest_city) or []
+    profiles = city_profiles_by_dest or {}
+    best_months = best_months_by_dest or {}
+    similar = similar_cities_by_dest or {}
+    calendar = seasonal_calendar_by_dest or {}
+    profile_lines = _format_city_profile(profiles.get(dest_city) or {})
+    best_lines = _format_best_months(best_months.get(dest_city) or {})
+    similar_lines = _format_similar_cities(similar.get(dest_city) or {})
+    calendar_lines = _format_seasonal_calendar(calendar.get(dest_city) or {})
     weather_lines = [s for w in weather_list[:7] if (s := _format_weather_item(w))]
+    if profile_lines:
+        print("   Destination:")
+        for line in profile_lines:
+            print(f"     {line}")
     if weather_lines:
         print("   Weather:")
         for line in weather_lines:
+            print(f"     {line}")
+    if best_lines:
+        print("   Best months to visit:")
+        for line in best_lines:
+            print(f"     • {line}")
+    if similar_lines:
+        print("   Similar cities:")
+        for line in similar_lines:
+            print(f"     • {line}")
+    if calendar_lines:
+        print("   Seasonal calendar:")
+        for line in calendar_lines:
             print(f"     {line}")
     if att_list:
         print("   Attractions:")
@@ -426,18 +598,54 @@ def _add_weather_attractions_html(
     ret_date: object,
     weather_by_key: dict,
     attractions_by_dest: dict,
+    city_profiles_by_dest: dict | None = None,
+    best_months_by_dest: dict | None = None,
+    similar_cities_by_dest: dict | None = None,
+    seasonal_calendar_by_dest: dict | None = None,
 ) -> None:
-    """Append weather and attractions blocks to lines (HTML)."""
+    """Append destination, weather, best months, similar cities, seasonal calendar and attractions blocks to lines (HTML)."""
     start_iso = out_date.isoformat() if hasattr(out_date, "isoformat") else str(out_date)
     end_iso = ret_date.isoformat() if hasattr(ret_date, "isoformat") else str(ret_date)
     key = (dest_city, start_iso, end_iso)
     weather_list = weather_by_key.get(key) or []
     att_list = attractions_by_dest.get(dest_city) or []
+    profiles = city_profiles_by_dest or {}
+    best_months = best_months_by_dest or {}
+    similar = similar_cities_by_dest or {}
+    calendar = seasonal_calendar_by_dest or {}
+    profile_lines = _format_city_profile(profiles.get(dest_city) or {})
+    best_lines = _format_best_months(best_months.get(dest_city) or {})
+    similar_lines = _format_similar_cities(similar.get(dest_city) or {})
+    calendar_lines = _format_seasonal_calendar(calendar.get(dest_city) or {})
     weather_lines = [s for w in weather_list[:7] if (s := _format_weather_item(w))]
+    if profile_lines:
+        lines.append("    <div class=\"destination\">")
+        lines.append("      <div class=\"destination-title\">Destination</div>")
+        for line in profile_lines:
+            lines.append(f"      <div>{html.escape(line)}</div>")
+        lines.append("    </div>")
     if weather_lines:
         lines.append("    <div class=\"weather\">")
         lines.append("      <div class=\"weather-title\">Weather</div>")
         for line in weather_lines:
+            lines.append(f"      <div>{html.escape(line)}</div>")
+        lines.append("    </div>")
+    if best_lines:
+        lines.append("    <div class=\"best-months\">")
+        lines.append("      <div class=\"best-months-title\">Best months to visit</div>")
+        for line in best_lines:
+            lines.append(f"      <div>{html.escape(line)}</div>")
+        lines.append("    </div>")
+    if similar_lines:
+        lines.append("    <div class=\"similar-cities\">")
+        lines.append("      <div class=\"similar-cities-title\">Similar cities</div>")
+        for line in similar_lines:
+            lines.append(f"      <div>{html.escape(line)}</div>")
+        lines.append("    </div>")
+    if calendar_lines:
+        lines.append("    <div class=\"seasonal-calendar\">")
+        lines.append("      <div class=\"seasonal-calendar-title\">Seasonal calendar</div>")
+        for line in calendar_lines:
             lines.append(f"      <div>{html.escape(line)}</div>")
         lines.append("    </div>")
     if att_list:
@@ -461,6 +669,10 @@ def _build_html(
     tagline = "Best-priced flights from Weeze & Köln (Thu eve / Fri) and lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
     weather_by_key = (travel_data or {}).get("weather") or {}
     attractions_by_dest = (travel_data or {}).get("attractions") or {}
+    city_profiles_by_dest = (travel_data or {}).get("city_profiles") or {}
+    best_months_by_dest = (travel_data or {}).get("best_months") or {}
+    similar_cities_by_dest = (travel_data or {}).get("similar_cities") or {}
+    seasonal_calendar_by_dest = (travel_data or {}).get("seasonal_calendar") or {}
     lines = [
         "<!DOCTYPE html>",
         "<html lang=\"en\">",
@@ -478,8 +690,8 @@ def _build_html(
         "    a.trip-link:hover { text-decoration: underline; }",
         "    .hotel { margin: 0.2rem 0; }",
         "    .hotel a { color: #073590; }",
-        "    .flight-title, .weather-title, .attractions-title, .hotels-title { font-weight: 600; margin-bottom: 0.2rem; }",
-        "    .flight, .weather, .attractions, .hotels { margin-top: 0.5rem; font-size: 0.9rem; color: #444; }",
+        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .seasonal-calendar-title { font-weight: 600; margin-bottom: 0.2rem; }",
+        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
         "  </style>",
         "</head>",
@@ -515,7 +727,7 @@ def _build_html(
             lines.append("      <div class=\"flight-title\">Flight</div>")
             lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(ryanair_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
             lines.append("    </div>")
-            _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest)
+            _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest)
             lines.append("    <div class=\"hotels\">")
             lines.append("      <div class=\"hotels-title\">Hotels</div>")
             for hotel in r["hotels"]:
@@ -554,7 +766,7 @@ def _build_html(
             lines.append("      <div class=\"flight-title\">Flight</div>")
             lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(ryanair_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
             lines.append("    </div>")
-            _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest)
+            _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest)
             lines.append("  </div>")
     if not cheapest_flights:
         lines.append("  <p>(No round trips found.)</p>")
@@ -798,6 +1010,10 @@ def run(
     # Human-readable output
     weather_by_key = (travel_data or {}).get("weather") or {}
     attractions_by_dest = (travel_data or {}).get("attractions") or {}
+    city_profiles_by_dest = (travel_data or {}).get("city_profiles") or {}
+    best_months_by_dest = (travel_data or {}).get("best_months") or {}
+    similar_cities_by_dest = (travel_data or {}).get("similar_cities") or {}
+    seasonal_calendar_by_dest = (travel_data or {}).get("seasonal_calendar") or {}
     print("Fly cheap, stay cheap — Ryanair + Trivago deals from Weeze & Köln (Thu eve / Fri, 2–4 nights)")
     print("=" * 80)
     print("CHEAPEST ROUND TRIPS" + (" + HOTELS" if hotel_results else " (flights only)"))
@@ -831,7 +1047,7 @@ def run(
                 adults=adults,
             )
             print(f"   {ryanair_url}")
-            _print_weather_attractions_text(dest_city, outbound.departureTime.date(), ret.departureTime.date(), weather_by_key, attractions_by_dest)
+            _print_weather_attractions_text(dest_city, outbound.departureTime.date(), ret.departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest)
             nights = (datetime.fromisoformat(departure).date() - datetime.fromisoformat(arrival).date()).days
             print("Hotels")
             print(f"   {nights} nights, {arrival} → {departure}")
@@ -871,7 +1087,7 @@ def run(
                 adults=adults,
             )
             print(f"   {ryanair_url}")
-            _print_weather_attractions_text(dest_city, ob.departureTime.date(), ib.departureTime.date(), weather_by_key, attractions_by_dest)
+            _print_weather_attractions_text(dest_city, ob.departureTime.date(), ib.departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest)
         if not cheapest_flights:
             print("(No round trips found for Thu after 5pm / Fri after 11pm from Weeze or Köln.)")
     if not TRIVAGO_AVAILABLE and fetch_hotels:
