@@ -125,5 +125,5 @@ python3 -m venv .venv-travel
 ```bash
 export GMAIL_USER=your.gmail@gmail.com
 export GMAIL_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
-.venv-travel/bin/python travel_helper.py --num-cheapest-flights 20 --days-ahead 180 --cheapest-hotels-per-flight 1 --email ammar.sahib@yahoo.com 
+.venv-travel/bin/python travel_helper.py --num-cheapest-flights 20 --days-ahead 180 --cheapest-hotels-per-flight 1 --html --email ammar.sahib@yahoo.com 
 ```

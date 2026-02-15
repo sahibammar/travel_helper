@@ -252,6 +252,33 @@ async def fetch_hotels_for_cheapest_flights(
     return results
 
 
+# Known airport names that often appear after the city (e.g. "Barcelona Girona", "London Stansted").
+# Used to strip to city-only for weather/attractions API lookups.
+_AIRPORT_SUFFIXES = frozenset({
+    "Bergamo", "Beauvais", "Charleroi", "Ciampino", "Eindhoven", "Girona",
+    "Hahn", "Knock", "Luton", "Malpensa", "Mazury", "Memmingen", "Modlin",
+    "Prestwick", "Sandefjord", "Shannon", "Stansted", "Southend", "Torp",
+    "Weeze",
+})
+
+
+def _city_name_for_api(dest: str) -> str:
+    """Extract city name from destination string for weather/attractions API.
+    E.g. 'Olsztyn - Mazury' -> 'Olsztyn', 'Barcelona Girona' -> 'Barcelona', 'London Stansted' -> 'London'.
+    """
+    if not dest or not dest.strip():
+        return dest
+    s = dest.strip()
+    # "City - Airport/Region" (e.g. Olsztyn - Mazury)
+    if " - " in s:
+        return s.split(" - ", 1)[0].strip() or s
+    # "City Airport" (e.g. Barcelona Girona, London Stansted, Milan Bergamo)
+    parts = s.split()
+    if len(parts) >= 2 and parts[-1] in _AIRPORT_SUFFIXES:
+        return " ".join(parts[:-1]).strip() or s
+    return s
+
+
 def _dest_city_from_flight(ob: object) -> str:
     """Destination city string for a trip (for GeoTemp / display)."""
     dest_full = getattr(ob, "destinationFull", None) or ""
@@ -297,7 +324,7 @@ async def _fetch_geotemp_for_trips(
                 for (dest, start_iso, end_iso) in weather_keys:
                     key = (dest, start_iso, end_iso)
                     if key not in weather_by_key:
-                        dest_api = dest.split(" - ")[0].strip() if " - " in dest else dest
+                        dest_api = _city_name_for_api(dest)
                         month = None
                         try:
                             month = int(start_iso.split("-")[1])
@@ -309,7 +336,7 @@ async def _fetch_geotemp_for_trips(
                         weather_by_key[key] = w if isinstance(w, list) else ([w] if w else [])
                 for dest in destinations:
                     if dest not in attractions_by_dest:
-                        dest_api = dest.split(" - ")[0].strip() if " - " in dest else dest
+                        dest_api = _city_name_for_api(dest)
                         a = await get_attractions(session, dest_api, limit=10)
                         attractions_by_dest[dest] = a if isinstance(a, list) else ([] if not a else [a])
     except Exception as e:
