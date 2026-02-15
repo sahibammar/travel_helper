@@ -1,129 +1,278 @@
-# Ryanair Python
-![Testing status](https://github.com/cohaolain/ryanair-py/actions/workflows/python-app.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/cohaolain/ryanair-py/badge.svg?branch=develop)](https://coveralls.io/github/cohaolain/ryanair-py?branch=develop)
+# Travel Helper — Developer Documentation
 
-This module allows you to retrieve the cheapest flights, with or without return flights, within a fixed set of dates.
+**Cheap round-trip flights (Ryanair API) + hotels (Trivago MCP) + weather & destinations (GeoTemp MCP).**
 
-This is done directly through Ryanair's API, and does not require an API key.
+This document is for **developers**: technical details of the Ryanair API, Trivago MCP server, and GeoTemp MCP server, plus how to run and extend the stack.
 
-## Disclaimer
-> __DISCLAIMER:__ This library is not affiliated, endorsed, or sponsored by Ryanair or any of its affiliates.  
-> All trademarks related to Ryanair and its affiliates are owned by the relevant companies.  
-> The author(s) of this library assume no responsibility for any consequences resulting from the use of this library.  
-> The author(s) of this library also assume no liability for any damages, losses, or expenses that may arise from the use of this library.  
-> Any use of this library is entirely at the user's own risk.  
-> It is solely the user's responsibility to ensure compliance with Ryanair's terms of use and any applicable laws 
-> and regulations.  
-> The library is an independent project aimed at providing a convenient way to interact with the Ryanair API, allowing
-> individuals to find flights for personal use, and then ultimately purchase them via Ryanair's website.
-> While the author(s) will make efforts to ensure the library's functionality, they do not guarantee the accuracy,
-> completeness, or timeliness of the information provided.  
-> The author(s) do not guarantee the availability or continuity of the library, and updates may not be guaranteed.  
-> Support for this library may be provided at the author(s)'s discretion, but it is not guaranteed.  
-> Users are encouraged to report any issues or feedback to the author(s) via appropriate channels.  
-> By using this library, users acknowledge that they have read, understood, and agreed to the terms of this disclaimer.
+---
 
-## Installation
-Run the following command in the terminal:
-```
-pip install ryanair-py
-```
-## Usage
-To create an instance:
-```python
-from ryanair import Ryanair
+## Table of Contents
 
-# You can set a currency at the API instance level, so could also be GBP etc. also.
-# Note that this may not *always* be respected by the API, so always check the currency returned matches
-# your expectation.
-api = Ryanair("EUR")
-```
-### Get the cheapest one-way flights
-Get the cheapest flights from a given origin airport (returns at most 1 flight to each destination).
-```python
-from datetime import datetime, timedelta
-from ryanair import Ryanair
-from ryanair.types import Flight
+1. [Overview](#overview)
+2. [Requirements & Setup](#requirements--setup)
+3. [Ryanair API](#ryanair-api)
+4. [Trivago MCP Server](#trivago-mcp-server)
+5. [GeoTemp MCP Server](#geotemp-mcp-server)
+6. [How to Run](#how-to-run)
+7. [Project Layout](#project-layout)
 
-api = Ryanair(currency="EUR")  # Euro currency, so could also be GBP etc. also
-tomorrow = datetime.today().date() + timedelta(days=1)
+---
 
-flights = api.get_cheapest_flights("DUB", tomorrow, tomorrow + timedelta(days=1))
+## Overview
 
-# Returns a list of Flight namedtuples
-flight: Flight = flights[0]
-print(flight)  # Flight(departureTime=datetime.datetime(2023, 3, 12, 17, 0), flightNumber='FR9717', price=31.99, currency='EUR' origin='DUB', originFull='Dublin, Ireland', destination='GOA', destinationFull='Genoa, Italy')
-print(flight.price)  # 9.78
-```
-### Get the cheapest return trips (outbound and inbound)
-```python
-from datetime import datetime, timedelta
-from ryanair import Ryanair
+The app:
 
-api = Ryanair(currency="EUR")  # Euro currency, so could also be GBP etc. also
-tomorrow = datetime.today().date() + timedelta(days=1)
-tomorrow_1 = tomorrow + timedelta(days=1)
+1. **Flights** — Queries Ryanair's public services API (no API key) for round trips from **Düsseldorf Weeze (NRN)** and **Köln (CGN)**. Outbound: **Thursday after 17:00** or **Friday after 23:00**; return 3–4 nights later.
+2. **Hotels** — Uses the **Trivago MCP server** (Streamable HTTP) to resolve city → location and fetch accommodations for each trip's dates.
+3. **Weather & destinations** — Uses the **GeoTemp Travel MCP server** (SSE) for weather, attractions, city profiles, similar/nearby cities, trip planning, and dataset stats.
 
-trips = api.get_cheapest_return_flights("DUB", tomorrow, tomorrow, tomorrow_1, tomorrow_1)
-print(trips[0])  # Trip(totalPrice=85.31, outbound=Flight(departureTime=datetime.datetime(2023, 3, 12, 7, 30), flightNumber='FR5437', price=49.84, currency='EUR', origin='DUB', originFull='Dublin, Ireland', destination='EMA', destinationFull='East Midlands, United Kingdom'), inbound=Flight(departureTime=datetime.datetime(2023, 3, 13, 7, 45), flightNumber='FR5438', price=35.47, origin='EMA', originFull='East Midlands, United Kingdom', destination='DUB', destinationFull='Dublin, Ireland'))
-```
+Output: human-readable text, JSON (`--json`), or HTML (`--html`). Optional email of the HTML report via Gmail.
 
-## Travel helper (flights + hotels)
+---
 
-The `travel_helper.py` script finds **round trips** from Düsseldorf Weeze (NRN) and Köln (CGN): outbound on **Thursday after 5 pm** or **Friday after 11 pm**, **3–4 nights** at destination, return to Weeze/Köln. It picks the 10 cheapest such trips and fetches M hotel options per trip (4 nights) from the Trivago MCP server.
+## Requirements & Setup
 
-### Setup
-
-Use a virtual environment with SSL and MCP support (e.g. project venv):
+- **Python 3.10+** (required for `mcp` and Trivago/GeoTemp clients).
+- **Virtual environment** (recommended):
 
 ```bash
+cd /path/to/travel_helper
 python3 -m venv .venv-travel
-.venv-travel/bin/pip install ryanair-py requests backoff "mcp[cli]"
+source .venv-travel/bin/activate   # Windows: .venv-travel\Scripts\activate
+pip install ryanair-py requests backoff "mcp[cli]"
 ```
 
-**Python 3.10+ required for hotels.** The `mcp` package (Trivago MCP client) needs Python 3.10 or newer. If `pip3 install "mcp[cli]"` fails with "Could not find a version that satisfies the requirement mcp[cli]", use a newer Python: e.g. on macOS run `brew install python@3.12`, then `python3.12 -m venv .venv-travel` and `.venv-travel/bin/pip install ryanair-py requests backoff "mcp[cli]"`.
+- **Ryanair**: no API key; uses `https://services-api.ryanair.com/`.
+- **Trivago MCP**: public endpoint `https://mcp.trivago.com/mcp`; no auth.
+- **GeoTemp MCP**: public endpoint `https://mcp-travel-data.onrender.com/sse`; no auth.
 
-**Running on another machine / “No hotels”?** Run the script with the **project venv** and ensure `mcp[cli]` is installed in that env (`pip install "mcp[cli]"`). If you use system `python3` without the venv, the script will show flights but report no hotels because the Trivago MCP client is missing there. You should then see: *“Trivago MCP not installed: pip install 'mcp[cli]' for hotels.”* If you see a urllib3/OpenSSL warning (e.g. LibreSSL 2.8.3), HTTPS to the Trivago MCP may fail; use a Python built with OpenSSL 1.1.1+ or the project venv where possible.
+If `mcp` is not installed, the script still runs but skips hotels and GeoTemp (flights only).
 
-### Run
+---
+
+## Ryanair API
+
+### Source
+
+The project uses the **ryanair-py** library (or a vendored `ryanair/`), which calls Ryanair's **Services API** directly. No API key.
+
+- **Base URL**: `https://services-api.ryanair.com/farfnd/v4/`
+- **Endpoints used**:
+  - **Round-trip fares**: `roundTripFares`  
+    Parameters: `departureAirportIataCode`, `outboundDepartureDateFrom`, `outboundDepartureDateTo`, `inboundDepartureDateFrom`, `inboundDepartureDateTo`, and optional time windows and `currency`.
+
+### Technical details
+
+- **Client**: `ryanair.Ryanair(currency="EUR")`.
+- **Method**: `get_cheapest_return_flights(source_airport, date_from, date_to, return_date_from, return_date_to, ...)`.
+- **Time windows** (used by travel_helper):
+  - Outbound: Thursday ≥ 17:00 or Friday ≥ 23:00 (`outboundDepartureTimeFrom` / `outboundDepartureTimeTo`).
+  - Inbound: unrestricted (full day).
+- **Return structure**: list of `(outbound, inbound, outbound_price)` where each leg is a `Flight`-like object with `departureTime`, `origin`, `destination`, `originFull`, `destinationFull`, `price`, `currency`, etc.
+
+### Code references
+
+- **API wrapper**: `ryanair/ryanair.py` — `Ryanair.get_cheapest_return_flights()`, `get_cheapest_flights()`.
+- **Usage in app**: `travel_helper.py` builds date ranges (e.g. next 120 days), filters outbound by weekday/time, then sorts by price and takes the N cheapest round trips.
+- **Booking URL**: `_ryanair_booking_url()` builds the German Ryanair round-trip select URL (`https://www.ryanair.com/de/de/trip/flights/select?...`) for manual booking.
+
+### Rate limiting & robustness
+
+- The library uses **backoff** for retries on failures.
+- No explicit rate limit is documented; use reasonable request spacing in scripts.
+
+---
+
+## Trivago MCP Server
+
+### Endpoint & transport
+
+- **URL**: `https://mcp.trivago.com/mcp`
+- **Transport**: **Streamable HTTP** (MCP over HTTP). The Python client uses `mcp.client.streamable_http.streamable_http_client(TRIVAGO_MCP_URL)`.
+
+### Tools used
+
+| Tool | Purpose | Main parameters |
+|------|---------|------------------|
+| `trivago-search-suggestions` | Resolve a place name (e.g. city) to a location id and ns | `query` (string) |
+| `trivago-accommodation-search` | Search accommodations for a location and dates | `id`, `ns`, `arrival`, `departure`, `adults`, `rooms` |
+
+### Flow in the app
+
+1. **Location resolution**  
+   For each destination city (e.g. from Ryanair's `destinationFull`), the app strips airport codes and calls `trivago-search-suggestions` with the city name (and optionally a fallback query). It parses the first `(ID, NS)` from the response (JSON or regex fallback).
+
+2. **Accommodation search**  
+   With `(id, ns)` and trip dates (arrival = outbound date, departure = return date), it calls `trivago-accommodation-search` with `adults` and `rooms` (from CLI, default 2 and 1). Results are sorted by price per night and the top N are kept per trip.
+
+### Client module
+
+- **File**: `trivago/fetch_hotels_mcp.py`
+- **Functions**:
+  - `get_location_suggestion(session, query) -> (id, ns) | None` — calls `trivago-search-suggestions`.
+  - `search_accommodations(session, location_id, location_ns, arrival, departure, adults=2, rooms=1) -> list[dict]` — calls `trivago-accommodation-search`.
+- **Response parsing**: Handles both `structuredContent` and text content blocks; accommodates Go-style and JSON responses (e.g. `output:[...]`). Hotel entries expose fields such as `Accommodation Name`, `Price Per Stay`, `Price Per Night`, `Accommodation URL`, `Review Rating`.
+
+### Standalone run
 
 ```bash
-# Default: 10 cheapest round trips, 3 hotels per trip (human-readable)
-.venv-travel/bin/python travel_helper.py
-
-# JSON output (e.g. for OpenClaw)
-.venv-travel/bin/python travel_helper.py --json
-
-# HTML output (writes travel_helper_YYYY-MM-DD.html, full path on stderr)
-.venv-travel/bin/python travel_helper.py --html
-
-# Flights only, no hotel fetch
-.venv-travel/bin/python travel_helper.py --no-hotels
-
-# Custom number of flights and hotels per flight
-.venv-travel/bin/python travel_helper.py --num-cheapest-flights 5 --cheapest-hotels-per-flight 3
-
-# Hotel search parameters
-.venv-travel/bin/python travel_helper.py --adults 2 --rooms 1
+python -m trivago.fetch_hotels_mcp "Berlin" --arrival 2026-03-15 --departure 2026-03-18 --adults 2 --rooms 1
+# Optional: --json for raw JSON, --max 10 for result count
 ```
 
-### Options (all `--` options)
+### Dependencies
+
+- `mcp` (with streamable HTTP support): `pip install "mcp[cli]"`.
+- No Trivago API key; the public MCP endpoint is used as-is.
+
+---
+
+## GeoTemp MCP Server
+
+### Endpoint & transport
+
+- **URL**: `https://mcp-travel-data.onrender.com/sse`
+- **Transport**: **SSE (Server-Sent Events)**. The client uses `mcp.client.sse.sse_client(GEOTEMP_MCP_URL)` and an MCP `ClientSession` over the SSE streams.
+
+### Dataset (high level)
+
+- **384 cities**, **115 countries**, **29 scored activities** (e.g. `beach_holiday`, `city_break`, `swimming`).
+- Weather, attractions, city features, and activity scores power the 13 tools.
+
+### Tools (13 total)
+
+| # | Tool | Purpose |
+|---|------|--------|
+| 1 | `search_destinations` | Cities by continent, country, coastal, safety, budget, etc. |
+| 2 | `search_by_activity` | Cities best for one activity (e.g. `swimming`) in a given month |
+| 3 | `multi_activity_search` | Cities that satisfy **all** of 2–6 activities in a month |
+| 4 | `find_nearby_destinations` | Destinations within `radius_km` of a city or lat/lon |
+| 5 | `find_similar_cities` | "Cities like X" (climate, activities, geography) |
+| 6 | `plan_trip` | "Where should I go?" — month, activities, budget, continent, etc. |
+| 7 | `get_city_profile` | Full city dossier (metadata, climate, features) |
+| 8 | `get_weather` | Daily or monthly weather by city and date/month |
+| 9 | `get_attractions` | Tourist POIs (category, limit) |
+| 10 | `get_seasonal_calendar` | 12-month weather + top activities per month |
+| 11 | `find_best_month` | Best months by weather (warm/rain/sunshine) |
+| 12 | `compare_cities` | Side-by-side comparison of 2–5 cities for a month |
+| 13 | `get_dataset_stats` | Counts: cities, countries, attractions, etc. |
+
+### Activity names (exact strings)
+
+Used by `search_by_activity`, `multi_activity_search`, `plan_trip` (among others):
+
+`adventure_sports`, `beach_holiday`, `city_break`, `cultural_sightseeing`, `cycling`, `diving`, `family_friendly`, `fishing`, `food_tourism`, `golf`, `hiking`, `nightlife`, `photography`, `rock_climbing`, `romantic_getaway`, `running_jogging`, `sailing`, `shopping`, `skiing`, `snorkeling`, `spa_wellness`, `surfing`, `swimming`, `water_sports`, `wildlife_viewing`, `wine_tasting`, `winter_sports`, `yoga_retreat`.
+
+### Client module
+
+- **File**: `geotemp_fetch_mcp.py`
+- **Pattern**: All functions are `async` and take a `ClientSession` as first argument; they call `session.call_tool(tool_name, params)` and parse JSON from the result (`content[0].text` or `structuredContent`).
+- **Examples**:
+  - `get_weather(session, city_name, start_date, end_date, month=None)` — monthly or date-range weather.
+  - `get_attractions(session, city_name, category=None, limit=10)`.
+  - `get_city_profile(session, city_name)`.
+  - `find_best_month(session, city_name, prefer_warm=True, ...)`.
+  - `find_similar_cities(session, city_name, limit=10)`.
+  - `find_nearby_destinations(session, city_name=..., radius_km=500, limit=15)` or `latitude=..., longitude=...`.
+  - `get_seasonal_calendar(session, city_name)`.
+  - `plan_trip(session, month, activities=..., max_budget_usd=..., continent=..., limit=15)`.
+  - `compare_cities(session, city_names, month=None)`.
+  - `search_destinations(session, continent=..., country=..., limit=20)`.
+  - `search_by_activity(session, activity, month=..., min_score=60, limit=15)`.
+  - `multi_activity_search(session, activities, month=..., min_score=40, limit=15)`.
+  - `get_dataset_stats(session)`.
+
+### Use in travel_helper
+
+- **Per destination (per trip)**: weather for trip dates, attractions, city profile, best months, similar cities, nearby destinations, seasonal calendar. These are aggregated in `travel_data` and rendered in text and HTML.
+- **Once per run**: `get_dataset_stats`, `plan_trip` (e.g. Europe, first month), `compare_cities` (first 5 destinations), `search_destinations`, `search_by_activity` (e.g. `city_break`), `multi_activity_search` (e.g. `beach_holiday` + `swimming`). Results are shown in global "Dataset", "Trip ideas", "Compare destinations", "More destinations", "Top city break", "Beach & swimming" sections.
+
+### Dependencies
+
+- `mcp` (SSE client): `pip install "mcp[cli]"`. No API key for the public GeoTemp SSE endpoint.
+
+---
+
+## How to Run
+
+### One-off (recommended: use venv)
+
+```bash
+# From project root
+source .venv-travel/bin/activate   # or .venv-travel\Scripts\activate on Windows
+
+# Human-readable (default: 10 cheapest round trips, 3 hotels per trip)
+python travel_helper.py
+
+# JSON (e.g. for pipelines / OpenClaw)
+python travel_helper.py --json
+
+# HTML report (writes travel_helper_YYYY-MM-DD.html)
+python travel_helper.py --html
+
+# Flights only (no Trivago / no GeoTemp)
+python travel_helper.py --no-hotels
+
+# Tuning
+python travel_helper.py --num-cheapest-flights 5 --cheapest-hotels-per-flight 3
+python travel_helper.py --adults 2 --rooms 1 --days-ahead 120
+```
+
+### CLI options (summary)
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--json` | — | Machine-readable JSON output |
-| `--html` | — | Write results to travel_helper_YYYY-MM-DD.html (full path printed to stderr) |
-| `--no-hotels` | — | Skip Trivago hotel fetch (flights only) |
+| `--json` | — | Machine-readable JSON |
+| `--html` | — | Write `travel_helper_YYYY-MM-DD.html` (path on stderr) |
+| `--no-hotels` | — | Skip Trivago (flights only; GeoTemp still used if available) |
 | `--adults` | 2 | Adults for hotel search |
 | `--rooms` | 1 | Rooms for hotel search |
-| `--num-cheapest-flights` | 10 | Number of cheapest round trips to show and fetch hotels for |
-| `--cheapest-hotels-per-flight` | 3 | Number of cheapest hotels to fetch per flight |
-| `--days-ahead` | 120 | Search for departures in the next N days |
-| `--email` | — | Send results as HTML to this address (via Gmail; see below) |
+| `--num-cheapest-flights` | 10 | Number of cheapest round trips to fetch hotels + GeoTemp for |
+| `--cheapest-hotels-per-flight` | 3 | Hotels per trip |
+| `--days-ahead` | 120 | Search window for outbound dates |
+| `--email` | — | Send HTML report to this email (Gmail; requires `GMAIL_USER` and `GMAIL_APP_PASSWORD`) |
 
-**Email (Gmail):** To use `--email you@example.com`, set two environment variables (Gmail account that sends the message, and an [App Password](https://support.google.com/accounts/answer/185833)):
+### Email (Gmail)
 
 ```bash
-export GMAIL_USER=your.gmail@gmail.com
+export GMAIL_USER=your@gmail.com
 export GMAIL_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
-.venv-travel/bin/python travel_helper.py --num-cheapest-flights 20 --days-ahead 180 --cheapest-hotels-per-flight 1 --html --email ammar.sahib@yahoo.com 
+python travel_helper.py --html --email recipient@example.com
 ```
+
+### Troubleshooting
+
+- **"Trivago MCP not installed"** — Install in the same env: `pip install "mcp[cli]"`. Python 3.10+ required.
+- **No hotels / HTTPS errors** — Use a Python build with proper SSL (e.g. OpenSSL 1.1.1+). Run with the project venv that has `mcp` installed.
+- **GeoTemp unavailable** — If the GeoTemp import fails (e.g. missing `mcp` or SSE), the app still runs with flights and Trivago only; GeoTemp sections are omitted.
+
+---
+
+## Project Layout
+
+```
+travel_helper/
+├── travel_helper.py       # Main script: Ryanair + Trivago + GeoTemp orchestration
+├── geotemp_fetch_mcp.py   # GeoTemp MCP client (SSE, 13 tools)
+├── trivago/
+│   └── fetch_hotels_mcp.py # Trivago MCP client (Streamable HTTP; suggestions + accommodation search)
+├── ryanair/               # Ryanair API client (or use ryanair-py from PyPI)
+│   ├── ryanair.py
+│   ├── SessionManager.py
+│   └── ...
+├── README.md              # User/developer docs (this file in repo)
+├── setup.py               # Optional package setup
+└── travel_helper_*.html   # Generated reports (optional)
+```
+
+---
+
+## Summary
+
+| Component | Protocol / API | Auth | Role |
+|-----------|----------------|------|------|
+| **Ryanair** | REST (`services-api.ryanair.com`) | None | Cheapest return flights NRN/CGN → Europe |
+| **Trivago MCP** | MCP over Streamable HTTP (`mcp.trivago.com`) | None | Location suggestions + accommodation search |
+| **GeoTemp MCP** | MCP over SSE (`mcp-travel-data.onrender.com/sse`) | None | Weather, attractions, city/destination intelligence, trip ideas |
+
+All three are integrated in `travel_helper.py`; Trivago and GeoTemp are optional and degrade gracefully if the MCP stack is not installed.
