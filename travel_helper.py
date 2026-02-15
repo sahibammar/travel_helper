@@ -3,7 +3,7 @@
 Travel helper: cheap round-trip flights from Düsseldorf Weeze / Köln, then hotels.
 
 1. Collects return trips from Weeze (NRN) and Köln (CGN). Only the departure (outbound) must
-   match the schedule: Thursday after 5 pm or Friday after 11 pm. Return is 3–4 nights later
+   match the schedule: Thursday after 5 pm or Friday after 11 am. Return is 3–4 nights later
    (any time); no schedule restriction on the return flight.
 2. Picks the 10 cheapest such trips by outbound price.
 3. For each, fetches hotels for 3–4 nights from the Trivago MCP server.
@@ -123,12 +123,12 @@ RETURN_DAYS_MAX = 4  # 4 nights at destination
 HOTEL_NIGHTS = 4  # legacy; hotel stay now matches return flight (arrival = outbound date, departure = return date)
 TRIVAGO_MCP_URL = "https://mcp.trivago.com/mcp"
 
-# Only the departure (outbound) is restricted: Thursday >= 17:00, or Friday >= 23:00 (11 pm).
+# Only the departure (outbound) is restricted: Thursday >= 17:00, or Friday >= 11:00 (11 am).
 # Return flight is 3–4 nights later with no time-of-day restriction. Monday=0 in weekday().
 THURSDAY = 3
 FRIDAY = 4
 OUTBOUND_THURSDAY_AFTER_HOUR = 17
-OUTBOUND_FRIDAY_AFTER_HOUR = 23  # 11 pm
+OUTBOUND_FRIDAY_AFTER_HOUR = 11  # 11 am
 
 # Display: separator between the two legs on one line
 LEG_SEP = "  |  "    # between outbound and inbound on one line
@@ -1122,7 +1122,7 @@ def _send_email_html(html_body: str, to_email: str, subject: str | None = None) 
 
 
 def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object, object, float]]:
-    """Collect return trips from Weeze/Köln. Only the departure must match: Thu after 5pm or Fri after 11pm.
+    """Collect return trips from Weeze/Köln. Only the departure must match: Thu after 5pm or Fri after 11am.
     Return is 3–4 nights later (any time of day). Uses API time windows so we get trips in those slots.
     Returns list of (outbound, return_flight, outbound_price).
     """
@@ -1173,7 +1173,7 @@ def run(
 ) -> None:
     t_start = time.perf_counter()
 
-    # 1. Collect return trips (only departure restricted: Thu after 5pm / Fri after 11pm; return 3–4 nights later, any time)
+    # 1. Collect return trips (only departure restricted: Thu after 5pm / Fri after 11am; return 3–4 nights later, any time)
     t0 = time.perf_counter()
     outbound_flights = collect_outbound_flights(days_ahead=days_ahead)
     t_flights = time.perf_counter() - t0
@@ -1387,7 +1387,7 @@ def run(
             print(f"   {ryanair_url}")
             _print_weather_attractions_text(dest_city, ob.departureTime.date(), ib.departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
         if not cheapest_flights:
-            print("(No round trips found for Thu after 5pm / Fri after 11pm from Weeze or Köln.)")
+            print("(No round trips found for Thu after 5pm / Fri after 11am from Weeze or Köln.)")
     # Global GeoTemp sections
     for section_title, data, formatter in [
         ("Dataset", dataset_stats, _format_dataset_stats),
@@ -1417,7 +1417,7 @@ def run(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Round trips from Weeze/Köln (Thu after 5pm or Fri after 11pm outbound, 3–4 nights, return). N cheapest + M hotels each.",
+        description="Round trips from Weeze/Köln (Thu after 5pm or Fri after 11am outbound, 3–4 nights, return). N cheapest + M hotels each.",
     )
     parser.add_argument(
         "--json",
