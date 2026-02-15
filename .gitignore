@@ -1,0 +1,9 @@
+# Virtual environment
+.venv-travel/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
