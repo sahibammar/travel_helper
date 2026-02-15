@@ -456,6 +456,7 @@ def _build_html(
     timings: dict | None = None,
 ) -> str:
     """Build results as HTML string (same content as --html file)."""
+    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     title = "Fly cheap, stay cheap — your daily Ryanair + Trivago deals"
     tagline = "Best-priced flights from Weeze & Köln (Thu eve / Fri) and lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
     weather_by_key = (travel_data or {}).get("weather") or {}
@@ -557,14 +558,15 @@ def _build_html(
             lines.append("  </div>")
     if not cheapest_flights:
         lines.append("  <p>(No round trips found.)</p>")
+    lines.append("  <p class=\"timings-note\">")
+    lines.append(f"    Generated: {html.escape(generated_at)}")
     if timings:
         total_s = timings.get("total") or 0
         flights_s = timings.get("flights") or 0
         weather_s = timings.get("weather_attractions") or 0
         hotels_s = timings.get("hotels") or 0
-        lines.append("  <p class=\"timings-note\">")
         lines.append(f"    Total execution time: {total_s:.1f}s. Flights: {flights_s:.1f}s, Weather &amp; attractions: {weather_s:.1f}s, Hotels: {hotels_s:.1f}s.")
-        lines.append("  </p>")
+    lines.append("  </p>")
     lines.append("</body>")
     lines.append("</html>")
     return "\n".join(lines)
