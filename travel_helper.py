@@ -462,6 +462,72 @@ def _format_city_profile(profile: dict) -> list[str]:
     return [" · ".join(parts)]
 
 
+def _format_activities(profile: dict) -> list[str]:
+    """Format city profile features (activities) into readable lines. Returns list of activity names with optional score."""
+    if not profile or not isinstance(profile, dict):
+        return []
+    # API may nest under "city" or put "features" at top level
+    city = profile.get("city") if isinstance(profile.get("city"), dict) else {}
+    features = (city.get("features") or profile.get("features")) if isinstance(city.get("features"), list) else (profile.get("features") if isinstance(profile.get("features"), list) else [])
+    if not features:
+        return []
+    lines = []
+    month_names = ("", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    for f in features[:15]:
+        if not isinstance(f, dict):
+            continue
+        name = f.get("feature") or f.get("activity") or f.get("name")
+        if not name:
+            continue
+        # Optional: show best month and score from monthly_scores
+        monthly = f.get("monthly_scores")
+        if isinstance(monthly, dict) and monthly:
+            try:
+                best = max(
+                    ((k, v) for k, v in monthly.items() if v is not None and isinstance(v, (int, float))),
+                    key=lambda x: float(x[1]),
+                    default=None,
+                )
+                if best:
+                    month_num, score = best[0], best[1]
+                    idx = int(month_num) if str(month_num).isdigit() else 0
+                    mn = month_names[idx] if 1 <= idx <= 12 else str(month_num)
+                    lines.append(f"{name} ({mn} {int(score)})")
+                else:
+                    lines.append(str(name))
+            except (ValueError, TypeError):
+                lines.append(str(name))
+        else:
+            lines.append(str(name))
+    return lines
+
+
+def _format_activities_from_calendar(cal_data: dict) -> list[str]:
+    """Build activity list from seasonal calendar top_activities (fallback when profile has no features)."""
+    if not cal_data or not isinstance(cal_data, dict):
+        return []
+    calendar = cal_data.get("calendar")
+    if not isinstance(calendar, list):
+        return []
+    # Collect (activity, best_month_name, score) across months
+    activity_best: dict[str, tuple[str, int]] = {}
+    for entry in calendar:
+        if not isinstance(entry, dict):
+            continue
+        month_name = entry.get("month_name") or ""
+        top = entry.get("top_activities") or []
+        for ta in top[:3]:
+            if not isinstance(ta, dict):
+                continue
+            act = ta.get("activity") or ta.get("feature")
+            score = ta.get("score")
+            if not act:
+                continue
+            if act not in activity_best or (score is not None and score > activity_best[act][1]):
+                activity_best[act] = (month_name or "", int(score) if score is not None else 0)
+    return [f"{act} ({info[0]} {info[1]})" if info[0] or info[1] else act for act, info in list(activity_best.items())[:15]]
+
+
 def _format_best_months(best_data: dict) -> list[str]:
     """Format find_best_month result into readable lines. Returns list of strings."""
     if not best_data or not isinstance(best_data, dict):
@@ -563,6 +629,7 @@ def _print_weather_attractions_text(
     profile_lines = _format_city_profile(profiles.get(dest_city) or {})
     best_lines = _format_best_months(best_months.get(dest_city) or {})
     similar_lines = _format_similar_cities(similar.get(dest_city) or {})
+    activity_lines = _format_activities(profiles.get(dest_city) or {}) or _format_activities_from_calendar(calendar.get(dest_city) or {})
     calendar_lines = _format_seasonal_calendar(calendar.get(dest_city) or {})
     weather_lines = [s for w in weather_list[:7] if (s := _format_weather_item(w))]
     if profile_lines:
@@ -580,6 +647,10 @@ def _print_weather_attractions_text(
     if similar_lines:
         print("   Similar cities:")
         for line in similar_lines:
+            print(f"     • {line}")
+    if activity_lines:
+        print("   Activities:")
+        for line in activity_lines:
             print(f"     • {line}")
     if calendar_lines:
         print("   Seasonal calendar:")
@@ -616,6 +687,7 @@ def _add_weather_attractions_html(
     profile_lines = _format_city_profile(profiles.get(dest_city) or {})
     best_lines = _format_best_months(best_months.get(dest_city) or {})
     similar_lines = _format_similar_cities(similar.get(dest_city) or {})
+    activity_lines = _format_activities(profiles.get(dest_city) or {}) or _format_activities_from_calendar(calendar.get(dest_city) or {})
     calendar_lines = _format_seasonal_calendar(calendar.get(dest_city) or {})
     weather_lines = [s for w in weather_list[:7] if (s := _format_weather_item(w))]
     if profile_lines:
@@ -640,6 +712,12 @@ def _add_weather_attractions_html(
         lines.append("    <div class=\"similar-cities\">")
         lines.append("      <div class=\"similar-cities-title\">Similar cities</div>")
         for line in similar_lines:
+            lines.append(f"      <div>{html.escape(line)}</div>")
+        lines.append("    </div>")
+    if activity_lines:
+        lines.append("    <div class=\"activities\">")
+        lines.append("      <div class=\"activities-title\">Activities</div>")
+        for line in activity_lines:
             lines.append(f"      <div>{html.escape(line)}</div>")
         lines.append("    </div>")
     if calendar_lines:
@@ -690,8 +768,8 @@ def _build_html(
         "    a.trip-link:hover { text-decoration: underline; }",
         "    .hotel { margin: 0.2rem 0; }",
         "    .hotel a { color: #073590; }",
-        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .seasonal-calendar-title { font-weight: 600; margin-bottom: 0.2rem; }",
-        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; }",
+        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .activities-title, .seasonal-calendar-title { font-weight: 600; margin-bottom: 0.2rem; }",
+        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .activities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
         "  </style>",
         "</head>",
