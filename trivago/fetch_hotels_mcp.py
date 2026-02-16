@@ -5,6 +5,7 @@ Fetch hotels from the Trivago MCP server (https://mcp.trivago.com/mcp).
 Uses the MCP Python SDK to connect via Streamable HTTP and call:
 - trivago-search-suggestions: get location id/ns from a query (e.g. city name)
 - trivago-accommodation-search: search accommodations by location and dates
+- trivago-accommodation-radius-search: search accommodations by coordinates and radius (walking distance from attractions)
 
 Requires: pip install "mcp[cli]"
 """
@@ -126,33 +127,14 @@ async def get_location_suggestion(session: ClientSession, query: str) -> tuple[i
     return None
 
 
-async def search_accommodations(
-    session: ClientSession,
-    location_id: int,
-    location_ns: int,
-    arrival: str,
-    departure: str,
-    adults: int = 2,
-    rooms: int = 1,
-) -> list[dict]:
-    """Search accommodations for the given location and dates."""
-    args = {
-        "id": location_id,
-        "ns": location_ns,
-        "arrival": arrival,
-        "departure": departure,
-        "adults": adults,
-        "rooms": rooms,
-    }
-    result = await session.call_tool("trivago-accommodation-search", args)
-    # Try structuredContent first
+def _parse_accommodations_from_result(result: object) -> list[dict]:
+    """Extract list of accommodation dicts from MCP call_tool result (shared by search and radius search)."""
     if getattr(result, "structuredContent", None) and isinstance(result.structuredContent, dict):
         out = result.structuredContent.get("output")
         if isinstance(out, list) and out:
             return out
-    # Collect all text from content blocks (same as suggestions - server may use instruction + data)
     all_text_parts = []
-    if result.content:
+    if getattr(result, "content", None):
         for block in result.content:
             text = _get_block_text(block)
             if text:
@@ -161,15 +143,12 @@ async def search_accommodations(
                 t = block.model_dump().get("text")
                 if t:
                     all_text_parts.append(t)
-    full_text = "\n".join(all_text_parts) if all_text_parts else ""
-    accommodations = []
 
     def extract_array_from_text(s: str) -> list | None:
-        # Server may return "map[output:[\n  {...},\n  {...}\n]]" - find the array after "output:["
         start_marker = "output:["
         idx = s.find(start_marker)
         if idx != -1:
-            start = idx + len("output:")  # position of "["
+            start = idx + len("output:")
             depth = 0
             for i in range(start, len(s)):
                 if s[i] == "[":
@@ -182,7 +161,6 @@ async def search_accommodations(
                         except json.JSONDecodeError:
                             break
             return None
-        # Fallback: first "[" to matching "]"
         start = s.find("[")
         if start != -1:
             depth = 0
@@ -202,18 +180,63 @@ async def search_accommodations(
         try:
             data = json.loads(part)
             if isinstance(data, dict) and "output" in data and isinstance(data["output"], list):
-                accommodations = data["output"]
-                break
+                return data["output"]
             if isinstance(data, list) and data:
-                accommodations = data
-                break
+                return data
         except json.JSONDecodeError:
             pass
         arr = extract_array_from_text(part)
         if isinstance(arr, list) and arr:
-            accommodations = arr
-            break
-    return accommodations
+            return arr
+    return []
+
+
+async def search_accommodations(
+    session: ClientSession,
+    location_id: int,
+    location_ns: int,
+    arrival: str,
+    departure: str,
+    adults: int = 2,
+    rooms: int = 1,
+) -> list[dict]:
+    """Search accommodations for the given location and dates."""
+    args = {
+        "id": location_id,
+        "ns": location_ns,
+        "arrival": arrival,
+        "departure": departure,
+        "adults": adults,
+        "rooms": rooms,
+    }
+    result = await session.call_tool("trivago-accommodation-search", args)
+    return _parse_accommodations_from_result(result)
+
+
+async def search_accommodations_radius(
+    session: ClientSession,
+    latitude: float,
+    longitude: float,
+    radius_km: float,
+    arrival: str,
+    departure: str,
+    adults: int = 2,
+    rooms: int = 1,
+) -> list[dict]:
+    """Search accommodations within radius_km of (latitude, longitude). Use for hotels near attractions (walking distance).
+    See https://mcp.trivago.com/docs — trivago-accommodation-radius-search.
+    """
+    args = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "radius": radius_km,
+        "arrival": arrival,
+        "departure": departure,
+        "adults": adults,
+        "rooms": rooms,
+    }
+    result = await session.call_tool("trivago-accommodation-radius-search", args)
+    return _parse_accommodations_from_result(result)
 
 
 def format_hotels(hotels: list[dict], max_results: int = 10) -> str:
