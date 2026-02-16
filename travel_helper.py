@@ -67,7 +67,7 @@ def _flight_duration_str(origin_iata: str, destination_iata: str) -> str:
 try:
     from mcp import ClientSession
     from mcp.client.streamable_http import streamable_http_client
-    from trivago.fetch_hotels_mcp import get_location_suggestion, search_accommodations
+    from trivago.fetch_hotels_mcp import get_location_suggestion, search_accommodations, search_accommodations_radius
 
     TRIVAGO_AVAILABLE = True
 except ImportError:
@@ -199,6 +199,45 @@ def _trivago_query_for_destination(destination_city: str) -> list[str]:
     return queries
 
 
+# Radius (km) for "walking distance from attractions" when using Trivago radius search
+HOTEL_RADIUS_ATTRACTIONS_KM = 1.5
+
+
+# Max attractions to use when computing centroid (middle point) for hotel radius search
+_ATTRACTION_CENTROID_LIMIT = 25
+
+
+def _attraction_center(attractions: list) -> tuple[float, float] | None:
+    """Middle point of all attractions with coordinates: centroid (average lat, average lon). Used as reference for hotel radius search."""
+    if not attractions or not isinstance(attractions, list):
+        return None
+    coords = []
+    for a in attractions[:_ATTRACTION_CENTROID_LIMIT]:
+        if not isinstance(a, dict):
+            continue
+        lat = a.get("latitude") or a.get("lat")
+        lon = a.get("longitude") or a.get("lon") or a.get("lng")
+        if lat is not None and lon is not None:
+            try:
+                coords.append((float(lat), float(lon)))
+            except (TypeError, ValueError):
+                continue
+    if not coords:
+        return None
+    n = len(coords)
+    return (sum(c[0] for c in coords) / n, sum(c[1] for c in coords) / n)
+
+
+def _hotel_key(h: dict) -> str:
+    """Stable key for deduplication (same hotel from radius vs city search)."""
+    return (h.get("Accommodation Name") or h.get("accommodation_name") or "").strip() or str(id(h))
+
+
+def _cheapest_hotels(hotels: list[dict], n: int) -> list[dict]:
+    """Return the n cheapest hotels by price per night (ascending). Missing prices sort last."""
+    return sorted(hotels, key=_parse_price_night)[:n]
+
+
 async def _top_hotels_for_destination(
     session: ClientSession,
     destination_city: str,
@@ -207,29 +246,45 @@ async def _top_hotels_for_destination(
     n: int = 3,
     adults: int = 2,
     rooms: int = 1,
+    attraction_coords: tuple[float, float] | None = None,
 ) -> list[dict]:
-    """Return up to n cheapest hotels (by price per night) for one destination/dates."""
+    """Return up to n cheapest hotels (by price per night). Combines radius (near attractions) and city search when coords given, then always sorts by price."""
+    hotels: list[dict] = []
+    # City search: always run so we can merge with radius and pick cheapest overall
     suggestion = None
     for query in _trivago_query_for_destination(destination_city):
         suggestion = await get_location_suggestion(session, query)
         if suggestion:
             break
-    if not suggestion:
-        return []
-    location_id, location_ns = suggestion
-    hotels = await search_accommodations(
-        session,
-        location_id,
-        location_ns,
-        arrival_date,
-        departure_date,
-        adults=adults,
-        rooms=rooms,
-    )
+    if suggestion:
+        location_id, location_ns = suggestion
+        city_hotels = await search_accommodations(
+            session,
+            location_id,
+            location_ns,
+            arrival_date,
+            departure_date,
+            adults=adults,
+            rooms=rooms,
+        )
+        hotels = list(city_hotels) if city_hotels else []
+    # Optionally add radius results (near attractions) and merge
+    if attraction_coords is not None and search_accommodations_radius:
+        lat, lon = attraction_coords
+        radius_hotels = await search_accommodations_radius(
+            session, lat, lon, HOTEL_RADIUS_ATTRACTIONS_KM,
+            arrival_date, departure_date, adults=adults, rooms=rooms,
+        )
+        if radius_hotels:
+            seen = {_hotel_key(h) for h in hotels}
+            for h in radius_hotels:
+                if _hotel_key(h) not in seen:
+                    seen.add(_hotel_key(h))
+                    hotels.append(h)
     if not hotels:
         return []
-    hotels_sorted = sorted(hotels, key=_parse_price_night)
-    return hotels_sorted[:n]
+    # Always sort by price ascending and return the n cheapest
+    return _cheapest_hotels(hotels, n)
 
 
 async def fetch_hotels_for_cheapest_flights(
@@ -237,14 +292,17 @@ async def fetch_hotels_for_cheapest_flights(
     hotels_per_flight: int = 3,
     adults: int = 2,
     rooms: int = 1,
+    attractions_by_dest: dict | None = None,
 ) -> list[dict]:
     """
     For each (outbound, return_flight, price) entry, fetch hotels_per_flight hotels
-    for that destination. Hotel stay = arrival (outbound date) to departure (return flight date).
+    for that destination. When attractions_by_dest is provided and has coordinates,
+    hotels are searched within walking distance of attractions (Trivago radius search).
     Returns list of { "destination", "arrival", "departure", "flight", "return_flight", "price", "hotels": [...] }.
     """
     if not TRIVAGO_AVAILABLE or not cheapest_flights:
         return []
+    attractions_by_dest = attractions_by_dest or {}
     tasks = []
     for outbound, return_flight, price in cheapest_flights:
         dest_city = (
@@ -262,9 +320,11 @@ async def fetch_hotels_for_cheapest_flights(
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             for dest_city, arrival, departure, outbound, return_flight, price in tasks:
+                attraction_coords = _attraction_center(attractions_by_dest.get(dest_city) or [])
                 hotels = await _top_hotels_for_destination(
                     session, dest_city, arrival, departure,
                     n=hotels_per_flight, adults=adults, rooms=rooms,
+                    attraction_coords=attraction_coords,
                 )
                 results.append({
                     "destination": dest_city,
@@ -1180,12 +1240,25 @@ def run(
     # 2. Already sorted by price; take the N cheapest
     cheapest_flights = outbound_flights[:num_cheapest_flights]
 
-    # 3. Fetch hotels for those flights (stay = outbound date to return date)
+    # 3. GeoTemp first (weather + attractions) so hotels can be chosen near attractions (walking distance)
+    travel_data = None
+    t_weather_attractions = 0.0
+    if GEOTEMP_AVAILABLE and cheapest_flights:
+        if not output_json:
+            print("Fetching weather and attractions (GeoTemp)...", file=sys.stderr)
+        try:
+            t0 = time.perf_counter()
+            travel_data = asyncio.run(_fetch_geotemp_for_trips(cheapest_flights, []))
+            t_weather_attractions = time.perf_counter() - t0
+        except Exception as e:
+            print(f"GeoTemp fetch failed: {e}", file=sys.stderr)
+
+    # 4. Fetch hotels (near attractions when GeoTemp data available; else by city)
     hotel_results = []
     t_hotels = 0.0
     if fetch_hotels and TRIVAGO_AVAILABLE and cheapest_flights:
         if not output_json:
-            print(f"Fetching {hotels_per_flight} hotels per trip (stay = outbound date → return date) for the {num_cheapest_flights} cheapest round trips...", file=sys.stderr)
+            print(f"Fetching {hotels_per_flight} hotels per trip (near attractions when available)...", file=sys.stderr)
         t0 = time.perf_counter()
         hotel_results = asyncio.run(
             fetch_hotels_for_cheapest_flights(
@@ -1193,22 +1266,10 @@ def run(
                 hotels_per_flight=hotels_per_flight,
                 adults=adults,
                 rooms=rooms,
+                attractions_by_dest=(travel_data or {}).get("attractions") or {},
             )
         )
         t_hotels = time.perf_counter() - t0
-
-    # 4. Optional: weather + attractions per destination (GeoTemp MCP)
-    travel_data = None
-    t_weather_attractions = 0.0
-    if GEOTEMP_AVAILABLE and (cheapest_flights or hotel_results):
-        if not output_json:
-            print("Fetching weather and attractions (GeoTemp)...", file=sys.stderr)
-        try:
-            t0 = time.perf_counter()
-            travel_data = asyncio.run(_fetch_geotemp_for_trips(cheapest_flights, hotel_results))
-            t_weather_attractions = time.perf_counter() - t0
-        except Exception as e:
-            print(f"GeoTemp fetch failed: {e}", file=sys.stderr)
 
     t_total = time.perf_counter() - t_start
     timings = {
