@@ -30,7 +30,8 @@ jobs:
       - name: Run travel helper (flights + hotels + HTML)
         run: |
           .venv-travel/bin/python travel_helper.py \
-            --num-cheapest-flights 300 \
+            --num-cheapest-flights 50 \
+            --cheapest-hotels-per-flight 1 \
             --days-ahead 300 \
             --html
 
