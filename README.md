@@ -207,7 +207,7 @@ python travel_helper.py
 # JSON (e.g. for pipelines / OpenClaw)
 python travel_helper.py --json
 
-# HTML report (writes travel_helper_YYYY-MM-DD.html)
+# HTML report (writes travel_helper.html)
 python travel_helper.py --html
 
 # Flights only (no Trivago / no GeoTemp)
@@ -223,7 +223,7 @@ python travel_helper.py --adults 2 --rooms 1 --days-ahead 120
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--json` | — | Machine-readable JSON |
-| `--html` | — | Write `travel_helper_YYYY-MM-DD.html` (path on stderr) |
+| `--html` | — | Write `travel_helper.html` (path on stderr) |
 | `--no-hotels` | — | Skip Trivago (flights only; GeoTemp still used if available) |
 | `--adults` | 2 | Adults for hotel search |
 | `--rooms` | 1 | Rooms for hotel search |
@@ -270,7 +270,7 @@ travel_helper/
 │   └── ...
 ├── README.md              # User/developer docs (this file in repo)
 ├── setup.py               # Optional package setup
-└── travel_helper_*.html   # Generated reports (optional)
+└── travel_helper.html    # Generated report (optional)
 ```
 
 ---
