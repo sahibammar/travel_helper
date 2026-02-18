@@ -1,0 +1,46 @@
+# Run travel_helper daily at 7 AM Germany time (6:00 UTC = 7 AM CET / 8 AM CEST).
+# Generates HTML report and uploads it as a workflow artifact.
+name: Daily travel helper
+
+on:
+  schedule:
+    # 6:00 UTC = 7 AM Berlin (CET) in winter, 8 AM Berlin (CEST) in summer
+    - cron: '0 6 * * *'
+  workflow_dispatch: # allow manual run from Actions tab
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Create venv and install dependencies
+        run: |
+          python -m venv .venv-travel
+          .venv-travel/bin/pip install --upgrade pip
+          .venv-travel/bin/pip install -r requirements.txt
+          .venv-travel/bin/pip install ryanair-py "mcp[cli]"
+
+      - name: Run travel helper (flights + hotels + HTML)
+        run: |
+          .venv-travel/bin/python travel_helper.py \
+            --num-cheapest-flights 300 \
+            --days-ahead 300 \
+            --html
+        env:
+          # Optional: set if you want email report from the workflow
+          # GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          # GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: travel-helper-report
+          path: travel_helper.html
+          retention-days: 14

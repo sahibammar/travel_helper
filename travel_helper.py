@@ -1142,10 +1142,9 @@ def _print_html(
     travel_data: dict | None = None,
     timings: dict | None = None,
 ) -> None:
-    """Write results to travel_helper_YYYY-MM-DD.html and print path."""
+    """Write results to travel_helper.html and print path."""
     html_str = _build_html(cheapest_flights, hotel_results, adults, travel_data, timings)
-    now = datetime.now()
-    filename = f"travel_helper_{now.strftime('%Y-%m-%d')}.html"
+    filename = "travel_helper.html"
     path = Path(filename).resolve()
     path.write_text(html_str, encoding="utf-8")
     print(path, file=sys.stderr)
@@ -1488,7 +1487,7 @@ def main() -> None:
     parser.add_argument(
         "--html",
         action="store_true",
-        help="Write results to travel_helper_YYYY-MM-DD.html (full path printed to stderr)",
+        help="Write results to travel_helper.html (full path printed to stderr)",
     )
     parser.add_argument(
         "--no-hotels",

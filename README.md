@@ -207,7 +207,7 @@ python travel_helper.py
 # JSON (e.g. for pipelines / OpenClaw)
 python travel_helper.py --json
 
-# HTML report (writes travel_helper_YYYY-MM-DD.html)
+# HTML report (writes travel_helper.html)
 python travel_helper.py --html
 
 # Flights only (no Trivago / no GeoTemp)
@@ -223,7 +223,7 @@ python travel_helper.py --adults 2 --rooms 1 --days-ahead 120
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--json` | — | Machine-readable JSON |
-| `--html` | — | Write `travel_helper_YYYY-MM-DD.html` (path on stderr) |
+| `--html` | — | Write `travel_helper.html` (path on stderr) |
 | `--no-hotels` | — | Skip Trivago (flights only; GeoTemp still used if available) |
 | `--adults` | 2 | Adults for hotel search |
 | `--rooms` | 1 | Rooms for hotel search |
@@ -239,6 +239,14 @@ export GMAIL_USER=your@gmail.com
 export GMAIL_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
 python travel_helper.py --html --email recipient@example.com
 ```
+
+### Scheduled run (GitHub Actions)
+
+A workflow runs daily at **7 AM Germany time** (6:00 UTC) (see [.github/workflows/daily-travel-helper.yml](.github/workflows/daily-travel-helper.yml)) with:
+
+- `--num-cheapest-flights 300 --days-ahead 300 --html`
+
+The generated HTML report is uploaded as an artifact (retention 14 days). To run manually: **Actions** → **Daily travel helper** → **Run workflow**. To get the report by email from the workflow, add repo secrets `GMAIL_USER` and `GMAIL_APP_PASSWORD` and uncomment the `env` block in the workflow.
 
 ### Troubleshooting
 
@@ -262,7 +270,7 @@ travel_helper/
 │   └── ...
 ├── README.md              # User/developer docs (this file in repo)
 ├── setup.py               # Optional package setup
-└── travel_helper_*.html   # Generated reports (optional)
+└── travel_helper.html     # Generated report (optional)
 ```
 
 ---
