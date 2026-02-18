@@ -270,7 +270,7 @@ travel_helper/
 │   └── ...
 ├── README.md              # User/developer docs (this file in repo)
 ├── setup.py               # Optional package setup
-└── travel_helper.html    # Generated report (optional)
+└── travel_helper.html     # Generated report (optional)
 ```
 
 ---
