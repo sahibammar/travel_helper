@@ -1,0 +1,2230 @@
+{
+  "cheapest_flights_with_hotels": [
+    {
+      "outbound": {
+        "departure": "2026-02-27T12:15:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "SZY",
+        "destination_full": "Olsztyn - Mazury, Poland",
+        "price_eur": 14.99
+      },
+      "return": {
+        "departure": "2026-03-01T09:10:00",
+        "origin": "SZY",
+        "origin_full": "Olsztyn - Mazury, Poland",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-02-27",
+      "hotel_departure": "2026-03-01",
+      "hotels": [
+        {
+          "Accommodation ID": "efaf3e95a29f3ded0ea7850c462f73141d475d914859e67bfea2eeab5f0c7058",
+          "Accommodation Name": "Zespół Pałacowy Pacółtowo na wyłączność",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-zespół-pałacowy-pacółtowo-na-wyłączność-olsztyn?search=100-2734010;rc-1-2;dr-20260227-20260301-s&cip=234716015",
+          "Address": "Pacółtowo 2",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-02-27",
+          "Booking URL": "",
+          "Country City": "Olsztyn, Poland",
+          "Currency": "EUR",
+          "Departure": "2026-03-01",
+          "Distance": "Olsztyn, 22.1 miles to City centre",
+          "Distance To City Center": "22.100000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "53.531250",
+          "Longitude": "20.138760",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/85/b9/47eb19aacc961ed61a956466208f52e75a21d5aa44701ea274e3f03b333d",
+          "Postal Code": "14-107",
+          "Price Per Night": "€2,040",
+          "Price Per Stay": "€4,079",
+          "Review Rating": "",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-06T12:15:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "SZY",
+        "destination_full": "Olsztyn - Mazury, Poland",
+        "price_eur": 14.99
+      },
+      "return": {
+        "departure": "2026-03-08T09:10:00",
+        "origin": "SZY",
+        "origin_full": "Olsztyn - Mazury, Poland",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-03-06",
+      "hotel_departure": "2026-03-08",
+      "hotels": [
+        {
+          "Accommodation ID": "efaf3e95a29f3ded0ea7850c462f73141d475d914859e67bfea2eeab5f0c7058",
+          "Accommodation Name": "Zespół Pałacowy Pacółtowo na wyłączność",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-zespół-pałacowy-pacółtowo-na-wyłączność-olsztyn?search=100-2734010;rc-1-2;dr-20260306-20260308-s&cip=234716015",
+          "Address": "Pacółtowo 2",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-03-06",
+          "Booking URL": "",
+          "Country City": "Olsztyn, Poland",
+          "Currency": "EUR",
+          "Departure": "2026-03-08",
+          "Distance": "Olsztyn, 22.1 miles to City centre",
+          "Distance To City Center": "22.100000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "53.531250",
+          "Longitude": "20.138760",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/85/b9/47eb19aacc961ed61a956466208f52e75a21d5aa44701ea274e3f03b333d",
+          "Postal Code": "14-107",
+          "Price Per Night": "€2,040",
+          "Price Per Stay": "€4,079",
+          "Review Rating": "",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-13T12:15:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "SZY",
+        "destination_full": "Olsztyn - Mazury, Poland",
+        "price_eur": 14.99
+      },
+      "return": {
+        "departure": "2026-03-15T09:10:00",
+        "origin": "SZY",
+        "origin_full": "Olsztyn - Mazury, Poland",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-03-13",
+      "hotel_departure": "2026-03-15",
+      "hotels": [
+        {
+          "Accommodation ID": "efaf3e95a29f3ded0ea7850c462f73141d475d914859e67bfea2eeab5f0c7058",
+          "Accommodation Name": "Zespół Pałacowy Pacółtowo na wyłączność",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-zespół-pałacowy-pacółtowo-na-wyłączność-olsztyn?search=100-2734010;rc-1-2;dr-20260313-20260315-s&cip=234716015",
+          "Address": "Pacółtowo 2",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-03-13",
+          "Booking URL": "",
+          "Country City": "Olsztyn, Poland",
+          "Currency": "EUR",
+          "Departure": "2026-03-15",
+          "Distance": "Olsztyn, 22.1 miles to City centre",
+          "Distance To City Center": "22.100000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "53.531250",
+          "Longitude": "20.138760",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/85/b9/47eb19aacc961ed61a956466208f52e75a21d5aa44701ea274e3f03b333d",
+          "Postal Code": "14-107",
+          "Price Per Night": "€2,040",
+          "Price Per Stay": "€4,079",
+          "Review Rating": "",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-20T12:15:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "SZY",
+        "destination_full": "Olsztyn - Mazury, Poland",
+        "price_eur": 14.99
+      },
+      "return": {
+        "departure": "2026-03-22T09:10:00",
+        "origin": "SZY",
+        "origin_full": "Olsztyn - Mazury, Poland",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-03-20",
+      "hotel_departure": "2026-03-22",
+      "hotels": [
+        {
+          "Accommodation ID": "efaf3e95a29f3ded0ea7850c462f73141d475d914859e67bfea2eeab5f0c7058",
+          "Accommodation Name": "Zespół Pałacowy Pacółtowo na wyłączność",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-zespół-pałacowy-pacółtowo-na-wyłączność-olsztyn?search=100-2734010;rc-1-2;dr-20260320-20260322-s&cip=234716015",
+          "Address": "Pacółtowo 2",
+          "Advertisers": "Agoda",
+          "Arrival": "2026-03-20",
+          "Booking URL": "",
+          "Country City": "Olsztyn, Poland",
+          "Currency": "EUR",
+          "Departure": "2026-03-22",
+          "Distance": "Olsztyn, 22.1 miles to City centre",
+          "Distance To City Center": "22.100000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "53.531250",
+          "Longitude": "20.138760",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/85/b9/47eb19aacc961ed61a956466208f52e75a21d5aa44701ea274e3f03b333d",
+          "Postal Code": "14-107",
+          "Price Per Night": "€2,038",
+          "Price Per Stay": "€4,077",
+          "Review Rating": "",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-27T12:15:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "SZY",
+        "destination_full": "Olsztyn - Mazury, Poland",
+        "price_eur": 14.99
+      },
+      "return": {
+        "departure": "2026-03-29T20:25:00",
+        "origin": "SZY",
+        "origin_full": "Olsztyn - Mazury, Poland",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-03-27",
+      "hotel_departure": "2026-03-29",
+      "hotels": [
+        {
+          "Accommodation ID": "efaf3e95a29f3ded0ea7850c462f73141d475d914859e67bfea2eeab5f0c7058",
+          "Accommodation Name": "Zespół Pałacowy Pacółtowo na wyłączność",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-zespół-pałacowy-pacółtowo-na-wyłączność-olsztyn?search=100-2734010;rc-1-2;dr-20260327-20260329-s&cip=234716015",
+          "Address": "Pacółtowo 2",
+          "Advertisers": "Agoda",
+          "Arrival": "2026-03-27",
+          "Booking URL": "",
+          "Country City": "Olsztyn, Poland",
+          "Currency": "EUR",
+          "Departure": "2026-03-29",
+          "Distance": "Olsztyn, 22.1 miles to City centre",
+          "Distance To City Center": "22.100000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "53.531250",
+          "Longitude": "20.138760",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/85/b9/47eb19aacc961ed61a956466208f52e75a21d5aa44701ea274e3f03b333d",
+          "Postal Code": "14-107",
+          "Price Per Night": "€2,038",
+          "Price Per Stay": "€4,077",
+          "Review Rating": "",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-12T21:35:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 16.99
+      },
+      "return": {
+        "departure": "2026-03-16T22:15:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 15.99
+      },
+      "hotel_arrival": "2026-03-12",
+      "hotel_departure": "2026-03-16",
+      "hotels": [
+        {
+          "Accommodation ID": "78b096ae3b983954238e51aa2752b79f2e0dc8104f5f0af09e47e2fa257055af",
+          "Accommodation Name": "Travelodge Manchester Salford Quays",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-manchester-salford-quays?search=100-2396260;rc-1-2;dr-20260312-20260316-s&cip=234716015",
+          "Address": "18 Markendale Place",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-03-12",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-16",
+          "Distance": "0.8 miles to Old Trafford Football Stadium",
+          "Distance To City Center": "1.900000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "53.473179",
+          "Longitude": "-2.281870",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/0b/a7/e33e0cafdb81467bbb9017d6afdb958ade0c91f69dc026f0ddb6392f50cc",
+          "Postal Code": "M5 3GW",
+          "Price Per Night": "€83",
+          "Price Per Stay": "€331",
+          "Review Rating": "8.3",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-13T22:00:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 16.99
+      },
+      "return": {
+        "departure": "2026-03-16T22:15:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 15.99
+      },
+      "hotel_arrival": "2026-03-13",
+      "hotel_departure": "2026-03-16",
+      "hotels": [
+        {
+          "Accommodation ID": "9ba3457add10591fbac4ef2c1368c57e3e825f4ecda755493864e269014e0ca6",
+          "Accommodation Name": "Premier Inn Manchester Airport (M56/J6) Runger Lane South",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-premier-inn-manchester-airport-m56-j6-runger-lane-south?search=100-915127;rc-1-2;dr-20260313-20260316-s&cip=234716015",
+          "Address": "Runger Lane, Wilmslow Road",
+          "Advertisers": "Premier Inn",
+          "Arrival": "2026-03-13",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-16",
+          "Distance": "0.8 miles to Manchester Airport",
+          "Distance To City Center": "8.500000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "53.362679",
+          "Longitude": "-2.292580",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/b5/e5/9ec80122756ade2d81e2ac8fe65c318c6a67c4d858a8e8f1c590152623a4",
+          "Postal Code": "M90 5DL",
+          "Price Per Night": "€63",
+          "Price Per Stay": "€190",
+          "Review Rating": "8.3",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-06T22:00:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 16.99
+      },
+      "return": {
+        "departure": "2026-03-09T22:15:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-03-06",
+      "hotel_departure": "2026-03-09",
+      "hotels": [
+        {
+          "Accommodation ID": "78b096ae3b983954238e51aa2752b79f2e0dc8104f5f0af09e47e2fa257055af",
+          "Accommodation Name": "Travelodge Manchester Salford Quays",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-manchester-salford-quays?search=100-2396260;rc-1-2;dr-20260306-20260309-s&cip=234716015",
+          "Address": "18 Markendale Place",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-03-06",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-09",
+          "Distance": "0.8 miles to Old Trafford Football Stadium",
+          "Distance To City Center": "1.900000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "53.473179",
+          "Longitude": "-2.281870",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/0b/a7/e33e0cafdb81467bbb9017d6afdb958ade0c91f69dc026f0ddb6392f50cc",
+          "Postal Code": "M5 3GW",
+          "Price Per Night": "€101",
+          "Price Per Stay": "€302",
+          "Review Rating": "8.3",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-20T22:00:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 16.99
+      },
+      "return": {
+        "departure": "2026-03-23T22:15:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-03-20",
+      "hotel_departure": "2026-03-23",
+      "hotels": [
+        {
+          "Accommodation ID": "78b096ae3b983954238e51aa2752b79f2e0dc8104f5f0af09e47e2fa257055af",
+          "Accommodation Name": "Travelodge Manchester Salford Quays",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-manchester-salford-quays?search=100-2396260;rc-1-2;dr-20260320-20260323-s&cip=234716015",
+          "Address": "18 Markendale Place",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-03-20",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-23",
+          "Distance": "0.8 miles to Old Trafford Football Stadium",
+          "Distance To City Center": "1.900000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "53.473179",
+          "Longitude": "-2.281870",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/0b/a7/e33e0cafdb81467bbb9017d6afdb958ade0c91f69dc026f0ddb6392f50cc",
+          "Postal Code": "M5 3GW",
+          "Price Per Night": "€79",
+          "Price Per Stay": "€237",
+          "Review Rating": "8.3",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-17T21:05:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "ZAD",
+        "destination_full": "Zadar, Croatia",
+        "price_eur": 16.99
+      },
+      "return": {
+        "departure": "2026-04-21T06:00:00",
+        "origin": "ZAD",
+        "origin_full": "Zadar, Croatia",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-04-17",
+      "hotel_departure": "2026-04-21",
+      "hotels": [
+        {
+          "Accommodation ID": "1b2df63754142ee132c5803558bbe309fdb6fa3f9425cad4fdba9c7e7b8f9389",
+          "Accommodation Name": "Guesthouse Barić",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-guesthouse-barić-zadar?search=100-6400932;rc-1-2;dr-20260417-20260421-s&cip=234716015",
+          "Address": "7 Ulica Augusta Harambašića",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-17",
+          "Booking URL": "",
+          "Country City": "Zadar, Croatia",
+          "Currency": "EUR",
+          "Departure": "2026-04-21",
+          "Distance": "Zadar, 1.8 miles to City centre",
+          "Distance To City Center": "1.800000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "44.135410",
+          "Longitude": "15.219450",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/86/b3/b180a99b9d05f25e951113198730738553f38dd665710aec2fe22c709157",
+          "Postal Code": "23000",
+          "Price Per Night": "€54",
+          "Price Per Stay": "€216",
+          "Review Rating": "9.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-05-15T15:50:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 21.69
+      },
+      "return": {
+        "departure": "2026-05-19T06:35:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-05-15",
+      "hotel_departure": "2026-05-19",
+      "hotels": [
+        {
+          "Accommodation ID": "c0ca2e025ac4fd0b717e6e7e7c1608bbf86d8a5ff6d3a173cab97e8213006713",
+          "Accommodation Name": "Travelodge Manchester Sportcity",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-manchester-sportcity?search=100-137963;rc-1-2;dr-20260515-20260519-s&cip=234716015",
+          "Address": "Hyde Rd",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-05-15",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-05-19",
+          "Distance": "2.3 miles to Town Hall",
+          "Distance To City Center": "2.200000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "53.465530",
+          "Longitude": "-2.193200",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/f1/b6/0967f13829323f5c16b805673af47c3d211a71f20011008973496bd74b61",
+          "Postal Code": "M12 5NT",
+          "Price Per Night": "€51",
+          "Price Per Stay": "€205",
+          "Review Rating": "7.8",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-13T22:55:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "GRO",
+        "destination_full": "Barcelona Girona, Spain",
+        "price_eur": 14.99
+      },
+      "return": {
+        "departure": "2026-03-17T19:25:00",
+        "origin": "GRO",
+        "origin_full": "Barcelona Girona, Spain",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 23.56
+      },
+      "hotel_arrival": "2026-03-13",
+      "hotel_departure": "2026-03-17",
+      "hotels": [
+        {
+          "Accommodation ID": "199be43edddb0f411b780894811c09c1b5c24ac1e00ef41099596e327f2c0358",
+          "Accommodation Name": "Hostal Felipe II",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-hostal-felipe-ii-barcelona?search=100-147521;rc-1-2;dr-20260313-20260317-s&cip=234716015",
+          "Address": "Mallorca 329",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-03-13",
+          "Booking URL": "",
+          "Country City": "Barcelona, Spain",
+          "Currency": "EUR",
+          "Departure": "2026-03-17",
+          "Distance": "0.5 miles to Sagrada Familia",
+          "Distance To City Center": "0.800000 MILES",
+          "Hotel Rating": "2",
+          "Latitude": "41.398239",
+          "Longitude": "2.168220",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/d5/de/9ea0cf7ac009387003f38c3cac0d2341d00d8f9ecdf92341232c24e943ca",
+          "Postal Code": "08037",
+          "Price Per Night": "€124",
+          "Price Per Stay": "€495",
+          "Review Rating": "7.2",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-10T22:55:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "DUB",
+        "destination_full": "Dublin, Ireland",
+        "price_eur": 22.21
+      },
+      "return": {
+        "departure": "2026-04-14T20:55:00",
+        "origin": "DUB",
+        "origin_full": "Dublin, Ireland",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-04-10",
+      "hotel_departure": "2026-04-14",
+      "hotels": [
+        {
+          "Accommodation ID": "8f41843af2e07b23654399286c0ce0da7cf3c946e68b984f97c36795aa6b1c63",
+          "Accommodation Name": "Maldron Hotel Newlands Cross",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/maldron-hotel-newlands-cross-dublin?search=100-156610;rc-1-2;dr-20260410-20260414-s&cip=234716015",
+          "Address": "Naas Road",
+          "Advertisers": "Hotels.com",
+          "Arrival": "2026-04-10",
+          "Booking URL": "",
+          "Country City": "Dublin, Ireland",
+          "Currency": "EUR",
+          "Departure": "2026-04-14",
+          "Distance": "4.0 miles to Kilmainham Gaol",
+          "Distance To City Center": "5.900000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "53.313240",
+          "Longitude": "-6.392870",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/dd/5d/0820ce0a48fc7f93ffc58877862d637818dd5b3e5a7998e5b6d7704208e3",
+          "Postal Code": "",
+          "Price Per Night": "€105",
+          "Price Per Stay": "€419",
+          "Review Rating": "8.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-05T19:15:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "EDI",
+        "destination_full": "Edinburgh, United Kingdom",
+        "price_eur": 19.99
+      },
+      "return": {
+        "departure": "2026-03-08T06:15:00",
+        "origin": "EDI",
+        "origin_full": "Edinburgh, United Kingdom",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 19.99
+      },
+      "hotel_arrival": "2026-03-05",
+      "hotel_departure": "2026-03-08",
+      "hotels": [
+        {
+          "Accommodation ID": "2ed2002255cc40ffd2d800482b2343c528566b433fd4397d2c13440dfcd1f21a",
+          "Accommodation Name": "Premier Inn Edinburgh Airport - M9 Jct1",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-premier-inn-edinburgh-airport-m9-jct1?search=100-1824213;rc-1-2;dr-20260305-20260308-s&cip=234716015",
+          "Address": "5 Hallbarns Crescent",
+          "Advertisers": "Premier Inn",
+          "Arrival": "2026-03-05",
+          "Booking URL": "",
+          "Country City": "Edinburgh, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-08",
+          "Distance": "Edinburgh, 8.2 miles to City centre",
+          "Distance To City Center": "8.200000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "55.942291",
+          "Longitude": "-3.405440",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/dc/e3/a9e70796113ab77e278bfa7b8dafecf8bd7e6c282a837a71024c0d79ddc2",
+          "Postal Code": "EH28 8TH",
+          "Price Per Night": "€114",
+          "Price Per Stay": "€343",
+          "Review Rating": "8.2",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-10T18:35:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "ZAD",
+        "destination_full": "Zadar, Croatia",
+        "price_eur": 16.99
+      },
+      "return": {
+        "departure": "2026-04-14T09:35:00",
+        "origin": "ZAD",
+        "origin_full": "Zadar, Croatia",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 25.99
+      },
+      "hotel_arrival": "2026-04-10",
+      "hotel_departure": "2026-04-14",
+      "hotels": [
+        {
+          "Accommodation ID": "1b2df63754142ee132c5803558bbe309fdb6fa3f9425cad4fdba9c7e7b8f9389",
+          "Accommodation Name": "Guesthouse Barić",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-guesthouse-barić-zadar?search=100-6400932;rc-1-2;dr-20260410-20260414-s&cip=234716015",
+          "Address": "7 Ulica Augusta Harambašića",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-10",
+          "Booking URL": "",
+          "Country City": "Zadar, Croatia",
+          "Currency": "EUR",
+          "Departure": "2026-04-14",
+          "Distance": "Zadar, 1.8 miles to City centre",
+          "Distance To City Center": "1.800000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "44.135410",
+          "Longitude": "15.219450",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/86/b3/b180a99b9d05f25e951113198730738553f38dd665710aec2fe22c709157",
+          "Postal Code": "23000",
+          "Price Per Night": "€54",
+          "Price Per Stay": "€216",
+          "Review Rating": "9.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-05-15T13:45:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 26.45
+      },
+      "return": {
+        "departure": "2026-05-19T20:20:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-05-15",
+      "hotel_departure": "2026-05-19",
+      "hotels": [
+        {
+          "Accommodation ID": "225f50a63d79fb89c92f625a3368d3077f0937b2961649bf0042b1ed453143e4",
+          "Accommodation Name": "Travelodge Stansted Great Dunmow",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-stansted-great-dunmow?search=100-452216;rc-1-2;dr-20260515-20260519-s&cip=234716015",
+          "Address": "Chelmsford Rd",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-05-15",
+          "Booking URL": "",
+          "Country City": "Great Dunmow, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-05-19",
+          "Distance": "Great Dunmow, 0.9 miles to City centre",
+          "Distance To City Center": "1.000000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "51.860291",
+          "Longitude": "0.375650",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/eb/fd/9c4ab62a4ce847f71a6059a221a66cb35647eaa3c8e9aa05690f8ce4e267",
+          "Postal Code": "CM6 1LW",
+          "Price Per Night": "€64",
+          "Price Per Stay": "€254",
+          "Review Rating": "8.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-05-29T11:20:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "BGY",
+        "destination_full": "Milan Bergamo, Italy",
+        "price_eur": 19.99
+      },
+      "return": {
+        "departure": "2026-06-01T06:50:00",
+        "origin": "BGY",
+        "origin_full": "Milan Bergamo, Italy",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 24.99
+      },
+      "hotel_arrival": "2026-05-29",
+      "hotel_departure": "2026-06-01",
+      "hotels": [
+        {
+          "Accommodation ID": "2bb5e5470665921b5b36628bdd04cfd750bf058633cbb59b8c883732b68fa5f0",
+          "Accommodation Name": "Hotel Sirio, Sure Hotel Collection by Best Western",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-sirio-sure-hotel-collection-by-best-western-medolago?search=100-1886593;rc-1-2;dr-20260529-20260601-s&cip=234716015",
+          "Address": "Via Cesare Battisti 30",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-05-29",
+          "Booking URL": "",
+          "Country City": "Medolago, Italy",
+          "Currency": "EUR",
+          "Departure": "2026-06-01",
+          "Distance": "Medolago, 0.1 miles to City centre",
+          "Distance To City Center": "0.100000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "45.668999",
+          "Longitude": "9.498370",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/73/fd/ae5efc738becb1612ecd52a73737f08132464cac54debb9b979a28321184",
+          "Postal Code": "24030",
+          "Price Per Night": "€61",
+          "Price Per Stay": "€184",
+          "Review Rating": "8.2",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-05-01T22:55:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "DUB",
+        "destination_full": "Dublin, Ireland",
+        "price_eur": 26.99
+      },
+      "return": {
+        "departure": "2026-05-05T20:55:00",
+        "origin": "DUB",
+        "origin_full": "Dublin, Ireland",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 19.99
+      },
+      "hotel_arrival": "2026-05-01",
+      "hotel_departure": "2026-05-05",
+      "hotels": []
+    },
+    {
+      "outbound": {
+        "departure": "2026-06-05T13:45:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 27.07
+      },
+      "return": {
+        "departure": "2026-06-09T09:00:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 19.99
+      },
+      "hotel_arrival": "2026-06-05",
+      "hotel_departure": "2026-06-09",
+      "hotels": [
+        {
+          "Accommodation ID": "225f50a63d79fb89c92f625a3368d3077f0937b2961649bf0042b1ed453143e4",
+          "Accommodation Name": "Travelodge Stansted Great Dunmow",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-stansted-great-dunmow?search=100-452216;rc-1-2;dr-20260605-20260609-s&cip=234716015",
+          "Address": "Chelmsford Rd",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-06-05",
+          "Booking URL": "",
+          "Country City": "Great Dunmow, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-06-09",
+          "Distance": "Great Dunmow, 0.9 miles to City centre",
+          "Distance To City Center": "1.000000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "51.860291",
+          "Longitude": "0.375650",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/eb/fd/9c4ab62a4ce847f71a6059a221a66cb35647eaa3c8e9aa05690f8ce4e267",
+          "Postal Code": "CM6 1LW",
+          "Price Per Night": "€65",
+          "Price Per Stay": "€259",
+          "Review Rating": "8.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-05-08T16:00:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 31.15
+      },
+      "return": {
+        "departure": "2026-05-12T09:00:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-05-08",
+      "hotel_departure": "2026-05-12",
+      "hotels": [
+        {
+          "Accommodation ID": "fd6d0570e0d5111e0444460c086d6576d86cc2a98114aff90ad740f5cfe79d24",
+          "Accommodation Name": "Premier Inn London Stansted Airport",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-premier-inn-london-stansted-airport?search=100-2501720;rc-1-2;dr-20260508-20260512-s&cip=234716015",
+          "Address": "Thremhall Avenue",
+          "Advertisers": "Premier Inn",
+          "Arrival": "2026-05-08",
+          "Booking URL": "",
+          "Country City": "Stansted, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-05-12",
+          "Distance": "Stansted, 2.9 miles to City centre",
+          "Distance To City Center": "2.900000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "51.876060",
+          "Longitude": "0.247050",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/30/a6/4c64a96b6c25d7f8ba71b004bc3065098ff3fcfaf7e14110f66e6fdc1258",
+          "Postal Code": "CM24 1PY",
+          "Price Per Night": "€63",
+          "Price Per Stay": "€251",
+          "Review Rating": "8.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-10T21:05:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "ZAD",
+        "destination_full": "Zadar, Croatia",
+        "price_eur": 31.96
+      },
+      "return": {
+        "departure": "2026-04-14T06:00:00",
+        "origin": "ZAD",
+        "origin_full": "Zadar, Croatia",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-04-10",
+      "hotel_departure": "2026-04-14",
+      "hotels": [
+        {
+          "Accommodation ID": "1b2df63754142ee132c5803558bbe309fdb6fa3f9425cad4fdba9c7e7b8f9389",
+          "Accommodation Name": "Guesthouse Barić",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-guesthouse-barić-zadar?search=100-6400932;rc-1-2;dr-20260410-20260414-s&cip=234716015",
+          "Address": "7 Ulica Augusta Harambašića",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-10",
+          "Booking URL": "",
+          "Country City": "Zadar, Croatia",
+          "Currency": "EUR",
+          "Departure": "2026-04-14",
+          "Distance": "Zadar, 1.8 miles to City centre",
+          "Distance To City Center": "1.800000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "44.135410",
+          "Longitude": "15.219450",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/86/b3/b180a99b9d05f25e951113198730738553f38dd665710aec2fe22c709157",
+          "Postal Code": "23000",
+          "Price Per Night": "€54",
+          "Price Per Stay": "€216",
+          "Review Rating": "9.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-06-05T15:50:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 26.99
+      },
+      "return": {
+        "departure": "2026-06-09T06:35:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 22.04
+      },
+      "hotel_arrival": "2026-06-05",
+      "hotel_departure": "2026-06-09",
+      "hotels": [
+        {
+          "Accommodation ID": "2540f86eec966b80cf39ac9e3521ffe8f57d2b87071591a25d83757fb4e0435b",
+          "Accommodation Name": "Travelodge Manchester Central Arena",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-manchester-central-arena?search=100-2396262;rc-1-2;dr-20260605-20260609-s&cip=234716015",
+          "Address": "Great Ducie Street",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-06-05",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-06-09",
+          "Distance": "0.8 miles to Town Hall",
+          "Distance To City Center": "0.700000 MILES",
+          "Hotel Rating": "2",
+          "Latitude": "53.490108",
+          "Longitude": "-2.246660",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/c6/68/cee1a8d6bc7441462b0f899d2b7a82e7c94cd53be2ff85859866d4b1ace0",
+          "Postal Code": "M3 1RR",
+          "Price Per Night": "€67",
+          "Price Per Stay": "€269",
+          "Review Rating": "8.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-06T16:10:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "TNG",
+        "destination_full": "Tangier, Morocco",
+        "price_eur": 28.99
+      },
+      "return": {
+        "departure": "2026-03-10T14:25:00",
+        "origin": "TNG",
+        "origin_full": "Tangier, Morocco",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 21.99
+      },
+      "hotel_arrival": "2026-03-06",
+      "hotel_departure": "2026-03-10",
+      "hotels": [
+        {
+          "Accommodation ID": "a9af8be7971b2a91ad95d3824322b38a97b90ae74c74a0e9686c5c593d962284",
+          "Accommodation Name": "Hotel Mauritania Center Tangier",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-mauritania-center-tangier?search=100-22923958;rc-1-2;dr-20260306-20260310-s&cip=234716015",
+          "Address": "2 Rue Almohades, Old Medina, 90000 Tanger, Maroc",
+          "Advertisers": "Expedia",
+          "Arrival": "2026-03-06",
+          "Booking URL": "",
+          "Country City": "Tangier, Morocco",
+          "Currency": "EUR",
+          "Departure": "2026-03-10",
+          "Distance": "Tangier, 0.1 miles to City centre",
+          "Distance To City Center": "0.100000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "35.785500",
+          "Longitude": "-5.810660",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/91/a8/3054c4218b21b49dcb21539d58ffa2986bffd3e5c957ca8c6968d5092d27",
+          "Postal Code": "90000",
+          "Price Per Night": "€33",
+          "Price Per Stay": "€132",
+          "Review Rating": "7.2",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-13T19:35:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 33.99
+      },
+      "return": {
+        "departure": "2026-03-17T08:15:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-03-13",
+      "hotel_departure": "2026-03-17",
+      "hotels": [
+        {
+          "Accommodation ID": "9ef267bbb8225ebe6c05f73ad797a39e8591994c9cb19f7c3f861e550376038f",
+          "Accommodation Name": "Days Inn by Wyndham London Stansted Airport",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-days-inn-by-wyndham-london-stansted-airport-bishop-s-stortford?search=100-381206;rc-1-2;dr-20260313-20260317-s&cip=234716015",
+          "Address": "Welcome Break Service Area, Junction 8-M 11, Birchanger Green",
+          "Advertisers": "Expedia",
+          "Arrival": "2026-03-13",
+          "Booking URL": "",
+          "Country City": "Bishop's Stortford, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-17",
+          "Distance": "Bishop's Stortford, 1.5 miles to City centre",
+          "Distance To City Center": "1.500000 MILES",
+          "Hotel Rating": "2",
+          "Latitude": "51.872002",
+          "Longitude": "0.193570",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/f5/93/538354dc113f71d2a224fa110aef7572c6bd7fe8cba8b5f2175d02f6bbde",
+          "Postal Code": "CM23 5QZ",
+          "Price Per Night": "€59",
+          "Price Per Stay": "€236",
+          "Review Rating": "7.6",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-16T20:10:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "ARN",
+        "destination_full": "Stockholm Arlanda, Sweden",
+        "price_eur": 35.99
+      },
+      "return": {
+        "departure": "2026-04-20T17:10:00",
+        "origin": "ARN",
+        "origin_full": "Stockholm Arlanda, Sweden",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-04-16",
+      "hotel_departure": "2026-04-20",
+      "hotels": [
+        {
+          "Accommodation ID": "3dae10466b75393cbd7da984a06d60c901f865a991fcfd8f3d8a4a855e3c6471",
+          "Accommodation Name": "ApartDirect Arlandastad",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-apartdirect-arlandastad-sigtuna?search=100-28060834;rc-1-2;dr-20260416-20260420-s&cip=234716015",
+          "Address": "15 Cederströms Slinga",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-16",
+          "Booking URL": "",
+          "Country City": "Sigtuna, Sweden",
+          "Currency": "EUR",
+          "Departure": "2026-04-20",
+          "Distance": "Sigtuna, 6.1 miles to City centre",
+          "Distance To City Center": "1.900000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "59.607941",
+          "Longitude": "17.896910",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/ea/f2/b4feb563d95340cfb42ad8137072b50ff09a13d2116c6c26d7378bf11cd2",
+          "Postal Code": "195 95",
+          "Price Per Night": "€48",
+          "Price Per Stay": "€191",
+          "Review Rating": "7.6",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-13T19:05:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "EDI",
+        "destination_full": "Edinburgh, United Kingdom",
+        "price_eur": 27.99
+      },
+      "return": {
+        "departure": "2026-03-15T06:15:00",
+        "origin": "EDI",
+        "origin_full": "Edinburgh, United Kingdom",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 23.13
+      },
+      "hotel_arrival": "2026-03-13",
+      "hotel_departure": "2026-03-15",
+      "hotels": [
+        {
+          "Accommodation ID": "998b9ac36d3abebad4652bceaa2d87a1f97ad686a25fb027ea5ba1132f945c76",
+          "Accommodation Name": "Premier Inn Edinburgh Park - Airport",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-premier-inn-edinburgh-park-airport?search=100-2153362;rc-1-2;dr-20260313-20260315-s&cip=234716015",
+          "Address": "1 Lochside Court",
+          "Advertisers": "Premier Inn",
+          "Arrival": "2026-03-13",
+          "Booking URL": "",
+          "Country City": "Edinburgh, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-15",
+          "Distance": "Edinburgh, 4.6 miles to City centre",
+          "Distance To City Center": "4.700000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "55.927959",
+          "Longitude": "-3.308060",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/22/6d/5b3eccf5474b91e473ffc4717dc518b02adddb43f8e5c488d43d7f99113a",
+          "Postal Code": "EH12 9FX",
+          "Price Per Night": "€94",
+          "Price Per Stay": "€189",
+          "Review Rating": "8.6",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-24T21:05:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "ZAD",
+        "destination_full": "Zadar, Croatia",
+        "price_eur": 34.2
+      },
+      "return": {
+        "departure": "2026-04-28T06:00:00",
+        "origin": "ZAD",
+        "origin_full": "Zadar, Croatia",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-04-24",
+      "hotel_departure": "2026-04-28",
+      "hotels": [
+        {
+          "Accommodation ID": "1b2df63754142ee132c5803558bbe309fdb6fa3f9425cad4fdba9c7e7b8f9389",
+          "Accommodation Name": "Guesthouse Barić",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-guesthouse-barić-zadar?search=100-6400932;rc-1-2;dr-20260424-20260428-s&cip=234716015",
+          "Address": "7 Ulica Augusta Harambašića",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-24",
+          "Booking URL": "",
+          "Country City": "Zadar, Croatia",
+          "Currency": "EUR",
+          "Departure": "2026-04-28",
+          "Distance": "Zadar, 1.8 miles to City centre",
+          "Distance To City Center": "1.800000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "44.135410",
+          "Longitude": "15.219450",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/86/b3/b180a99b9d05f25e951113198730738553f38dd665710aec2fe22c709157",
+          "Postal Code": "23000",
+          "Price Per Night": "€54",
+          "Price Per Stay": "€216",
+          "Review Rating": "9.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-20T19:35:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 32.23
+      },
+      "return": {
+        "departure": "2026-03-24T08:15:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 18.99
+      },
+      "hotel_arrival": "2026-03-20",
+      "hotel_departure": "2026-03-24",
+      "hotels": [
+        {
+          "Accommodation ID": "9d8df3d3d7a1957b6d4a93135d03a27fd6396c68c4a3bcd9df9d58c9719f3813",
+          "Accommodation Name": "Desalis Hotel London Stansted",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/desalis-hotel-london-stansted-bishop-s-stortford?search=100-664506;rc-1-2;dr-20260320-20260324-s&cip=234716015",
+          "Address": "Hall Road, Gaunts End, Elsenham",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-03-20",
+          "Booking URL": "",
+          "Country City": "Bishop's Stortford, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-24",
+          "Distance": "Bishop's Stortford, 4.7 miles to City centre",
+          "Distance To City Center": "2.400000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "51.907059",
+          "Longitude": "0.252350",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/00/38/a4abae71a4f83fec6a4d6a60fc5b58e10e4b38f89db11e2e52b49759c90b",
+          "Postal Code": "CM22 6DR",
+          "Price Per Night": "€54",
+          "Price Per Stay": "€216",
+          "Review Rating": "6.8",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-19T20:40:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "ZAG",
+        "destination_full": "Zagreb, Croatia",
+        "price_eur": 33.99
+      },
+      "return": {
+        "departure": "2026-03-22T05:45:00",
+        "origin": "ZAG",
+        "origin_full": "Zagreb, Croatia",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 17.55
+      },
+      "hotel_arrival": "2026-03-19",
+      "hotel_departure": "2026-03-22",
+      "hotels": [
+        {
+          "Accommodation ID": "60688e36498c4811995c1828e6a361226d81fcc1c30a13797fadc9a31c73d713",
+          "Accommodation Name": "Novotel Zagreb",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-novotel-zagreb?search=100-42740892;rc-1-2;dr-20260319-20260322-s&cip=234716015",
+          "Address": "Slavonska avenija 100",
+          "Advertisers": "Expedia",
+          "Arrival": "2026-03-19",
+          "Booking URL": "",
+          "Country City": "Zagreb, Croatia",
+          "Currency": "EUR",
+          "Departure": "2026-03-22",
+          "Distance": "Zagreb, 5.1 miles to City centre",
+          "Distance To City Center": "5.100000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "45.804668",
+          "Longitude": "16.085020",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/ee/d9/0470c180ae5763cab3e3e89aa925700d76a7e728ac5cc754686b20696d21",
+          "Postal Code": "10040",
+          "Price Per Night": "€65",
+          "Price Per Stay": "€195",
+          "Review Rating": "9.2",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-06-12T16:00:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 26.45
+      },
+      "return": {
+        "departure": "2026-06-16T09:00:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 25.22
+      },
+      "hotel_arrival": "2026-06-12",
+      "hotel_departure": "2026-06-16",
+      "hotels": [
+        {
+          "Accommodation ID": "225f50a63d79fb89c92f625a3368d3077f0937b2961649bf0042b1ed453143e4",
+          "Accommodation Name": "Travelodge Stansted Great Dunmow",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-stansted-great-dunmow?search=100-452216;rc-1-2;dr-20260612-20260616-s&cip=234716015",
+          "Address": "Chelmsford Rd",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-06-12",
+          "Booking URL": "",
+          "Country City": "Great Dunmow, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-06-16",
+          "Distance": "Great Dunmow, 0.9 miles to City centre",
+          "Distance To City Center": "1.000000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "51.860291",
+          "Longitude": "0.375650",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/eb/fd/9c4ab62a4ce847f71a6059a221a66cb35647eaa3c8e9aa05690f8ce4e267",
+          "Postal Code": "CM6 1LW",
+          "Price Per Night": "€65",
+          "Price Per Stay": "€261",
+          "Review Rating": "8.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-20T22:55:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "GRO",
+        "destination_full": "Barcelona Girona, Spain",
+        "price_eur": 27.99
+      },
+      "return": {
+        "departure": "2026-03-24T19:25:00",
+        "origin": "GRO",
+        "origin_full": "Barcelona Girona, Spain",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 23.81
+      },
+      "hotel_arrival": "2026-03-20",
+      "hotel_departure": "2026-03-24",
+      "hotels": [
+        {
+          "Accommodation ID": "86ef34e14ea4490142b6923275b0fa0eb712365d033384510a5dcee65e3dc397",
+          "Accommodation Name": "Jardinets Guest House",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-jardinets-guest-house-barcelona?search=100-1073862;rc-1-2;dr-20260320-20260324-s&cip=234716015",
+          "Address": "Bruc 84",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-03-20",
+          "Booking URL": "",
+          "Country City": "Barcelona, Spain",
+          "Currency": "EUR",
+          "Departure": "2026-03-24",
+          "Distance": "0.7 miles to Sagrada Familia",
+          "Distance To City Center": "0.500000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "41.394402",
+          "Longitude": "2.169570",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/df/b3/c09c10bd209e6124fd3533bc89b34ccbe46e1bbee8ca4d336c242cf4081b",
+          "Postal Code": "08009",
+          "Price Per Night": "€130",
+          "Price Per Stay": "€521",
+          "Review Rating": "7.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-10T13:45:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 36.99
+      },
+      "return": {
+        "departure": "2026-04-14T20:20:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-04-10",
+      "hotel_departure": "2026-04-14",
+      "hotels": [
+        {
+          "Accommodation ID": "8a5ae8be5e45a261aa64a66f2313e975dc9548dc479e0c37a0c5639826fc3585",
+          "Accommodation Name": "The Green Man Boutique Hotel",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/guesthouse-the-green-man-boutique-hotel-little-easton?search=100-8209672;rc-1-2;dr-20260410-20260414-s&cip=234716015",
+          "Address": "The Green Man, The Street",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-10",
+          "Booking URL": "",
+          "Country City": "Little Easton, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-04-14",
+          "Distance": "Little Easton, 3.8 miles to City centre",
+          "Distance To City Center": "3.900000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "51.868382",
+          "Longitude": "0.246730",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/d1/ea/391f7b059b8a4622c3d4deba75fb4aab6e4c0723ea39d093d06771b5b726",
+          "Postal Code": "CM22 6QU",
+          "Price Per Night": "€56",
+          "Price Per Stay": "€224",
+          "Review Rating": "5.2",
+          "Top Amenities": "WiFi, Kitchen / Kitchenette, A/C, Parking, Balcony / Terrace, Washing machine, TV / Entertainment, Hairdryer, Pool, Non-smoking rooms"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-06T22:25:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "DUB",
+        "destination_full": "Dublin, Ireland",
+        "price_eur": 31.99
+      },
+      "return": {
+        "departure": "2026-03-09T07:25:00",
+        "origin": "DUB",
+        "origin_full": "Dublin, Ireland",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 20.61
+      },
+      "hotel_arrival": "2026-03-06",
+      "hotel_departure": "2026-03-09",
+      "hotels": [
+        {
+          "Accommodation ID": "e733a68ea004b25b7f1bd2b59672caff0b0d1f1fe6695f006e6ba1ff6c75be67",
+          "Accommodation Name": "Louis Fitzgerald Hotel",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/louis-fitzgerald-hotel-dublin?search=100-401081;rc-1-2;dr-20260306-20260309-s&cip=234716015",
+          "Address": "Newland's Cross, Naas Road",
+          "Advertisers": "Hotels.com",
+          "Arrival": "2026-03-06",
+          "Booking URL": "",
+          "Country City": "Dublin, Ireland",
+          "Currency": "EUR",
+          "Departure": "2026-03-09",
+          "Distance": "3.6 miles to Kilmainham Gaol",
+          "Distance To City Center": "5.500000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "53.315498",
+          "Longitude": "-6.384260",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/b1/16/e413a862be39f8e43ab647968a2e73f9586952f3d3f91f697c14b18e790b",
+          "Postal Code": "",
+          "Price Per Night": "€108",
+          "Price Per Stay": "€323",
+          "Review Rating": "8.0",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-24T11:20:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "BGY",
+        "destination_full": "Milan Bergamo, Italy",
+        "price_eur": 38.69
+      },
+      "return": {
+        "departure": "2026-04-28T13:55:00",
+        "origin": "BGY",
+        "origin_full": "Milan Bergamo, Italy",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-04-24",
+      "hotel_departure": "2026-04-28",
+      "hotels": [
+        {
+          "Accommodation ID": "a4cf3de1841e0b89e5260d313708b9a28b2ea86716f2d7948d469a5b54a6fccd",
+          "Accommodation Name": "Spa Hotel Parigi 2",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/spa-hotel-parigi-2-dalmine?search=100-844941;rc-1-2;dr-20260424-20260428-s&cip=234716015",
+          "Address": "Via Leoncavallo 5",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-24",
+          "Booking URL": "",
+          "Country City": "Dalmine, Italy",
+          "Currency": "EUR",
+          "Departure": "2026-04-28",
+          "Distance": "Dalmine, 1.2 miles to City centre",
+          "Distance To City Center": "1.300000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "45.636902",
+          "Longitude": "9.619590",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/8c/49/1e6b4912c7c38178faf61dbfc6c676aba84f990a4b82e988be225489d742",
+          "Postal Code": "24044",
+          "Price Per Night": "€87",
+          "Price Per Stay": "€347",
+          "Review Rating": "8.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-17T22:55:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "DUB",
+        "destination_full": "Dublin, Ireland",
+        "price_eur": 37.99
+      },
+      "return": {
+        "departure": "2026-04-21T20:55:00",
+        "origin": "DUB",
+        "origin_full": "Dublin, Ireland",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-04-17",
+      "hotel_departure": "2026-04-21",
+      "hotels": [
+        {
+          "Accommodation ID": "e733a68ea004b25b7f1bd2b59672caff0b0d1f1fe6695f006e6ba1ff6c75be67",
+          "Accommodation Name": "Louis Fitzgerald Hotel",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/louis-fitzgerald-hotel-dublin?search=100-401081;rc-1-2;dr-20260417-20260421-s&cip=234716015",
+          "Address": "Newland's Cross, Naas Road",
+          "Advertisers": "Hotels.com",
+          "Arrival": "2026-04-17",
+          "Booking URL": "",
+          "Country City": "Dublin, Ireland",
+          "Currency": "EUR",
+          "Departure": "2026-04-21",
+          "Distance": "3.6 miles to Kilmainham Gaol",
+          "Distance To City Center": "5.500000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "53.315498",
+          "Longitude": "-6.384260",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/b1/16/e413a862be39f8e43ab647968a2e73f9586952f3d3f91f697c14b18e790b",
+          "Postal Code": "",
+          "Price Per Night": "€121",
+          "Price Per Stay": "€485",
+          "Review Rating": "8.0",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-20T22:25:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "DUB",
+        "destination_full": "Dublin, Ireland",
+        "price_eur": 21.24
+      },
+      "return": {
+        "departure": "2026-03-23T07:25:00",
+        "origin": "DUB",
+        "origin_full": "Dublin, Ireland",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 33.99
+      },
+      "hotel_arrival": "2026-03-20",
+      "hotel_departure": "2026-03-23",
+      "hotels": [
+        {
+          "Accommodation ID": "8f41843af2e07b23654399286c0ce0da7cf3c946e68b984f97c36795aa6b1c63",
+          "Accommodation Name": "Maldron Hotel Newlands Cross",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/maldron-hotel-newlands-cross-dublin?search=100-156610;rc-1-2;dr-20260320-20260323-s&cip=234716015",
+          "Address": "Naas Road",
+          "Advertisers": "Hotels.com",
+          "Arrival": "2026-03-20",
+          "Booking URL": "",
+          "Country City": "Dublin, Ireland",
+          "Currency": "EUR",
+          "Departure": "2026-03-23",
+          "Distance": "4.0 miles to Kilmainham Gaol",
+          "Distance To City Center": "5.900000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "53.313240",
+          "Longitude": "-6.392870",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/dd/5d/0820ce0a48fc7f93ffc58877862d637818dd5b3e5a7998e5b6d7704208e3",
+          "Postal Code": "",
+          "Price Per Night": "€98",
+          "Price Per Stay": "€294",
+          "Review Rating": "8.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-26T20:40:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "ZAG",
+        "destination_full": "Zagreb, Croatia",
+        "price_eur": 28.31
+      },
+      "return": {
+        "departure": "2026-03-30T08:35:00",
+        "origin": "ZAG",
+        "origin_full": "Zagreb, Croatia",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 27.31
+      },
+      "hotel_arrival": "2026-03-26",
+      "hotel_departure": "2026-03-30",
+      "hotels": [
+        {
+          "Accommodation ID": "60688e36498c4811995c1828e6a361226d81fcc1c30a13797fadc9a31c73d713",
+          "Accommodation Name": "Novotel Zagreb",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-novotel-zagreb?search=100-42740892;rc-1-2;dr-20260326-20260330-s&cip=234716015",
+          "Address": "Slavonska avenija 100",
+          "Advertisers": "Hotels.com",
+          "Arrival": "2026-03-26",
+          "Booking URL": "",
+          "Country City": "Zagreb, Croatia",
+          "Currency": "EUR",
+          "Departure": "2026-03-30",
+          "Distance": "Zagreb, 5.1 miles to City centre",
+          "Distance To City Center": "5.100000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "45.804668",
+          "Longitude": "16.085020",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/ee/d9/0470c180ae5763cab3e3e89aa925700d76a7e728ac5cc754686b20696d21",
+          "Postal Code": "10040",
+          "Price Per Night": "€65",
+          "Price Per Stay": "€260",
+          "Review Rating": "9.2",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-05-15T11:20:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "BGY",
+        "destination_full": "Milan Bergamo, Italy",
+        "price_eur": 40.87
+      },
+      "return": {
+        "departure": "2026-05-19T13:55:00",
+        "origin": "BGY",
+        "origin_full": "Milan Bergamo, Italy",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-05-15",
+      "hotel_departure": "2026-05-19",
+      "hotels": [
+        {
+          "Accommodation ID": "2bb5e5470665921b5b36628bdd04cfd750bf058633cbb59b8c883732b68fa5f0",
+          "Accommodation Name": "Hotel Sirio, Sure Hotel Collection by Best Western",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-sirio-sure-hotel-collection-by-best-western-medolago?search=100-1886593;rc-1-2;dr-20260515-20260519-s&cip=234716015",
+          "Address": "Via Cesare Battisti 30",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-05-15",
+          "Booking URL": "",
+          "Country City": "Medolago, Italy",
+          "Currency": "EUR",
+          "Departure": "2026-05-19",
+          "Distance": "Medolago, 0.1 miles to City centre",
+          "Distance To City Center": "0.100000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "45.668999",
+          "Longitude": "9.498370",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/73/fd/ae5efc738becb1612ecd52a73737f08132464cac54debb9b979a28321184",
+          "Postal Code": "24030",
+          "Price Per Night": "€61",
+          "Price Per Stay": "€246",
+          "Review Rating": "8.2",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-10-29T19:55:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 31.99
+      },
+      "return": {
+        "departure": "2026-10-31T06:00:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 23.99
+      },
+      "hotel_arrival": "2026-10-29",
+      "hotel_departure": "2026-10-31",
+      "hotels": [
+        {
+          "Accommodation ID": "8a5ae8be5e45a261aa64a66f2313e975dc9548dc479e0c37a0c5639826fc3585",
+          "Accommodation Name": "The Green Man Boutique Hotel",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/guesthouse-the-green-man-boutique-hotel-little-easton?search=100-8209672;rc-1-2;dr-20261029-20261031-s&cip=234716015",
+          "Address": "The Green Man, The Street",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-10-29",
+          "Booking URL": "",
+          "Country City": "Little Easton, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-10-31",
+          "Distance": "Little Easton, 3.8 miles to City centre",
+          "Distance To City Center": "3.900000 MILES",
+          "Hotel Rating": "0",
+          "Latitude": "51.868382",
+          "Longitude": "0.246730",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/d1/ea/391f7b059b8a4622c3d4deba75fb4aab6e4c0723ea39d093d06771b5b726",
+          "Postal Code": "CM22 6QU",
+          "Price Per Night": "€56",
+          "Price Per Stay": "€112",
+          "Review Rating": "5.2",
+          "Top Amenities": "WiFi, Kitchen / Kitchenette, A/C, Parking, Balcony / Terrace, Washing machine, TV / Entertainment, Hairdryer, Pool, Non-smoking rooms"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-13T22:25:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "DUB",
+        "destination_full": "Dublin, Ireland",
+        "price_eur": 38.99
+      },
+      "return": {
+        "departure": "2026-03-16T07:25:00",
+        "origin": "DUB",
+        "origin_full": "Dublin, Ireland",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-03-13",
+      "hotel_departure": "2026-03-16",
+      "hotels": [
+        {
+          "Accommodation ID": "e733a68ea004b25b7f1bd2b59672caff0b0d1f1fe6695f006e6ba1ff6c75be67",
+          "Accommodation Name": "Louis Fitzgerald Hotel",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/louis-fitzgerald-hotel-dublin?search=100-401081;rc-1-2;dr-20260313-20260316-s&cip=234716015",
+          "Address": "Newland's Cross, Naas Road",
+          "Advertisers": "Hotels.com",
+          "Arrival": "2026-03-13",
+          "Booking URL": "",
+          "Country City": "Dublin, Ireland",
+          "Currency": "EUR",
+          "Departure": "2026-03-16",
+          "Distance": "3.6 miles to Kilmainham Gaol",
+          "Distance To City Center": "5.500000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "53.315498",
+          "Longitude": "-6.384260",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/b1/16/e413a862be39f8e43ab647968a2e73f9586952f3d3f91f697c14b18e790b",
+          "Postal Code": "",
+          "Price Per Night": "€180",
+          "Price Per Stay": "€541",
+          "Review Rating": "8.0",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-20T19:05:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "EDI",
+        "destination_full": "Edinburgh, United Kingdom",
+        "price_eur": 35.99
+      },
+      "return": {
+        "departure": "2026-03-23T14:30:00",
+        "origin": "EDI",
+        "origin_full": "Edinburgh, United Kingdom",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 19.99
+      },
+      "hotel_arrival": "2026-03-20",
+      "hotel_departure": "2026-03-23",
+      "hotels": [
+        {
+          "Accommodation ID": "af73a2ed74730f7b824b99e22ba22b9d65ecda9efce8ed768e4d16d116e8527a",
+          "Accommodation Name": "Travelodge Edinburgh Dreghorn",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-edinburgh-dreghorn?search=100-46721;rc-1-2;dr-20260320-20260323-s&cip=234716015",
+          "Address": "A6 Dreghorn Link",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-03-20",
+          "Booking URL": "",
+          "Country City": "Edinburgh, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-23",
+          "Distance": "Edinburgh, 3.7 miles to City centre",
+          "Distance To City Center": "3.700000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "55.900589",
+          "Longitude": "-3.233110",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/de/45/7f7bf88d289559662f44477f7c54ef16c15a6d371ba27ae33fd5ce225573",
+          "Postal Code": "EH13 9QR",
+          "Price Per Night": "€72",
+          "Price Per Stay": "€215",
+          "Review Rating": "7.8",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-17T18:35:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "ZAD",
+        "destination_full": "Zadar, Croatia",
+        "price_eur": 41.32
+      },
+      "return": {
+        "departure": "2026-04-21T09:35:00",
+        "origin": "ZAD",
+        "origin_full": "Zadar, Croatia",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-04-17",
+      "hotel_departure": "2026-04-21",
+      "hotels": [
+        {
+          "Accommodation ID": "1b2df63754142ee132c5803558bbe309fdb6fa3f9425cad4fdba9c7e7b8f9389",
+          "Accommodation Name": "Guesthouse Barić",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-guesthouse-barić-zadar?search=100-6400932;rc-1-2;dr-20260417-20260421-s&cip=234716015",
+          "Address": "7 Ulica Augusta Harambašića",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-04-17",
+          "Booking URL": "",
+          "Country City": "Zadar, Croatia",
+          "Currency": "EUR",
+          "Departure": "2026-04-21",
+          "Distance": "Zadar, 1.8 miles to City centre",
+          "Distance To City Center": "1.800000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "44.135410",
+          "Longitude": "15.219450",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/86/b3/b180a99b9d05f25e951113198730738553f38dd665710aec2fe22c709157",
+          "Postal Code": "23000",
+          "Price Per Night": "€54",
+          "Price Per Stay": "€216",
+          "Review Rating": "9.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-06T14:45:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 41.99
+      },
+      "return": {
+        "departure": "2026-03-08T06:10:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 14.99
+      },
+      "hotel_arrival": "2026-03-06",
+      "hotel_departure": "2026-03-08",
+      "hotels": [
+        {
+          "Accommodation ID": "fd6d0570e0d5111e0444460c086d6576d86cc2a98114aff90ad740f5cfe79d24",
+          "Accommodation Name": "Premier Inn London Stansted Airport",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-premier-inn-london-stansted-airport?search=100-2501720;rc-1-2;dr-20260306-20260308-s&cip=234716015",
+          "Address": "Thremhall Avenue",
+          "Advertisers": "Premier Inn",
+          "Arrival": "2026-03-06",
+          "Booking URL": "",
+          "Country City": "Stansted, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-08",
+          "Distance": "Stansted, 2.9 miles to City centre",
+          "Distance To City Center": "2.900000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "51.876060",
+          "Longitude": "0.247050",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/30/a6/4c64a96b6c25d7f8ba71b004bc3065098ff3fcfaf7e14110f66e6fdc1258",
+          "Postal Code": "CM24 1PY",
+          "Price Per Night": "€62",
+          "Price Per Stay": "€125",
+          "Review Rating": "8.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-19T21:35:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 40.99
+      },
+      "return": {
+        "departure": "2026-03-23T22:15:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-03-19",
+      "hotel_departure": "2026-03-23",
+      "hotels": [
+        {
+          "Accommodation ID": "78b096ae3b983954238e51aa2752b79f2e0dc8104f5f0af09e47e2fa257055af",
+          "Accommodation Name": "Travelodge Manchester Salford Quays",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-manchester-salford-quays?search=100-2396260;rc-1-2;dr-20260319-20260323-s&cip=234716015",
+          "Address": "18 Markendale Place",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-03-19",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-23",
+          "Distance": "0.8 miles to Old Trafford Football Stadium",
+          "Distance To City Center": "1.900000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "53.473179",
+          "Longitude": "-2.281870",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/0b/a7/e33e0cafdb81467bbb9017d6afdb958ade0c91f69dc026f0ddb6392f50cc",
+          "Postal Code": "M5 3GW",
+          "Price Per Night": "€71",
+          "Price Per Stay": "€283",
+          "Review Rating": "8.3",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-24T16:00:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "STN",
+        "destination_full": "London Stansted, United Kingdom",
+        "price_eur": 40.99
+      },
+      "return": {
+        "departure": "2026-04-27T08:35:00",
+        "origin": "STN",
+        "origin_full": "London Stansted, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-04-24",
+      "hotel_departure": "2026-04-27",
+      "hotels": [
+        {
+          "Accommodation ID": "225f50a63d79fb89c92f625a3368d3077f0937b2961649bf0042b1ed453143e4",
+          "Accommodation Name": "Travelodge Stansted Great Dunmow",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-stansted-great-dunmow?search=100-452216;rc-1-2;dr-20260424-20260427-s&cip=234716015",
+          "Address": "Chelmsford Rd",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-04-24",
+          "Booking URL": "",
+          "Country City": "Great Dunmow, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-04-27",
+          "Distance": "Great Dunmow, 0.9 miles to City centre",
+          "Distance To City Center": "1.000000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "51.860291",
+          "Longitude": "0.375650",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/eb/fd/9c4ab62a4ce847f71a6059a221a66cb35647eaa3c8e9aa05690f8ce4e267",
+          "Postal Code": "CM6 1LW",
+          "Price Per Night": "€55",
+          "Price Per Stay": "€166",
+          "Review Rating": "8.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-05T22:05:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "DUB",
+        "destination_full": "Dublin, Ireland",
+        "price_eur": 39.09
+      },
+      "return": {
+        "departure": "2026-03-09T07:25:00",
+        "origin": "DUB",
+        "origin_full": "Dublin, Ireland",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 20.61
+      },
+      "hotel_arrival": "2026-03-05",
+      "hotel_departure": "2026-03-09",
+      "hotels": [
+        {
+          "Accommodation ID": "e733a68ea004b25b7f1bd2b59672caff0b0d1f1fe6695f006e6ba1ff6c75be67",
+          "Accommodation Name": "Louis Fitzgerald Hotel",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/louis-fitzgerald-hotel-dublin?search=100-401081;rc-1-2;dr-20260305-20260309-s&cip=234716015",
+          "Address": "Newland's Cross, Naas Road",
+          "Advertisers": "Hotels.com",
+          "Arrival": "2026-03-05",
+          "Booking URL": "",
+          "Country City": "Dublin, Ireland",
+          "Currency": "EUR",
+          "Departure": "2026-03-09",
+          "Distance": "3.6 miles to Kilmainham Gaol",
+          "Distance To City Center": "5.500000 MILES",
+          "Hotel Rating": "4",
+          "Latitude": "53.315498",
+          "Longitude": "-6.384260",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/b1/16/e413a862be39f8e43ab647968a2e73f9586952f3d3f91f697c14b18e790b",
+          "Postal Code": "",
+          "Price Per Night": "€109",
+          "Price Per Stay": "€436",
+          "Review Rating": "8.0",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-05T21:35:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "MAN",
+        "destination_full": "Manchester, United Kingdom",
+        "price_eur": 42.99
+      },
+      "return": {
+        "departure": "2026-03-09T22:15:00",
+        "origin": "MAN",
+        "origin_full": "Manchester, United Kingdom",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 16.99
+      },
+      "hotel_arrival": "2026-03-05",
+      "hotel_departure": "2026-03-09",
+      "hotels": [
+        {
+          "Accommodation ID": "78b096ae3b983954238e51aa2752b79f2e0dc8104f5f0af09e47e2fa257055af",
+          "Accommodation Name": "Travelodge Manchester Salford Quays",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-travelodge-manchester-salford-quays?search=100-2396260;rc-1-2;dr-20260305-20260309-s&cip=234716015",
+          "Address": "18 Markendale Place",
+          "Advertisers": "Travelodge",
+          "Arrival": "2026-03-05",
+          "Booking URL": "",
+          "Country City": "Manchester, United Kingdom",
+          "Currency": "EUR",
+          "Departure": "2026-03-09",
+          "Distance": "0.8 miles to Old Trafford Football Stadium",
+          "Distance To City Center": "1.900000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "53.473179",
+          "Longitude": "-2.281870",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/0b/a7/e33e0cafdb81467bbb9017d6afdb958ade0c91f69dc026f0ddb6392f50cc",
+          "Postal Code": "M5 3GW",
+          "Price Per Night": "€87",
+          "Price Per Stay": "€348",
+          "Review Rating": "8.3",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-03-06T22:55:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "GRO",
+        "destination_full": "Barcelona Girona, Spain",
+        "price_eur": 14.99
+      },
+      "return": {
+        "departure": "2026-03-09T11:20:00",
+        "origin": "GRO",
+        "origin_full": "Barcelona Girona, Spain",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 44.99
+      },
+      "hotel_arrival": "2026-03-06",
+      "hotel_departure": "2026-03-09",
+      "hotels": [
+        {
+          "Accommodation ID": "3680076e81eef8c1d2a73576177e569f8e440a584748bce6f244406a32151ba4",
+          "Accommodation Name": "Hotel Condado",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-condado-barcelona?search=100-40088;rc-1-2;dr-20260306-20260309-s&cip=234716015",
+          "Address": "Aribau 201",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-03-06",
+          "Booking URL": "",
+          "Country City": "Barcelona, Spain",
+          "Currency": "EUR",
+          "Departure": "2026-03-09",
+          "Distance": "1.4 miles to Sagrada Familia",
+          "Distance To City Center": "1.200000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "41.395599",
+          "Longitude": "2.149560",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/6b/c0/dcb11ef7174bf6cb9aceb345fad9a9a016f7aa9ae0185d655a9dbad98b02",
+          "Postal Code": "08021",
+          "Price Per Night": "€122",
+          "Price Per Stay": "€365",
+          "Review Rating": "8.5",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-05-08T20:05:00",
+        "origin": "CGN",
+        "origin_full": "Cologne, Germany",
+        "destination": "KUN",
+        "destination_full": "Kaunas, Lithuania",
+        "price_eur": 21.79
+      },
+      "return": {
+        "departure": "2026-05-11T12:25:00",
+        "origin": "KUN",
+        "origin_full": "Kaunas, Lithuania",
+        "destination": "CGN",
+        "destination_full": "Cologne, Germany",
+        "price_eur": 38.99
+      },
+      "hotel_arrival": "2026-05-08",
+      "hotel_departure": "2026-05-11",
+      "hotels": [
+        {
+          "Accommodation ID": "40840a7def23d2a13c7ba403dcdfc22a225baebd699f348eefdc232a90a927e2",
+          "Accommodation Name": "The house Kaunas",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/serviced-apartment-the-house-kaunas?search=100-30552916;rc-1-2;dr-20260508-20260511-s&cip=234716015",
+          "Address": "18A Šv. Gertrūdos gatvė",
+          "Advertisers": "Booking.com",
+          "Arrival": "2026-05-08",
+          "Booking URL": "",
+          "Country City": "Kaunas, Lithuania",
+          "Currency": "EUR",
+          "Departure": "2026-05-11",
+          "Distance": "Kaunas, 0.3 miles to City centre",
+          "Distance To City Center": "0.300000 MILES",
+          "Hotel Rating": "2",
+          "Latitude": "54.898579",
+          "Longitude": "23.898270",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//hotelier-images/32/e7/19f484b5b6d551f9929b451890ed318d08044718c338e91a2d98634b3f4f",
+          "Postal Code": "44260",
+          "Price Per Night": "€52",
+          "Price Per Stay": "€157",
+          "Review Rating": "8.1",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    },
+    {
+      "outbound": {
+        "departure": "2026-04-10T13:55:00",
+        "origin": "NRN",
+        "origin_full": "Dusseldorf Weeze, Germany",
+        "destination": "PMI",
+        "destination_full": "Palma de Mallorca, Spain",
+        "price_eur": 29.44
+      },
+      "return": {
+        "departure": "2026-04-14T09:10:00",
+        "origin": "PMI",
+        "origin_full": "Palma de Mallorca, Spain",
+        "destination": "NRN",
+        "destination_full": "Dusseldorf Weeze, Germany",
+        "price_eur": 32.32
+      },
+      "hotel_arrival": "2026-04-10",
+      "hotel_departure": "2026-04-14",
+      "hotels": [
+        {
+          "Accommodation ID": "4a53f70f69bb5d39389bb86623d39ce04d20a31f468db692e7b879d6a66decc2",
+          "Accommodation Name": "Hotel Amic Horizonte",
+          "Accommodation URL": "https://www.trivago.com/en-GB/oar/hotel-amic-horizonte-palma-de-majorca?search=100-37116;rc-1-2;dr-20260410-20260414-s&cip=234716015",
+          "Address": "Vista Alegre, 1",
+          "Advertisers": "Expedia",
+          "Arrival": "2026-04-10",
+          "Booking URL": "",
+          "Country City": "Palma de Majorca, Spain",
+          "Currency": "EUR",
+          "Departure": "2026-04-14",
+          "Distance": "Palma de Majorca, 1.8 miles to City centre",
+          "Distance To City Center": "1.800000 MILES",
+          "Hotel Rating": "3",
+          "Latitude": "39.555439",
+          "Longitude": "2.621460",
+          "Main Image": "https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_534,q_40,w_800//partner-images/6d/4a/f9363c8919d10ae5b4e4e47ce9a457395bd939424403b3abdece0aa79926",
+          "Postal Code": "07015",
+          "Price Per Night": "€116",
+          "Price Per Stay": "€464",
+          "Review Rating": "7.4",
+          "Top Amenities": "WiFi in lobby, WiFi in rooms, Pool, Spa, Parking, Pets, A/C, Restaurant, Hotel bar, Gym"
+        }
+      ]
+    }
+  ]
+}
