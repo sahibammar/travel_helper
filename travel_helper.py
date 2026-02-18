@@ -63,6 +63,25 @@ def _flight_duration_str(origin_iata: str, destination_iata: str) -> str:
         return ""
 
 
+def _flight_duration_for_json(origin_iata: str, destination_iata: str) -> dict:
+    """Return estimated flight duration for JSON: duration_minutes (int or null) and duration (e.g. '2h 15m')."""
+    if not _DURATION_AVAILABLE:
+        return {"duration_minutes": None, "duration": ""}
+    try:
+        load_airports()
+        km = get_distance_between_airports(origin_iata, destination_iata)
+        total_minutes = (km / 800.0) * 60 + 38
+        m = int(round(total_minutes % 60))
+        h = int(total_minutes // 60)
+        if m == 60:
+            h += 1
+            m = 0
+        mins = h * 60 + m
+        return {"duration_minutes": mins, "duration": f"{h}h {m:02d}m" if h > 0 or m > 0 else ""}
+    except (KeyError, TypeError):
+        return {"duration_minutes": None, "duration": ""}
+
+
 # Trivago MCP (optional: only if mcp is installed)
 try:
     from mcp import ClientSession
@@ -1279,27 +1298,36 @@ def run(
     }
 
     if output_json:
+        def _flight_leg_json(flight, price_eur: float | None = None) -> dict:
+            dur = _flight_duration_for_json(flight.origin, flight.destination)
+            leg = {
+                "departure": flight.departureTime.isoformat(),
+                "departure_time": flight.departureTime.strftime("%H:%M"),
+                "duration_minutes": dur["duration_minutes"],
+                "duration": dur["duration"],
+                "flight_number": flight.flightNumber,
+                "origin": flight.origin,
+                "origin_full": flight.originFull,
+                "destination": flight.destination,
+                "destination_full": flight.destinationFull,
+                "price_eur": price_eur if price_eur is not None else flight.price,
+            }
+            return leg
+
         # Prefer hotel_results when present; otherwise output flight-only from cheapest_flights
         if hotel_results:
             out = {
                 "cheapest_flights_with_hotels": [
                     {
-                        "outbound": {
-                            "departure": r["flight"].departureTime.isoformat(),
-                            "origin": r["flight"].origin,
-                            "origin_full": r["flight"].originFull,
-                            "destination": r["flight"].destination,
-                            "destination_full": r["flight"].destinationFull,
-                            "price_eur": r["price"],
-                        },
-                        "return": {
-                            "departure": r["return_flight"].departureTime.isoformat(),
-                            "origin": r["return_flight"].origin,
-                            "origin_full": r["return_flight"].originFull,
-                            "destination": r["return_flight"].destination,
-                            "destination_full": r["return_flight"].destinationFull,
-                            "price_eur": r["return_flight"].price,
-                        },
+                        "outbound": _flight_leg_json(r["flight"], r["price"]),
+                        "return": _flight_leg_json(r["return_flight"]),
+                        "booking_url": _ryanair_booking_url(
+                            r["flight"].origin,
+                            r["flight"].destination,
+                            r["flight"].departureTime.date().isoformat(),
+                            r["return_flight"].departureTime.date().isoformat(),
+                            adults=adults,
+                        ),
                         "hotel_arrival": r["arrival"],
                         "hotel_departure": r["departure"],
                         "hotels": r["hotels"],
@@ -1311,22 +1339,15 @@ def run(
             out = {
                 "cheapest_flights": [
                     {
-                        "outbound": {
-                            "departure": ob.departureTime.isoformat(),
-                            "origin": ob.origin,
-                            "origin_full": ob.originFull,
-                            "destination": ob.destination,
-                            "destination_full": ob.destinationFull,
-                            "price_eur": ob.price,
-                        },
-                        "return": {
-                            "departure": ib.departureTime.isoformat(),
-                            "origin": ib.origin,
-                            "origin_full": ib.originFull,
-                            "destination": ib.destination,
-                            "destination_full": ib.destinationFull,
-                            "price_eur": ib.price,
-                        },
+                        "outbound": _flight_leg_json(ob, None),
+                        "return": _flight_leg_json(ib),
+                        "booking_url": _ryanair_booking_url(
+                            ob.origin,
+                            ob.destination,
+                            ob.departureTime.date().isoformat(),
+                            ib.departureTime.date().isoformat(),
+                            adults=adults,
+                        ),
                     }
                     for ob, ib, price in cheapest_flights
                 ],
