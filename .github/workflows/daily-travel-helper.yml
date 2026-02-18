@@ -1,5 +1,5 @@
 # Run travel_helper daily at 7 AM Germany time (6:00 UTC = 7 AM CET / 8 AM CEST).
-# Generates HTML report and uploads it as a workflow artifact.
+# Generates HTML report, uploads it as an artifact, and commits it to the repo (master).
 name: Daily travel helper
 
 on:
@@ -11,6 +11,8 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,3 +43,15 @@ jobs:
           name: travel-helper-report
           path: travel_helper.html
           retention-days: 14
+
+      - name: Commit and push HTML to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add travel_helper.html
+          if git diff --staged --quiet; then
+            echo "No changes to travel_helper.html"
+          else
+            git commit -m "Daily travel helper report [skip ci]"
+            git push origin HEAD:master
+          fi
