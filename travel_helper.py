@@ -1314,6 +1314,26 @@ def run(
             }
             return leg
 
+        def _geotemp_destination_info(
+            td: dict | None,
+            dest_city: str,
+            start_iso: str,
+            end_iso: str,
+        ) -> dict:
+            """Build per-destination GeoTemp block for JSON (weather, attractions, city_profile, etc.)."""
+            if not td:
+                return {}
+            weather_key = (dest_city, start_iso, end_iso)
+            return {
+                "weather": (td.get("weather") or {}).get(weather_key),
+                "attractions": (td.get("attractions") or {}).get(dest_city),
+                "city_profile": (td.get("city_profiles") or {}).get(dest_city),
+                "best_months": (td.get("best_months") or {}).get(dest_city),
+                "similar_cities": (td.get("similar_cities") or {}).get(dest_city),
+                "seasonal_calendar": (td.get("seasonal_calendar") or {}).get(dest_city),
+                "nearby_destinations": (td.get("nearby_destinations") or {}).get(dest_city),
+            }
+
         # Prefer hotel_results when present; otherwise output flight-only from cheapest_flights
         if hotel_results:
             out = {
@@ -1331,6 +1351,9 @@ def run(
                         "hotel_arrival": r["arrival"],
                         "hotel_departure": r["departure"],
                         "hotels": r["hotels"],
+                        "destination_info": _geotemp_destination_info(
+                            travel_data, r["destination"], r["arrival"], r["departure"]
+                        ),
                     }
                     for r in hotel_results
                 ],
@@ -1348,9 +1371,25 @@ def run(
                             ib.departureTime.date().isoformat(),
                             adults=adults,
                         ),
+                        "destination_info": _geotemp_destination_info(
+                            travel_data,
+                            _dest_city_from_flight(ob),
+                            ob.departureTime.date().isoformat(),
+                            ib.departureTime.date().isoformat(),
+                        ),
                     }
                     for ob, ib, price in cheapest_flights
                 ],
+            }
+        # Global GeoTemp data (dataset, trip ideas, compare, etc.)
+        if travel_data:
+            out["geotemp_global"] = {
+                "dataset_stats": travel_data.get("dataset_stats"),
+                "plan_trip_result": travel_data.get("plan_trip_result"),
+                "compare_cities_result": travel_data.get("compare_cities_result"),
+                "search_destinations_result": travel_data.get("search_destinations_result"),
+                "search_by_activity_result": travel_data.get("search_by_activity_result"),
+                "multi_activity_search_result": travel_data.get("multi_activity_search_result"),
             }
         print(json.dumps(out, indent=2, ensure_ascii=False, default=str))
         return
