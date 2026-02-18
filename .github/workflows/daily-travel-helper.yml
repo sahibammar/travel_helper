@@ -32,7 +32,7 @@ jobs:
       - name: Run travel helper (flights + hotels + JSON)
         run: |
           .venv-travel/bin/python travel_helper.py \
-            --num-cheapest-flights 50 \
+            --num-cheapest-flights 100 \
             --cheapest-hotels-per-flight 1 \
             --days-ahead 300 \
             --json > travel_helper.json
