@@ -240,6 +240,14 @@ export GMAIL_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
 python travel_helper.py --html --email recipient@example.com
 ```
 
+### Scheduled run (GitHub Actions)
+
+A workflow runs daily at **7 AM Germany time** (6:00 UTC) (see [.github/workflows/daily-travel-helper.yml](.github/workflows/daily-travel-helper.yml)) with:
+
+- `--num-cheapest-flights 20 --days-ahead 300 --html`
+
+The generated HTML report is uploaded as an artifact (retention 14 days). To run manually: **Actions** → **Daily travel helper** → **Run workflow**. To get the report by email from the workflow, add repo secrets `GMAIL_USER` and `GMAIL_APP_PASSWORD` and uncomment the `env` block in the workflow.
+
 ### Troubleshooting
 
 - **"Trivago MCP not installed"** — Install in the same env: `pip install "mcp[cli]"`. Python 3.10+ required.
