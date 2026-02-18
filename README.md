@@ -244,7 +244,7 @@ python travel_helper.py --html --email recipient@example.com
 
 A workflow runs daily at **7 AM Germany time** (6:00 UTC) (see [.github/workflows/daily-travel-helper.yml](.github/workflows/daily-travel-helper.yml)) with:
 
-- `--num-cheapest-flights 20 --days-ahead 300 --html`
+- `--num-cheapest-flights 300 --days-ahead 300 --html`
 
 The generated HTML report is uploaded as an artifact (retention 14 days). To run manually: **Actions** → **Daily travel helper** → **Run workflow**. To get the report by email from the workflow, add repo secrets `GMAIL_USER` and `GMAIL_APP_PASSWORD` and uncomment the `env` block in the workflow.
 
