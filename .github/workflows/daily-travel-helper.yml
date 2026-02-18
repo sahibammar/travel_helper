@@ -6,7 +6,7 @@ on:
   schedule:
     # 6:00 UTC = 7 AM Berlin (CET) in winter, 8 AM Berlin (CEST) in summer
     - cron: '0 6 * * *'
-  workflow_dispatch: # allow manual run from Actions tab
+  workflow_dispatch: {}
 
 jobs:
   run:
@@ -33,6 +33,7 @@ jobs:
             --num-cheapest-flights 300 \
             --days-ahead 300 \
             --html
+
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
         with:
