@@ -33,11 +33,6 @@ jobs:
             --num-cheapest-flights 300 \
             --days-ahead 300 \
             --html
-        env:
-          # Optional: set if you want email report from the workflow
-          # GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          # GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
         with:
