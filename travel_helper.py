@@ -95,7 +95,7 @@ except ImportError:
 # GeoTemp Travel MCP (optional: weather + attractions per destination)
 try:
     from mcp.client.sse import sse_client
-    from geotemp_fetch_mcp import (
+    from geotemp.geotemp_fetch_mcp import (
     GEOTEMP_MCP_URL,
     compare_cities,
     find_best_month,
@@ -1248,6 +1248,7 @@ def run(
     hotels_per_flight: int = 3,
     days_ahead: int | None = None,
     email: str | None = None,
+    json_file: str | None = None,
 ) -> None:
     t_start = time.perf_counter()
 
@@ -1391,7 +1392,12 @@ def run(
                 "search_by_activity_result": travel_data.get("search_by_activity_result"),
                 "multi_activity_search_result": travel_data.get("multi_activity_search_result"),
             }
-        print(json.dumps(out, indent=2, ensure_ascii=False, default=str))
+        if json_file:
+            with open(json_file, "w", encoding="utf-8") as f:
+                json.dump(out, f, indent=2, ensure_ascii=False, default=str)
+                f.flush()
+        else:
+            print(json.dumps(out, indent=2, ensure_ascii=False, default=str))
         return
 
     if output_html:
@@ -1545,6 +1551,13 @@ def main() -> None:
         help="Output JSON for OpenClaw/machine use",
     )
     parser.add_argument(
+        "--json-file",
+        type=str,
+        default=None,
+        metavar="PATH",
+        help="With --json: write JSON to PATH instead of stdout (avoids truncated output when redirecting)",
+    )
+    parser.add_argument(
         "--html",
         action="store_true",
         help="Write results to travel_helper.html (full path printed to stderr)",
@@ -1596,6 +1609,7 @@ def main() -> None:
         hotels_per_flight=args.cheapest_hotels_per_flight,
         days_ahead=args.days_ahead,
         email=args.email,
+        json_file=args.json_file,
     )
 
 

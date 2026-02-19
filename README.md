@@ -165,7 +165,7 @@ Used by `search_by_activity`, `multi_activity_search`, `plan_trip` (among others
 
 ### Client module
 
-- **File**: `geotemp_fetch_mcp.py`
+- **File**: `geotemp/geotemp_fetch_mcp.py`
 - **Pattern**: All functions are `async` and take a `ClientSession` as first argument; they call `session.call_tool(tool_name, params)` and parse JSON from the result (`content[0].text` or `structuredContent`).
 - **Examples**:
   - `get_weather(session, city_name, start_date, end_date, month=None)` — monthly or date-range weather.
@@ -261,7 +261,8 @@ The generated HTML report is uploaded as an artifact (retention 14 days). To run
 ```
 travel_helper/
 ├── travel_helper.py       # Main script: Ryanair + Trivago + GeoTemp orchestration
-├── geotemp_fetch_mcp.py   # GeoTemp MCP client (SSE, 13 tools)
+├── geotemp/               # GeoTemp MCP client (SSE, 13 tools)
+│   └── geotemp_fetch_mcp.py
 ├── trivago/
 │   └── fetch_hotels_mcp.py # Trivago MCP client (Streamable HTTP; suggestions + accommodation search)
 ├── ryanair/               # Ryanair API client (or use ryanair-py from PyPI)
