@@ -22,7 +22,7 @@ This document is for **developers**: technical details of the Ryanair API, Triva
 
 The app:
 
-1. **Flights** — Queries Ryanair's public services API (no API key) for round trips from **Düsseldorf Weeze (NRN)** and **Köln (CGN)**. Outbound: **Thursday after 17:00** or **Friday after 23:00**; return 3–4 nights later.
+1. **Flights** — Queries Ryanair's public services API (no API key) for round trips from **Düsseldorf Weeze (NRN)** and **Köln (CGN)**. Outbound: **Thursday after 17:00** or **Friday after 23:00**; return 2–4 nights later.
 2. **Hotels** — Uses the **Trivago MCP server** (Streamable HTTP) to resolve city → location and fetch accommodations for each trip's dates.
 3. **Weather & destinations** — Uses the **GeoTemp Travel MCP server** (SSE) for weather, attractions, city profiles, similar/nearby cities, trip planning, and dataset stats.
 

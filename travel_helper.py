@@ -3,10 +3,10 @@
 Travel helper: cheap round-trip flights from Düsseldorf Weeze / Köln, then hotels.
 
 1. Collects return trips from Weeze (NRN) and Köln (CGN). Only the departure (outbound) must
-   match the schedule: Thursday after 5 pm or Friday after 11 am. Return is 3–4 nights later
+   match the schedule: Thursday after 5 pm or Friday after 11 am. Return is 2–4 nights later
    (any time); no schedule restriction on the return flight.
 2. Picks the 10 cheapest such trips by outbound price.
-3. For each, fetches hotels for 3–4 nights from the Trivago MCP server.
+3. For each, fetches hotels for 2–4 nights from the Trivago MCP server.
 
 Callable by OpenClaw:
   - Run: python travel_helper.py [--json] [--no-hotels]
@@ -131,7 +131,7 @@ except ImportError:
     get_dataset_stats = None
     GEOTEMP_MCP_URL = None
 
-# --------------- Config: Weeze + Köln, Thu eve / Fri late outbound, 3–4 nights ---------------
+# --------------- Config: Weeze + Köln, Thu eve / Fri late outbound, 2–4 nights ---------------
 ORIGIN_AIRPORTS = [
     ("CGN", "Köln"),
     ("NRN", "Düsseldorf Weeze"),
@@ -143,7 +143,7 @@ HOTEL_NIGHTS = 4  # legacy; hotel stay now matches return flight (arrival = outb
 TRIVAGO_MCP_URL = "https://mcp.trivago.com/mcp"
 
 # Only the departure (outbound) is restricted: Thursday >= 17:00, or Friday >= 11:00 (11 am).
-# Return flight is 3–4 nights later with no time-of-day restriction. Monday=0 in weekday().
+# Return flight is 2–4 nights later with no time-of-day restriction. Monday=0 in weekday().
 THURSDAY = 3
 FRIDAY = 4
 OUTBOUND_THURSDAY_AFTER_HOUR = 17
@@ -174,6 +174,39 @@ def _ryanair_booking_url(
         f"&tpOriginIata={origin_iata}&tpDestinationIata={destination_iata}"
     )
     return f"{RYANAIR_BOOKING_BASE}?{params}"
+
+
+def _ryanair_booking_url_one_way(
+    origin_iata: str,
+    destination_iata: str,
+    date_iso: str,
+    adults: int = 2,
+) -> str:
+    """Build Ryanair one-way flight select URL (German site)."""
+    params = (
+        f"adults={adults}&teens=0&children=0&infants=0"
+        f"&dateOut={date_iso}&dateIn={date_iso}"
+        "&isConnectedFlight=false&discount=0&promoCode=&isReturn=false"
+        f"&originIata={origin_iata}&destinationIata={destination_iata}"
+    )
+    return f"{RYANAIR_BOOKING_BASE}?{params}"
+
+
+def _booking_urls_for_trip(ob: object, ret: object, adults: int = 2) -> dict:
+    """Return booking URL(s): one round-trip URL for same-airport, or two one-way URLs for open-jaw."""
+    date_out = ob.departureTime.date().isoformat()
+    date_in = ret.departureTime.date().isoformat()
+    if ob.origin == ret.destination:
+        return {"booking_url": _ryanair_booking_url(ob.origin, ob.destination, date_out, date_in, adults)}
+    return {
+        "booking_url_outbound": _ryanair_booking_url_one_way(ob.origin, ob.destination, date_out, adults),
+        "booking_url_return": _ryanair_booking_url_one_way(ret.origin, ret.destination, date_in, adults),
+    }
+
+
+def _flight_route_label(ob: object, ret: object) -> str:
+    """Return label for flight route: (NRN→FAO→NRN) same airport, (NRN→FAO→CGN) open-jaw."""
+    return f" ({ob.origin}→{ob.destination}→{ret.destination})"
 
 
 def _outbound_departure_allowed(dt: datetime) -> bool:
@@ -969,35 +1002,18 @@ def _add_weather_attractions_html(
         for line in best_lines:
             lines.append(f"      <div>{html.escape(line)}</div>")
         lines.append("    </div>")
-    if similar_lines:
-        lines.append("    <div class=\"similar-cities\">")
-        lines.append("      <div class=\"similar-cities-title\">Similar cities</div>")
-        for line in similar_lines:
-            lines.append(f"      <div>{html.escape(line)}</div>")
-        lines.append("    </div>")
-    if nearby_lines:
-        lines.append("    <div class=\"nearby-destinations\">")
-        lines.append("      <div class=\"nearby-destinations-title\">Nearby destinations</div>")
-        for line in nearby_lines:
-            lines.append(f"      <div>{html.escape(line)}</div>")
-        lines.append("    </div>")
     if activity_lines:
         lines.append("    <div class=\"activities\">")
         lines.append("      <div class=\"activities-title\">Activities</div>")
-        for line in activity_lines:
-            lines.append(f"      <div>{html.escape(line)}</div>")
-        lines.append("    </div>")
-    if calendar_lines:
-        lines.append("    <div class=\"seasonal-calendar\">")
-        lines.append("      <div class=\"seasonal-calendar-title\">Seasonal calendar</div>")
-        for line in calendar_lines:
-            lines.append(f"      <div>{html.escape(line)}</div>")
+        line = " . ".join(html.escape(l) for l in activity_lines)
+        lines.append(f"      <div>{line}</div>")
         lines.append("    </div>")
     if att_list:
         lines.append("    <div class=\"attractions\">")
         lines.append("      <div class=\"attractions-title\">Attractions</div>")
-        for a in att_list[:10]:
-            lines.append(f"      <div>{html.escape(_format_attraction_item(a))}</div>")
+        names = [_format_attraction_item(a) for a in att_list[:10]]
+        line = " . ".join(html.escape(n) for n in names)
+        lines.append(f"      <div>{line}</div>")
         lines.append("    </div>")
 
 
@@ -1065,21 +1081,20 @@ def _build_html(
             ret_dur = _flight_duration_str(ret.origin, ret.destination)
             out_leg = f"{out_weekday}{out_dur}  {outbound.price}€  {outbound.origin}→{outbound.destination}"
             ret_leg = f"{ret_weekday}{ret_dur}  {ret.price}€  {ret.origin}→{ret.destination}"
-            ryanair_url = _ryanair_booking_url(
-                outbound.origin, outbound.destination,
-                outbound.departureTime.date().isoformat(),
-                ret.departureTime.date().isoformat(),
-                adults=adults,
-            )
+            urls = _booking_urls_for_trip(outbound, ret, adults)
             out_date = outbound.departureTime.date()
             ret_date = ret.departureTime.date()
             nights = (ret_date - out_date).days
             days = nights + 1
+            route_label = _flight_route_label(outbound, ret)
             lines.append("  <div class=\"trip\">")
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} ({total:.2f}€) — {days} days, {nights} nights</div>")
             lines.append("    <div class=\"flight\">")
-            lines.append("      <div class=\"flight-title\">Flight</div>")
-            lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(ryanair_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
+            lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
+            if "booking_url" in urls:
+                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
+            else:
+                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>")
             lines.append("    </div>")
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
             lines.append("    <div class=\"hotels\">")
@@ -1104,21 +1119,20 @@ def _build_html(
             ret_dur = _flight_duration_str(ib.origin, ib.destination)
             out_leg = f"{out_weekday}{out_dur}  {price}€  {ob.origin}→{ob.destination}"
             ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {ib.origin}→{ib.destination}"
-            ryanair_url = _ryanair_booking_url(
-                ob.origin, ob.destination,
-                ob.departureTime.date().isoformat(),
-                ib.departureTime.date().isoformat(),
-                adults=adults,
-            )
+            urls = _booking_urls_for_trip(ob, ib, adults)
             out_date = ob.departureTime.date()
             ret_date = ib.departureTime.date()
             nights = (ret_date - out_date).days
             days = nights + 1
+            route_label = _flight_route_label(ob, ib)
             lines.append("  <div class=\"trip\">")
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} ({total:.2f}€) — {days} days, {nights} nights</div>")
             lines.append("    <div class=\"flight\">")
-            lines.append("      <div class=\"flight-title\">Flight</div>")
-            lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(ryanair_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
+            lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
+            if "booking_url" in urls:
+                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
+            else:
+                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>")
             lines.append("    </div>")
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
             lines.append("  </div>")
@@ -1201,12 +1215,16 @@ def _send_email_html(html_body: str, to_email: str, subject: str | None = None) 
 
 def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object, object, float]]:
     """Collect return trips from Weeze/Köln. Only the departure must match: Thu after 5pm or Fri after 11am.
-    Return is 3–4 nights later (any time of day). Uses API time windows so we get trips in those slots.
+    Return is 2–4 nights later (any time of day). Includes:
+    - Same-airport round trips: NRN↔NRN, CGN↔CGN.
+    - Open-jaw: outbound from Weeze, return to Köln (NRN→dest→CGN) and vice versa (CGN→dest→NRN).
     Returns list of (outbound, return_flight, outbound_price).
     """
     api = Ryanair(currency="EUR")
     outbound = []
     n_days = days_ahead if days_ahead is not None else DAYS_AHEAD
+
+    # 1) Same-airport round trips (existing logic)
     for airport_code, airport_name in ORIGIN_AIRPORTS:
         for day_offset in range(0, n_days):
             search_date = datetime.today().date() + timedelta(days=day_offset)
@@ -1234,6 +1252,42 @@ def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object
                     ob._origin_airport = t._origin_airport
                     ob._origin_code = t._origin_code
                     outbound.append((ob, t.inbound, ob.price))
+
+    # 2) Open-jaw: outbound from A, return to B (A != B)
+    airport_list = list(ORIGIN_AIRPORTS)
+    for i, (out_code, out_name) in enumerate(airport_list):
+        return_code, return_name = airport_list[1 - i]
+        for day_offset in range(0, n_days):
+            search_date = datetime.today().date() + timedelta(days=day_offset)
+            wd = search_date.weekday()
+            if wd == THURSDAY:
+                outbound_time_from, outbound_time_to = "17:00", "23:59"
+            elif wd == FRIDAY:
+                outbound_time_from, outbound_time_to = "11:00", "23:59"
+            else:
+                continue
+            return_date_from = search_date + timedelta(days=RETURN_DAYS_MIN)
+            return_date_to = search_date + timedelta(days=RETURN_DAYS_MAX)
+            outbounds_oneway = api.get_cheapest_flights(
+                out_code,
+                search_date,
+                search_date,
+                departure_time_from=outbound_time_from,
+                departure_time_to=outbound_time_to,
+            )
+            for ob in outbounds_oneway:
+                dest = ob.destination
+                returns_oneway = api.get_cheapest_flights(
+                    dest,
+                    return_date_from,
+                    return_date_to,
+                    destination_airport=return_code,
+                )
+                for ret in returns_oneway:
+                    ob._origin_airport = out_name
+                    ob._origin_code = out_code
+                    outbound.append((ob, ret, ob.price))
+
     outbound.sort(key=lambda x: (x[2] + x[1].price, x[0].departureTime.date(), x[0].destination))
     return outbound
 
@@ -1252,10 +1306,14 @@ def run(
 ) -> None:
     t_start = time.perf_counter()
 
-    # 1. Collect return trips (only departure restricted: Thu after 5pm / Fri after 11am; return 3–4 nights later, any time)
+    # 1. Collect return trips (only departure restricted: Thu after 5pm / Fri after 11am; return 2–4 nights later, any time)
+    print("Fetching flights from Ryanair...", file=sys.stderr)
     t0 = time.perf_counter()
     outbound_flights = collect_outbound_flights(days_ahead=days_ahead)
     t_flights = time.perf_counter() - t0
+    same_airport = sum(1 for ob, ret, _ in outbound_flights if ob.origin == ret.destination)
+    different_airport = len(outbound_flights) - same_airport
+    print(f"{len(outbound_flights)} flights fetched (same airport ({same_airport}) - different airport ({different_airport}))", file=sys.stderr)
     # 2. Already sorted by price; take the N cheapest
     cheapest_flights = outbound_flights[:num_cheapest_flights]
 
@@ -1263,8 +1321,7 @@ def run(
     travel_data = None
     t_weather_attractions = 0.0
     if GEOTEMP_AVAILABLE and cheapest_flights:
-        if not output_json:
-            print("Fetching weather and attractions (GeoTemp)...", file=sys.stderr)
+        print("Fetching weather and attractions (GeoTemp)...", file=sys.stderr)
         try:
             t0 = time.perf_counter()
             travel_data = asyncio.run(_fetch_geotemp_for_trips(cheapest_flights, []))
@@ -1342,13 +1399,7 @@ def run(
                     {
                         "outbound": _flight_leg_json(r["flight"], r["price"]),
                         "return": _flight_leg_json(r["return_flight"]),
-                        "booking_url": _ryanair_booking_url(
-                            r["flight"].origin,
-                            r["flight"].destination,
-                            r["flight"].departureTime.date().isoformat(),
-                            r["return_flight"].departureTime.date().isoformat(),
-                            adults=adults,
-                        ),
+                        **_booking_urls_for_trip(r["flight"], r["return_flight"], adults),
                         "hotel_arrival": r["arrival"],
                         "hotel_departure": r["departure"],
                         "hotels": r["hotels"],
@@ -1365,13 +1416,7 @@ def run(
                     {
                         "outbound": _flight_leg_json(ob, None),
                         "return": _flight_leg_json(ib),
-                        "booking_url": _ryanair_booking_url(
-                            ob.origin,
-                            ob.destination,
-                            ob.departureTime.date().isoformat(),
-                            ib.departureTime.date().isoformat(),
-                            adults=adults,
-                        ),
+                        **_booking_urls_for_trip(ob, ib, adults),
                         "destination_info": _geotemp_destination_info(
                             travel_data,
                             _dest_city_from_flight(ob),
@@ -1392,13 +1437,12 @@ def run(
                 "search_by_activity_result": travel_data.get("search_by_activity_result"),
                 "multi_activity_search_result": travel_data.get("multi_activity_search_result"),
             }
-        if json_file:
-            with open(json_file, "w", encoding="utf-8") as f:
-                json.dump(out, f, indent=2, ensure_ascii=False, default=str)
-                f.flush()
-        else:
-            print(json.dumps(out, indent=2, ensure_ascii=False, default=str))
-        return
+        path = json_file if json_file is not None else "travel_helper.json"
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(out, f, indent=2, ensure_ascii=False, default=str)
+            f.flush()
+        if not output_html:
+            return
 
     if output_html:
         _print_html(
@@ -1464,13 +1508,12 @@ def run(
             print(f"{i}. {dest_city} ({total:.2f}€) — {days} days, {nights} nights")
             print("Flight")
             print(f"   {out_leg}{LEG_SEP}{ret_leg}")
-            ryanair_url = _ryanair_booking_url(
-                outbound.origin, outbound.destination,
-                outbound.departureTime.date().isoformat(),
-                ret.departureTime.date().isoformat(),
-                adults=adults,
-            )
-            print(f"   {ryanair_url}")
+            urls = _booking_urls_for_trip(outbound, ret, adults)
+            if "booking_url" in urls:
+                print(f"   {urls['booking_url']}")
+            else:
+                print(f"   Departure: {urls['booking_url_outbound']}")
+                print(f"   Return:   {urls['booking_url_return']}")
             _print_weather_attractions_text(dest_city, outbound.departureTime.date(), ret.departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
             nights = (datetime.fromisoformat(departure).date() - datetime.fromisoformat(arrival).date()).days
             print("Hotels")
@@ -1504,13 +1547,12 @@ def run(
             print(f"{i}. {dest_city} ({total:.2f}€) — {days} days, {nights} nights")
             print("Flight")
             print(f"   {out_leg}{LEG_SEP}{ret_leg}")
-            ryanair_url = _ryanair_booking_url(
-                ob.origin, ob.destination,
-                ob.departureTime.date().isoformat(),
-                ib.departureTime.date().isoformat(),
-                adults=adults,
-            )
-            print(f"   {ryanair_url}")
+            urls = _booking_urls_for_trip(ob, ib, adults)
+            if "booking_url" in urls:
+                print(f"   {urls['booking_url']}")
+            else:
+                print(f"   Departure: {urls['booking_url_outbound']}")
+                print(f"   Return:   {urls['booking_url_return']}")
             _print_weather_attractions_text(dest_city, ob.departureTime.date(), ib.departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
         if not cheapest_flights:
             print("(No round trips found for Thu after 5pm / Fri after 11am from Weeze or Köln.)")
@@ -1543,24 +1585,24 @@ def run(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Round trips from Weeze/Köln (Thu after 5pm or Fri after 11am outbound, 3–4 nights, return). N cheapest + M hotels each.",
+        description="Round trips from Weeze/Köln (Thu after 5pm or Fri after 11am outbound, 2–4 nights, return). N cheapest + M hotels each.",
     )
     parser.add_argument(
         "--json",
         action="store_true",
-        help="Output JSON for OpenClaw/machine use",
+        help="Write JSON to travel_helper.json (or --json-file PATH). Can be combined with --html.",
     )
     parser.add_argument(
         "--json-file",
         type=str,
         default=None,
         metavar="PATH",
-        help="With --json: write JSON to PATH instead of stdout (avoids truncated output when redirecting)",
+        help="With --json: write JSON to PATH instead of travel_helper.json",
     )
     parser.add_argument(
         "--html",
         action="store_true",
-        help="Write results to travel_helper.html (full path printed to stderr)",
+        help="Write HTML report to travel_helper.html. Can be combined with --json.",
     )
     parser.add_argument(
         "--no-hotels",
