@@ -33,11 +33,12 @@ jobs:
           .venv-travel/bin/pip install -r requirements.txt
           .venv-travel/bin/pip install ryanair-py "mcp[cli]"
 
-      - name: Run travel helper (flights + hotels + JSON + email HTML)
+      - name: Run travel helper (flights only + JSON + email HTML)
         run: |
           .venv-travel/bin/python travel_helper.py \
             --num-cheapest-trips 100 \
             --days-ahead 90 \
+            --no-hotels \
             --json \
             --html --email ammar.sahib@yahoo.com
 
