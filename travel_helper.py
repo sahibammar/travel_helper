@@ -25,6 +25,7 @@ import smtplib
 import sys
 import time
 from datetime import datetime, timedelta
+from urllib.parse import quote
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -251,6 +252,13 @@ def _trivago_query_for_destination(destination_city: str) -> list[str]:
     return queries
 
 
+def _trivago_search_url(destination_city: str, arrival_iso: str, departure_iso: str) -> str:
+    """Trivago destination search URL for city and dates (arrival/departure YYYY-MM-DD)."""
+    city = _city_name_for_trivago(destination_city)
+    q = quote(city)
+    return f"https://www.trivago.com/en/destination?search={q}&arrival={arrival_iso}&departure={departure_iso}"
+
+
 # Radius (km) for "walking distance from attractions" when using Trivago radius search
 HOTEL_RADIUS_ATTRACTIONS_KM = 1.5
 
@@ -295,7 +303,7 @@ async def _top_hotels_for_destination(
     destination_city: str,
     arrival_date: str,
     departure_date: str,
-    n: int = 3,
+    n: int = 1,
     adults: int = 2,
     rooms: int = 1,
     attraction_coords: tuple[float, float] | None = None,
@@ -341,16 +349,14 @@ async def _top_hotels_for_destination(
 
 async def fetch_hotels_for_cheapest_flights(
     cheapest_flights: list[tuple[object, object, float]],
-    hotels_per_flight: int = 3,
     adults: int = 2,
     rooms: int = 1,
     attractions_by_dest: dict | None = None,
 ) -> list[dict]:
     """
-    For each (outbound, return_flight, price) entry, fetch hotels_per_flight hotels
-    for that destination. When attractions_by_dest is provided and has coordinates,
-    hotels are searched within walking distance of attractions (Trivago radius search).
-    Returns list of { "destination", "arrival", "departure", "flight", "return_flight", "price", "hotels": [...] }.
+    For each (outbound, return_flight, price) entry, fetch the single cheapest hotel
+    for that destination (near attractions when coordinates available, else city).
+    Returns list of { "destination", "arrival", "departure", "flight", "return_flight", "price", "hotels": [one hotel] }.
     """
     if not TRIVAGO_AVAILABLE or not cheapest_flights:
         return []
@@ -375,7 +381,7 @@ async def fetch_hotels_for_cheapest_flights(
                 attraction_coords = _attraction_center(attractions_by_dest.get(dest_city) or [])
                 hotels = await _top_hotels_for_destination(
                     session, dest_city, arrival, departure,
-                    n=hotels_per_flight, adults=adults, rooms=rooms,
+                    n=1, adults=adults, rooms=rooms,
                     attraction_coords=attraction_coords,
                 )
                 results.append({
@@ -423,6 +429,64 @@ def _dest_city_from_flight(ob: object) -> str:
     if "," in dest_full:
         return dest_full.split(",")[0].strip()
     return dest_full.strip() or getattr(ob, "destination", "")
+
+
+def _display_airport(code: str) -> str:
+    """Airport code for display (e.g. NRN instead of WEE for Weeze)."""
+    if code == "WEE":
+        return "NRN"
+    return code
+
+
+def _aggregate_hotel_results(hotel_results: list[dict]) -> list[dict]:
+    """Group hotel_results by (destination, days, nights). Each group has trips sorted by total price (cheapest first)."""
+    groups: dict[tuple[str, int, int], list[dict]] = {}
+    for r in hotel_results:
+        outbound = r["flight"]
+        ret = r["return_flight"]
+        dest = r["destination"]
+        ret_date = ret.departureTime.date()
+        out_date = outbound.departureTime.date()
+        nights = (ret_date - out_date).days
+        days = nights + 1
+        key = (dest, days, nights)
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(r)
+    # Sort each group by total price
+    result = []
+    for (dest, days, nights), trips in groups.items():
+        trips_sorted = sorted(trips, key=lambda t: t["price"] + t["return_flight"].price)
+        result.append({
+            "destination": dest,
+            "days": days,
+            "nights": nights,
+            "trips": trips_sorted,
+            "min_total": trips_sorted[0]["price"] + trips_sorted[0]["return_flight"].price,
+        })
+    result.sort(key=lambda g: g["min_total"])
+    return result
+
+
+def _aggregate_cheapest_flights(cheapest_flights: list[tuple[object, object, float]]) -> list[tuple[str, int, int, list[tuple[object, object, float]]]]:
+    """Group cheapest_flights by (destination, days, nights). Each group has flights sorted by total price (cheapest first)."""
+    groups: dict[tuple[str, int, int], list[tuple[object, object, float]]] = {}
+    for ob, ib, price in cheapest_flights:
+        dest = _dest_city_from_flight(ob)
+        ret_date = ib.departureTime.date()
+        out_date = ob.departureTime.date()
+        nights = (ret_date - out_date).days
+        days = nights + 1
+        key = (dest, days, nights)
+        if key not in groups:
+            groups[key] = []
+        groups[key].append((ob, ib, price))
+    result = []
+    for (dest, days, nights), flights in groups.items():
+        flights_sorted = sorted(flights, key=lambda x: x[2] + x[1].price)
+        result.append((dest, days, nights, flights_sorted))
+    result.sort(key=lambda g: g[3][0][2] + g[3][0][1].price)
+    return result
 
 
 async def _fetch_geotemp_for_trips(
@@ -637,7 +701,7 @@ def _format_activities(profile: dict) -> list[str]:
         return []
     lines = []
     month_names = ("", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    for f in features[:15]:
+    for f in features:
         if not isinstance(f, dict):
             continue
         name = f.get("feature") or f.get("activity") or f.get("name")
@@ -689,7 +753,7 @@ def _format_activities_from_calendar(cal_data: dict) -> list[str]:
                 continue
             if act not in activity_best or (score is not None and score > activity_best[act][1]):
                 activity_best[act] = (month_name or "", int(score) if score is not None else 0)
-    return [f"{act} ({info[0]} {info[1]})" if info[0] or info[1] else act for act, info in list(activity_best.items())[:15]]
+    return [f"{act} ({info[0]} {info[1]})" if info[0] or info[1] else act for act, info in list(activity_best.items())]
 
 
 def _format_best_months(best_data: dict) -> list[str]:
@@ -1014,7 +1078,7 @@ def _print_weather_attractions_text(
             print(f"     {line}")
     if att_list:
         print("   Attractions:")
-        for a in att_list[:10]:
+        for a in att_list:
             print(f"     • {_format_attraction_item(a)}")
 
 
@@ -1084,7 +1148,7 @@ def _add_weather_attractions_html(
     if att_list:
         lines.append("    <div class=\"attractions\">")
         lines.append("      <div class=\"attractions-title\">Attractions</div>")
-        names = [_format_attraction_item(a) for a in att_list[:10]]
+        names = [_format_attraction_item(a) for a in att_list]
         line = " . ".join(html.escape(n) for n in names)
         lines.append(f"      <div>{line}</div>")
         lines.append("    </div>")
@@ -1096,13 +1160,13 @@ def _build_html(
     adults: int = 2,
     travel_data: dict | None = None,
     timings: dict | None = None,
-    num_cheapest_flights: int = 100,
+    num_cheapest_trips: int = 100,
     days_ahead: int = 90,
 ) -> str:
     """Build results as HTML string (same content as --html file)."""
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     title = "Fly cheap, stay cheap — your daily Ryanair + Trivago deals"
-    tagline = f"Top {num_cheapest_flights} round trips from Weeze & Köln (Thu eve / Fri) over the next {days_ahead} days. Lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
+    tagline = f"Top {num_cheapest_trips} round trips from Weeze & Köln (Thu eve / Fri) over the next {days_ahead} days. Lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
     weather_by_key = (travel_data or {}).get("weather") or {}
     attractions_by_dest = (travel_data or {}).get("attractions") or {}
     city_profiles_by_dest = (travel_data or {}).get("city_profiles") or {}
@@ -1138,6 +1202,7 @@ def _build_html(
         "    .hotel a { color: #008513; }",
         "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
         "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
+        "    .flight-option { margin-bottom: 0.35rem; }",
         "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
         "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
@@ -1172,6 +1237,7 @@ def _build_html(
         "    .hotel a { color: #008513; }",
         "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
         "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
+        "    .flight-option { margin-bottom: 0.35rem; }",
         "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
         "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
@@ -1189,87 +1255,87 @@ def _build_html(
         "    }",
         "  </style>",
     ]
-    # Preheader (shows in email preview) and intro
-    num_deals = len(hotel_results) if hotel_results else len(cheapest_flights)
+    # Preheader (shows in email preview) and intro (count = aggregated groups)
+    agg_hotel = _aggregate_hotel_results(hotel_results) if hotel_results else []
+    agg_flights = _aggregate_cheapest_flights(cheapest_flights) if not hotel_results and cheapest_flights else []
+    num_deals = len(agg_hotel) if agg_hotel else len(agg_flights)
     if num_deals:
         lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze &amp; Köln — next {days_ahead} days, {num_deals} deal{'s' if num_deals != 1 else ''} inside.</p>")
-        lines.append(f"  <p class=\"intro\">Here are today's top deals (up to {num_cheapest_flights} round trips, {days_ahead}-day window). Click any flight or hotel link to compare and book.</p>")
+        lines.append(f"  <p class=\"intro\">Here are today's top deals (up to {num_cheapest_trips} round trips, {days_ahead}-day window). Click any flight or hotel link to compare and book.</p>")
     else:
         lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze &amp; Köln — next {days_ahead} days.</p>")
     lines.extend([
         f"  <h1>{html.escape(title)}</h1>",
         f"  <p class=\"tagline\">{html.escape(tagline)}</p>",
     ])
-    if hotel_results:
+    if agg_hotel:
         lines.append("  <h2 class=\"section-heading\">Top deals (flight + hotel)</h2>")
-        for i, r in enumerate(hotel_results, 1):
-            outbound = r["flight"]
-            ret = r["return_flight"]
-            dest_city = r["destination"]
-            total = r["price"] + ret.price
-            out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            ret_weekday = ret.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            out_dur = _flight_duration_str(outbound.origin, outbound.destination)
-            ret_dur = _flight_duration_str(ret.origin, ret.destination)
-            out_leg = f"{out_weekday}{out_dur}  {outbound.price}€  {outbound.origin}→{outbound.destination}"
-            ret_leg = f"{ret_weekday}{ret_dur}  {ret.price}€  {ret.origin}→{ret.destination}"
-            urls = _booking_urls_for_trip(outbound, ret, adults)
-            out_date = outbound.departureTime.date()
-            ret_date = ret.departureTime.date()
-            nights = (ret_date - out_date).days
-            days = nights + 1
-            route_label = _flight_route_label(outbound, ret)
+        for g in agg_hotel:
+            dest_city = g["destination"]
+            days, nights = g["days"], g["nights"]
+            min_total = g["min_total"]
+            first = g["trips"][0]
+            out_date = first["flight"].departureTime.date()
+            ret_date = first["return_flight"].departureTime.date()
+            route_label = _flight_route_label(first["flight"], first["return_flight"])
             lines.append("  <div class=\"trip\">")
-            lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} ({total:.2f}€) — {days} days, {nights} nights</div>")
+            lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
-            if "booking_url" in urls:
-                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
-            else:
-                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>")
+            for r in g["trips"]:
+                outbound = r["flight"]
+                ret = r["return_flight"]
+                out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                ret_weekday = ret.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                out_dur = _flight_duration_str(outbound.origin, outbound.destination)
+                ret_dur = _flight_duration_str(ret.origin, ret.destination)
+                out_leg = f"{out_weekday}{out_dur}  {outbound.price}€  {_display_airport(outbound.origin)}→{_display_airport(outbound.destination)}"
+                ret_leg = f"{ret_weekday}{ret_dur}  {ret.price}€  {_display_airport(ret.origin)}→{_display_airport(ret.destination)}"
+                urls = _booking_urls_for_trip(outbound, ret, adults)
+                first_hotel = r["hotels"][0] if r["hotels"] else {}
+                hotel_name = first_hotel.get("Accommodation Name") or first_hotel.get("accommodation_name") or "—"
+                hotel_url = first_hotel.get("Accommodation URL") or first_hotel.get("accommodation_url") or ""
+                hotel_price = first_hotel.get("Price Per Stay") or first_hotel.get("price_per_stay") or ""
+                hotel_part = f"  |  <a class=\"trip-details trip-link\" href=\"{html.escape(hotel_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(hotel_name)}</a> {html.escape(hotel_price)}" if hotel_url else (f"  |  {html.escape(hotel_name)} {html.escape(hotel_price)}" if hotel_name or hotel_price else "")
+                lines.append("      <div class=\"flight-option\">")
+                if "booking_url" in urls:
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>{hotel_part}")
+                else:
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>{hotel_part}")
+                lines.append("      </div>")
             lines.append("    </div>")
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
-            lines.append("    <div class=\"hotels\">")
-            lines.append("      <div class=\"hotels-title\">Hotels (click to compare on Trivago)</div>")
-            for hotel in r["hotels"]:
-                name = hotel.get("Accommodation Name") or hotel.get("accommodation_name") or "—"
-                url = hotel.get("Accommodation URL") or hotel.get("accommodation_url") or ""
-                price_stay = hotel.get("Price Per Stay") or hotel.get("price_per_stay") or ""
-                if url:
-                    lines.append(f"      <div class=\"hotel\"><a href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(name)}</a> {html.escape(price_stay)}</div>")
-                else:
-                    lines.append(f"      <div class=\"hotel\">{html.escape(name)} {html.escape(price_stay)}</div>")
-            lines.append("    </div>")
             lines.append("  </div>")
-    else:
+    elif agg_flights:
         lines.append("  <h2 class=\"section-heading\">Top deals (flights only)</h2>")
-        for i, (ob, ib, price) in enumerate(cheapest_flights, 1):
-            dest_city = ob.destinationFull.split(",")[0] if "," in ob.destinationFull else ob.destinationFull
-            total = price + ib.price
-            out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            out_dur = _flight_duration_str(ob.origin, ob.destination)
-            ret_dur = _flight_duration_str(ib.origin, ib.destination)
-            out_leg = f"{out_weekday}{out_dur}  {price}€  {ob.origin}→{ob.destination}"
-            ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {ib.origin}→{ib.destination}"
-            urls = _booking_urls_for_trip(ob, ib, adults)
+        for dest_city, days, nights, flights in agg_flights:
+            ob, ib, price = flights[0]
+            min_total = price + ib.price
             out_date = ob.departureTime.date()
             ret_date = ib.departureTime.date()
-            nights = (ret_date - out_date).days
-            days = nights + 1
             route_label = _flight_route_label(ob, ib)
             lines.append("  <div class=\"trip\">")
-            lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} ({total:.2f}€) — {days} days, {nights} nights</div>")
+            lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
-            if "booking_url" in urls:
-                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
-            else:
-                lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>")
+            for ob, ib, price in flights:
+                out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                out_dur = _flight_duration_str(ob.origin, ob.destination)
+                ret_dur = _flight_duration_str(ib.origin, ib.destination)
+                out_leg = f"{out_weekday}{out_dur}  {price}€  {_display_airport(ob.origin)}→{_display_airport(ob.destination)}"
+                ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {_display_airport(ib.origin)}→{_display_airport(ib.destination)}"
+                urls = _booking_urls_for_trip(ob, ib, adults)
+                lines.append("      <div class=\"flight-option\">")
+                if "booking_url" in urls:
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
+                else:
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>")
+                lines.append("      </div>")
             lines.append("    </div>")
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
             lines.append("  </div>")
-    if not cheapest_flights:
+    if not agg_hotel and not agg_flights:
         lines.append("  <p>(No round trips found.)</p>")
     # Global GeoTemp sections
     for title, data, formatter in [
@@ -1309,13 +1375,13 @@ def _print_html(
     adults: int = 2,
     travel_data: dict | None = None,
     timings: dict | None = None,
-    num_cheapest_flights: int = 100,
+    num_cheapest_trips: int = 100,
     days_ahead: int = 90,
 ) -> None:
     """Write results to travel_helper.html and print path."""
     html_str = _build_html(
         cheapest_flights, hotel_results, adults, travel_data, timings,
-        num_cheapest_flights=num_cheapest_flights, days_ahead=days_ahead,
+        num_cheapest_trips=num_cheapest_trips, days_ahead=days_ahead,
     )
     filename = "travel_helper.html"
     path = Path(filename).resolve()
@@ -1438,8 +1504,7 @@ def run(
     fetch_hotels: bool = True,
     adults: int = 2,
     rooms: int = 1,
-    num_cheapest_flights: int = 100,
-    hotels_per_flight: int = 3,
+    num_cheapest_trips: int = 100,
     days_ahead: int | None = None,
     email: str | None = None,
     json_file: str | None = None,
@@ -1455,7 +1520,7 @@ def run(
     different_airport = len(outbound_flights) - same_airport
     print(f"{len(outbound_flights)} flights fetched (same airport ({same_airport}) - different airport ({different_airport}))", file=sys.stderr)
     # 2. Already sorted by price; take the N cheapest
-    cheapest_flights = outbound_flights[:num_cheapest_flights]
+    cheapest_flights = outbound_flights[:num_cheapest_trips]
 
     # 3. GeoTemp first (weather + attractions) so hotels can be chosen near attractions (walking distance)
     travel_data = None
@@ -1474,12 +1539,11 @@ def run(
     t_hotels = 0.0
     if fetch_hotels and TRIVAGO_AVAILABLE and cheapest_flights:
         if not output_json:
-            print(f"Fetching {hotels_per_flight} hotels per trip (near attractions when available)...", file=sys.stderr)
+            print("Fetching cheapest hotel per trip (near attractions when available)...", file=sys.stderr)
         t0 = time.perf_counter()
         hotel_results = asyncio.run(
             fetch_hotels_for_cheapest_flights(
                 cheapest_flights,
-                hotels_per_flight=hotels_per_flight,
                 adults=adults,
                 rooms=rooms,
                 attractions_by_dest=(travel_data or {}).get("attractions") or {},
@@ -1532,39 +1596,60 @@ def run(
                 "nearby_destinations": (td.get("nearby_destinations") or {}).get(dest_city),
             }
 
-        # Prefer hotel_results when present; otherwise output flight-only from cheapest_flights
+        # Prefer hotel_results when present; otherwise output flight-only from cheapest_flights (aggregated by dest, days, nights)
         if hotel_results:
+            agg = _aggregate_hotel_results(hotel_results)
             out = {
                 "cheapest_flights_with_hotels": [
                     {
-                        "outbound": _flight_leg_json(r["flight"], r["price"]),
-                        "return": _flight_leg_json(r["return_flight"]),
-                        **_booking_urls_for_trip(r["flight"], r["return_flight"], adults),
-                        "hotel_arrival": r["arrival"],
-                        "hotel_departure": r["departure"],
-                        "hotels": r["hotels"],
+                        "destination": g["destination"],
+                        "days": g["days"],
+                        "nights": g["nights"],
+                        "min_total_eur": round(g["min_total"], 2),
+                        "flights": [
+                            {
+                                "outbound": _flight_leg_json(r["flight"], r["price"]),
+                                "return": _flight_leg_json(r["return_flight"]),
+                                **_booking_urls_for_trip(r["flight"], r["return_flight"], adults),
+                                "hotel_arrival": r["arrival"],
+                                "hotel_departure": r["departure"],
+                                "hotels": r["hotels"],
+                                "total_eur": round(r["price"] + r["return_flight"].price, 2),
+                            }
+                            for r in g["trips"]
+                        ],
                         "destination_info": _geotemp_destination_info(
-                            travel_data, r["destination"], r["arrival"], r["departure"]
+                            travel_data, g["destination"], g["trips"][0]["arrival"], g["trips"][0]["departure"]
                         ),
                     }
-                    for r in hotel_results
+                    for g in agg
                 ],
             }
         else:
+            agg = _aggregate_cheapest_flights(cheapest_flights)
             out = {
                 "cheapest_flights": [
                     {
-                        "outbound": _flight_leg_json(ob, None),
-                        "return": _flight_leg_json(ib),
-                        **_booking_urls_for_trip(ob, ib, adults),
+                        "destination": dest,
+                        "days": days,
+                        "nights": nights,
+                        "min_total_eur": round(flights[0][2] + flights[0][1].price, 2),
+                        "flights": [
+                            {
+                                "outbound": _flight_leg_json(ob, None),
+                                "return": _flight_leg_json(ib),
+                                **_booking_urls_for_trip(ob, ib, adults),
+                                "total_eur": round(price + ib.price, 2),
+                            }
+                            for ob, ib, price in flights
+                        ],
                         "destination_info": _geotemp_destination_info(
-                            travel_data,
-                            _dest_city_from_flight(ob),
-                            ob.departureTime.date().isoformat(),
-                            ib.departureTime.date().isoformat(),
+                            travel_data, dest,
+                            flights[0][0].departureTime.date().isoformat(),
+                            flights[0][1].departureTime.date().isoformat(),
                         ),
                     }
-                    for ob, ib, price in cheapest_flights
+                    for dest, days, nights, flights in agg
                 ],
             }
         # Global GeoTemp data (dataset, trip ideas, compare, etc.)
@@ -1591,7 +1676,7 @@ def run(
             adults=adults,
             travel_data=travel_data,
             timings=timings,
-            num_cheapest_flights=num_cheapest_flights,
+            num_cheapest_trips=num_cheapest_trips,
             days_ahead=days_ahead or 90,
         )
         if not email:
@@ -1603,7 +1688,7 @@ def run(
             adults=adults,
             travel_data=travel_data,
             timings=timings,
-            num_cheapest_flights=num_cheapest_flights,
+            num_cheapest_trips=num_cheapest_trips,
             days_ahead=days_ahead or 90,
         )
         _send_email_html(html_str, email)
@@ -1630,76 +1715,71 @@ def run(
     print("=" * 80)
     print("CHEAPEST ROUND TRIPS" + (" + HOTELS" if hotel_results else " (flights only)"))
     print("-" * 80)
-    if hotel_results:
-        for i, r in enumerate(hotel_results, 1):
-            outbound = r["flight"]
-            ret = r["return_flight"]
-            price = r["price"]
-            dest_city = r["destination"]
-            arrival, departure = r["arrival"], r["departure"]
-            out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            ret_weekday = ret.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            out_dur = _flight_duration_str(outbound.origin, outbound.destination)
-            ret_dur = _flight_duration_str(ret.origin, ret.destination)
-            origin_city = outbound.originFull.split(",")[0] if "," in outbound.originFull else outbound.originFull
-            ret_origin_city = ret.originFull.split(",")[0] if "," in ret.originFull else ret.originFull
-            ret_dest_city = ret.destinationFull.split(",")[0].strip() if "," in ret.destinationFull else ret.destination
-            total = price + ret.price
-            nights = (ret.departureTime.date() - outbound.departureTime.date()).days
-            days = nights + 1
-            out_leg = f"{out_weekday}{out_dur}  {price}€  {origin_city} ({outbound._origin_code})→{dest_city} ({outbound.destination})"
-            ret_leg = f"{ret_weekday}{ret_dur}  {ret.price}€  {ret_origin_city} ({ret.origin})→{ret_dest_city} ({ret.destination})"
-            print(f"{i}. {dest_city} ({total:.2f}€) — {days} days, {nights} nights")
+    agg_hotel_print = _aggregate_hotel_results(hotel_results) if hotel_results else []
+    agg_flights_print = _aggregate_cheapest_flights(cheapest_flights) if not hotel_results and cheapest_flights else []
+    if agg_hotel_print:
+        for i, g in enumerate(agg_hotel_print, 1):
+            dest_city = g["destination"]
+            days, nights = g["days"], g["nights"]
+            min_total = g["min_total"]
+            first = g["trips"][0]
+            arrival, departure = first["arrival"], first["departure"]
+            print(f"{i}. {dest_city} (from {min_total:.2f}€) — {days} days, {nights} nights")
             print("Flight")
-            print(f"   {out_leg}{LEG_SEP}{ret_leg}")
-            urls = _booking_urls_for_trip(outbound, ret, adults)
-            if "booking_url" in urls:
-                print(f"   {urls['booking_url']}")
-            else:
-                print(f"   Departure: {urls['booking_url_outbound']}")
-                print(f"   Return:   {urls['booking_url_return']}")
-            _print_weather_attractions_text(dest_city, outbound.departureTime.date(), ret.departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
-            nights = (datetime.fromisoformat(departure).date() - datetime.fromisoformat(arrival).date()).days
-            print("Hotels")
-            print(f"   {nights} nights, {arrival} → {departure}")
-            for j, hotel in enumerate(r["hotels"], 1):
-                name = hotel.get("Accommodation Name") or hotel.get("accommodation_name") or "—"
-                price_night = hotel.get("Price Per Night") or hotel.get("price_per_night") or "—"
-                price_stay = hotel.get("Price Per Stay") or hotel.get("price_per_stay") or "—"
-                url = hotel.get("Accommodation URL") or hotel.get("accommodation_url") or ""
-                print(f"   {j}. {name}  |  {price_night} (total {price_stay})")
-                if url:
-                    print(f"      {url}")
-            if not r["hotels"]:
-                print("   (none found)")
+            for r in g["trips"]:
+                outbound = r["flight"]
+                ret = r["return_flight"]
+                out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                ret_weekday = ret.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                out_dur = _flight_duration_str(outbound.origin, outbound.destination)
+                ret_dur = _flight_duration_str(ret.origin, ret.destination)
+                origin_city = outbound.originFull.split(",")[0] if "," in outbound.originFull else outbound.originFull
+                ret_origin_city = ret.originFull.split(",")[0] if "," in ret.originFull else ret.originFull
+                ret_dest_city = ret.destinationFull.split(",")[0].strip() if "," in ret.destinationFull else ret.destination
+                out_leg = f"{out_weekday}{out_dur}  {outbound.price}€  {origin_city} ({_display_airport(getattr(outbound, '_origin_code', outbound.origin))})→{dest_city} ({_display_airport(outbound.destination)})"
+                ret_leg = f"{ret_weekday}{ret_dur}  {ret.price}€  {ret_origin_city} ({_display_airport(ret.origin)})→{ret_dest_city} ({_display_airport(ret.destination)})"
+                print(f"   {out_leg}{LEG_SEP}{ret_leg}")
+                urls = _booking_urls_for_trip(outbound, ret, adults)
+                if "booking_url" in urls:
+                    print(f"   {urls['booking_url']}")
+                else:
+                    print(f"   Departure: {urls['booking_url_outbound']}")
+                    print(f"   Return:   {urls['booking_url_return']}")
+                first_hotel = r.get("hotels") and r["hotels"][0]
+                if first_hotel:
+                    h_name = first_hotel.get("Accommodation Name") or first_hotel.get("accommodation_name") or "Hotel"
+                    h_url = first_hotel.get("Accommodation URL") or first_hotel.get("accommodation_url")
+                    if h_url:
+                        print(f"   Hotel (Trivago): {h_name} — {h_url}")
+            _print_weather_attractions_text(dest_city, first["flight"].departureTime.date(), first["return_flight"].departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
             print()
-    else:
-        for i, (ob, ib, price) in enumerate(cheapest_flights, 1):
-            out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
-            out_dur = _flight_duration_str(ob.origin, ob.destination)
-            ret_dur = _flight_duration_str(ib.origin, ib.destination)
-            origin_city = ob.originFull.split(",")[0] if "," in ob.originFull else ob.originFull
-            dest_city = ob.destinationFull.split(",")[0] if "," in ob.destinationFull else ob.destinationFull
-            ret_origin_city = ib.originFull.split(",")[0] if "," in ib.originFull else ib.originFull
-            ret_dest_city = ib.destinationFull.split(",")[0] if "," in ib.destinationFull else ib.destination
-            total = price + ib.price
-            nights = (ib.departureTime.date() - ob.departureTime.date()).days
-            days = nights + 1
-            out_leg = f"{out_weekday}{out_dur}  {price}€  {origin_city} ({ob._origin_code})→{dest_city} ({ob.destination})"
-            ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {ret_origin_city} ({ib.origin})→{ret_dest_city} ({ib.destination})"
-            print(f"{i}. {dest_city} ({total:.2f}€) — {days} days, {nights} nights")
+    elif agg_flights_print:
+        for i, (dest_city, days, nights, flights) in enumerate(agg_flights_print, 1):
+            ob, ib, price = flights[0]
+            min_total = price + ib.price
+            print(f"{i}. {dest_city} (from {min_total:.2f}€) — {days} days, {nights} nights")
             print("Flight")
-            print(f"   {out_leg}{LEG_SEP}{ret_leg}")
-            urls = _booking_urls_for_trip(ob, ib, adults)
-            if "booking_url" in urls:
-                print(f"   {urls['booking_url']}")
-            else:
-                print(f"   Departure: {urls['booking_url_outbound']}")
-                print(f"   Return:   {urls['booking_url_return']}")
-            _print_weather_attractions_text(dest_city, ob.departureTime.date(), ib.departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
-        if not cheapest_flights:
-            print("(No round trips found for Thu after 5pm / Fri after 11am from Weeze or Köln.)")
+            for ob, ib, price in flights:
+                out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
+                out_dur = _flight_duration_str(ob.origin, ob.destination)
+                ret_dur = _flight_duration_str(ib.origin, ib.destination)
+                origin_city = ob.originFull.split(",")[0] if "," in ob.originFull else ob.originFull
+                ret_origin_city = ib.originFull.split(",")[0] if "," in ib.originFull else ib.originFull
+                ret_dest_city = ib.destinationFull.split(",")[0] if "," in ib.destinationFull else ib.destination
+                out_leg = f"{out_weekday}{out_dur}  {price}€  {origin_city} ({_display_airport(getattr(ob, '_origin_code', ob.origin))})→{dest_city} ({_display_airport(ob.destination)})"
+                ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {ret_origin_city} ({_display_airport(ib.origin)})→{ret_dest_city} ({_display_airport(ib.destination)})"
+                print(f"   {out_leg}{LEG_SEP}{ret_leg}")
+                urls = _booking_urls_for_trip(ob, ib, adults)
+                if "booking_url" in urls:
+                    print(f"   {urls['booking_url']}")
+                else:
+                    print(f"   Departure: {urls['booking_url_outbound']}")
+                    print(f"   Return:   {urls['booking_url_return']}")
+            _print_weather_attractions_text(dest_city, flights[0][0].departureTime.date(), flights[0][1].departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
+        print()
+    else:
+        print("(No round trips found for Thu after 5pm / Fri after 11am from Weeze or Köln.)")
     # Global GeoTemp sections
     for section_title, data, formatter in [
         ("Dataset", dataset_stats, _format_dataset_stats),
@@ -1729,7 +1809,7 @@ def run(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Round trips from Weeze/Köln (Thu after 5pm or Fri after 11am outbound, 2–4 nights, return). N cheapest + M hotels each.",
+        description="Round trips from Weeze/Köln (Thu after 5pm or Fri after 11am outbound, 2–4 nights, return). N cheapest; one cheapest hotel per trip (near attractions) when not --no-hotels.",
     )
     parser.add_argument(
         "--json",
@@ -1757,18 +1837,11 @@ def main() -> None:
     parser.add_argument("--adults", type=int, default=2, help="Adults for hotel search")
     parser.add_argument("--rooms", type=int, default=1, help="Rooms for hotel search")
     parser.add_argument(
-        "--num-cheapest-flights",
+        "--num-cheapest-trips",
         type=int,
         default=100,
         metavar="N",
         help="Number of cheapest round trips to show and fetch hotels for (default: 100)",
-    )
-    parser.add_argument(
-        "--cheapest-hotels-per-flight",
-        type=int,
-        default=3,
-        metavar="M",
-        help="Number of cheapest hotels to fetch per flight (default: 3)",
     )
     parser.add_argument(
         "--days-ahead",
@@ -1791,8 +1864,7 @@ def main() -> None:
         fetch_hotels=not args.no_hotels,
         adults=args.adults,
         rooms=args.rooms,
-        num_cheapest_flights=args.num_cheapest_flights,
-        hotels_per_flight=args.cheapest_hotels_per_flight,
+        num_cheapest_trips=args.num_cheapest_trips,
         days_ahead=args.days_ahead,
         email=args.email,
         json_file=args.json_file,

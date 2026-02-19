@@ -36,8 +36,7 @@ jobs:
       - name: Run travel helper (flights + hotels + JSON + email HTML)
         run: |
           .venv-travel/bin/python travel_helper.py \
-            --num-cheapest-flights 100 \
-            --cheapest-hotels-per-flight 1 \
+            --num-cheapest-trips 100 \
             --days-ahead 90 \
             --json \
             --html --email ammar.sahib@yahoo.com

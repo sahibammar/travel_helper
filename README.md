@@ -214,8 +214,7 @@ python travel_helper.py --html
 python travel_helper.py --no-hotels
 
 # Tuning
-python travel_helper.py --num-cheapest-flights 5 --cheapest-hotels-per-flight 3
-python travel_helper.py --adults 2 --rooms 1 --days-ahead 120
+python travel_helper.py --num-cheapest-trips 5 --adults 2 --rooms 1 --days-ahead 120
 ```
 
 ### CLI options (summary)
@@ -227,9 +226,8 @@ python travel_helper.py --adults 2 --rooms 1 --days-ahead 120
 | `--no-hotels` | — | Skip Trivago (flights only; GeoTemp still used if available) |
 | `--adults` | 2 | Adults for hotel search |
 | `--rooms` | 1 | Rooms for hotel search |
-| `--num-cheapest-flights` | 10 | Number of cheapest round trips to fetch hotels + GeoTemp for |
-| `--cheapest-hotels-per-flight` | 3 | Hotels per trip |
-| `--days-ahead` | 120 | Search window for outbound dates |
+| `--num-cheapest-trips` | 100 | Number of cheapest round trips to fetch (one cheapest hotel per trip when not --no-hotels) |
+| `--days-ahead` | 90 | Search window for outbound dates |
 | `--email` | — | Send HTML report to this email (Gmail; requires `GMAIL_USER` and `GMAIL_APP_PASSWORD`) |
 
 ### Email (Gmail)
@@ -244,7 +242,7 @@ python travel_helper.py --html --email recipient@example.com
 
 A workflow runs daily at **7 AM Germany time** (6:00 UTC) (see [.github/workflows/daily-travel-helper.yml](.github/workflows/daily-travel-helper.yml)) with:
 
-- `--num-cheapest-flights 50 --cheapest-hotels-per-flight 1 --days-ahead 300 --html`
+- `--num-cheapest-trips 100 --days-ahead 90 --html`
 
 The generated HTML report is uploaded as an artifact (retention 14 days). To run manually: **Actions** → **Daily travel helper** → **Run workflow**. To get the report by email from the workflow, add repo secrets `GMAIL_USER` and `GMAIL_APP_PASSWORD` and uncomment the `env` block in the workflow.
 
