@@ -696,7 +696,7 @@ def _format_best_months(best_data: dict) -> list[str]:
     """Format find_best_month result into readable lines. Returns list of strings."""
     if not best_data or not isinstance(best_data, dict):
         return []
-    rankings = best_data.get("rankings")
+    rankings = best_data.get("rankings") or best_data.get("ranking")
     if not isinstance(rankings, list) or len(rankings) == 0:
         return []
     lines = []
@@ -704,8 +704,8 @@ def _format_best_months(best_data: dict) -> list[str]:
         if not isinstance(r, dict):
             continue
         month_name = r.get("month_name") or r.get("month") or "—"
-        avg_temp = r.get("avg_temp")
-        precip = r.get("precipitation")
+        avg_temp = r.get("avg_temp") or r.get("avg_temp_c")
+        precip = r.get("precipitation") or r.get("total_rain_mm")
         score = r.get("score")
         part = month_name
         if avg_temp is not None:
@@ -716,6 +716,71 @@ def _format_best_months(best_data: dict) -> list[str]:
             part += f" (score {score})"
         lines.append(part)
     return lines if lines else []
+
+
+def _format_best_time_tip(
+    best_months_data: dict | None,
+    seasonal_calendar_data: dict | None,
+) -> str | None:
+    """Build a one-line tip for best time to visit: the month(s) with highest temperature through the year."""
+    def _tip_with_temp_rain(month_name: str, avg_temp=None, rain=None) -> str:
+        parts = [f"Best time: {month_name}"]
+        if avg_temp is not None or rain is not None:
+            details = []
+            if avg_temp is not None:
+                details.append(f"avg {int(round(avg_temp))}°C")
+            if rain is not None:
+                details.append(f"rain {int(round(rain))} mm")
+            if details:
+                parts.append(" — " + ", ".join(details))
+        else:
+            parts.append(" — warmest month")
+        return "".join(parts) + "."
+
+    if best_months_data and isinstance(best_months_data, dict):
+        rankings = best_months_data.get("rankings") or best_months_data.get("ranking")
+        if isinstance(rankings, list) and len(rankings) > 0:
+            # Pick the month with highest temperature (ignore API score order)
+            with_temp = []
+            for r in rankings:
+                if not isinstance(r, dict):
+                    continue
+                name = r.get("month_name") or r.get("month")
+                avg_temp = r.get("avg_temp_c") or r.get("avg_temp")
+                if name is not None and avg_temp is not None:
+                    with_temp.append((float(avg_temp), name, r.get("total_rain_mm") or r.get("precipitation")))
+            if with_temp:
+                with_temp.sort(key=lambda x: x[0], reverse=True)
+                hottest = with_temp[0]
+                return _tip_with_temp_rain(hottest[1], hottest[0], hottest[2])
+        best_month = best_months_data.get("best_month")
+        if best_month:
+            if isinstance(rankings, list):
+                for r in rankings:
+                    if isinstance(r, dict) and (r.get("month_name") or r.get("month")) == best_month:
+                        avg_temp = r.get("avg_temp_c") or r.get("avg_temp")
+                        rain = r.get("total_rain_mm") or r.get("precipitation")
+                        return _tip_with_temp_rain(best_month, avg_temp, rain)
+            return _tip_with_temp_rain(best_month, None, None)
+    if seasonal_calendar_data and isinstance(seasonal_calendar_data, dict):
+        calendar = seasonal_calendar_data.get("calendar")
+        if isinstance(calendar, list) and len(calendar) >= 1:
+            candidates = []
+            for entry in calendar[:12]:
+                if not isinstance(entry, dict):
+                    continue
+                weather = entry.get("weather") if isinstance(entry.get("weather"), dict) else {}
+                avg_temp = weather.get("avg_temp") or weather.get("temperature_mean")
+                precip = weather.get("total_precipitation_mm")
+                month_name = entry.get("month_name") or entry.get("month")
+                if month_name is not None and avg_temp is not None:
+                    candidates.append((float(avg_temp), float(precip) if precip is not None else 0, str(month_name)))
+            if candidates:
+                # Highest temperature through the year (sort by temp only, descending)
+                candidates.sort(key=lambda x: x[0], reverse=True)
+                c = candidates[0]
+                return _tip_with_temp_rain(c[2], c[0], c[1] if c[1] else None)
+    return None
 
 
 def _format_nearby_destinations(nearby_data: dict) -> list[str]:
@@ -984,17 +1049,25 @@ def _add_weather_attractions_html(
     activity_lines = _format_activities(profiles.get(dest_city) or {}) or _format_activities_from_calendar(calendar.get(dest_city) or {})
     calendar_lines = _format_seasonal_calendar(calendar.get(dest_city) or {})
     weather_lines = [s for w in weather_list[:7] if (s := _format_weather_item(w))]
+    tip_line = _format_best_time_tip(best_months.get(dest_city), calendar.get(dest_city))
     if profile_lines:
         lines.append("    <div class=\"destination\">")
         lines.append("      <div class=\"destination-title\">Destination</div>")
         for line in profile_lines:
             lines.append(f"      <div>{html.escape(line)}</div>")
         lines.append("    </div>")
-    if weather_lines:
+    if weather_lines or tip_line:
         lines.append("    <div class=\"weather\">")
         lines.append("      <div class=\"weather-title\">Weather</div>")
-        for line in weather_lines:
-            lines.append(f"      <div>{html.escape(line)}</div>")
+        if weather_lines:
+            first_line = weather_lines[0]
+            if tip_line:
+                first_line = f"{first_line} (tip: {tip_line})"
+            lines.append(f"      <div>{html.escape(first_line)}</div>")
+            for line in weather_lines[1:]:
+                lines.append(f"      <div>{html.escape(line)}</div>")
+        elif tip_line:
+            lines.append(f"      <div>{html.escape(tip_line)}</div>")
         lines.append("    </div>")
     if best_lines:
         lines.append("    <div class=\"best-months\">")
@@ -1063,8 +1136,8 @@ def _build_html(
         "    a.trip-link:hover { text-decoration: underline; }",
         "    .hotel { margin: 0.35rem 0; }",
         "    .hotel a { color: #008513; }",
-        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
-        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
+        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
+        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
         "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
         "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
@@ -1097,8 +1170,8 @@ def _build_html(
         "    a.trip-link:hover { text-decoration: underline; }",
         "    .hotel { margin: 0.35rem 0; }",
         "    .hotel a { color: #008513; }",
-        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
-        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
+        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
+        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
         "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
         "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
