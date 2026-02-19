@@ -136,7 +136,7 @@ ORIGIN_AIRPORTS = [
     ("CGN", "Köln"),
     ("NRN", "Düsseldorf Weeze"),
 ]
-DAYS_AHEAD = 120  # search ahead for Thu/Fri departures
+DAYS_AHEAD = 90  # search ahead for Thu/Fri departures
 RETURN_DAYS_MIN = 2  # 2 nights at destination
 RETURN_DAYS_MAX = 4  # 4 nights at destination
 HOTEL_NIGHTS = 4  # legacy; hotel stay now matches return flight (arrival = outbound date, departure = return date)
@@ -1023,11 +1023,13 @@ def _build_html(
     adults: int = 2,
     travel_data: dict | None = None,
     timings: dict | None = None,
+    num_cheapest_flights: int = 100,
+    days_ahead: int = 90,
 ) -> str:
     """Build results as HTML string (same content as --html file)."""
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     title = "Fly cheap, stay cheap — your daily Ryanair + Trivago deals"
-    tagline = "Best-priced flights from Weeze & Köln (Thu eve / Fri) and lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
+    tagline = f"Top {num_cheapest_flights} round trips from Weeze & Köln (Thu eve / Fri) over the next {days_ahead} days. Lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
     weather_by_key = (travel_data or {}).get("weather") or {}
     attractions_by_dest = (travel_data or {}).get("attractions") or {}
     city_profiles_by_dest = (travel_data or {}).get("city_profiles") or {}
@@ -1041,35 +1043,92 @@ def _build_html(
     search_destinations_result = (travel_data or {}).get("search_destinations_result")
     search_by_activity_result = (travel_data or {}).get("search_by_activity_result")
     multi_activity_search_result = (travel_data or {}).get("multi_activity_search_result")
+    # Styles inspired by Trivago offer email: #cdcdcd background, white cards, #008513 accent, rounded corners
     lines = [
         "<!DOCTYPE html>",
         "<html lang=\"en\">",
         "<head>",
         "  <meta charset=\"utf-8\">",
+        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
         f"  <title>{html.escape(title)}</title>",
         "  <style>",
-        "    body { font-family: system-ui, sans-serif; margin: 1rem 2rem; max-width: 900px; }",
-        "    h1 { font-size: 1.35rem; color: #073590; margin-bottom: 0.25rem; }",
-        "    .tagline { color: #555; font-size: 0.95rem; line-height: 1.4; margin-bottom: 1rem; }",
-        "    .trip { margin: 1rem 0; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; }",
-        "    .trip-header { font-weight: bold; margin-bottom: 0.25rem; }",
-        "    .trip-details { color: #444; font-size: 0.95rem; }",
-        "    a.trip-link { color: #073590; text-decoration: none; }",
+        "    body { margin: 0; padding: 1rem; background-color: #cdcdcd; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }",
+        "    .main-wrap { max-width: 700px; margin: 0 auto; background: #ffffff; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid #cdcdcd; }",
+        "    h1 { font-size: 1.75rem; font-weight: 700; color: #000; margin-bottom: 0.25rem; line-height: 1.3; }",
+        "    .tagline { color: #555; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
+        "    .trip { margin: 1rem 0; padding: 1.25rem; background: #fff; border: 1px solid #cdcdcd; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }",
+        "    .trip-header { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.5rem; color: #000; }",
+        "    .trip-details { color: #444; font-size: 0.95rem; line-height: 1.5; }",
+        "    a.trip-link { color: #008513; text-decoration: none; }",
         "    a.trip-link:hover { text-decoration: underline; }",
-        "    .hotel { margin: 0.2rem 0; }",
-        "    .hotel a { color: #073590; }",
-        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title { font-weight: 600; margin-bottom: 0.2rem; }",
-        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; }",
-        "    .global-section { margin-top: 1.5rem; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; }",
-        "    .global-section-title { font-weight: 600; margin-bottom: 0.3rem; color: #073590; }",
+        "    .hotel { margin: 0.35rem 0; }",
+        "    .hotel a { color: #008513; }",
+        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
+        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
+        "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
+        "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
+        "    .preheader { font-size: 0.95rem; color: #555; margin-bottom: 1rem; line-height: 1.4; }",
+        "    .intro { color: #333; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
+        "    .section-heading { font-size: 1.125rem; font-weight: 700; color: #000; margin: 1.5rem 0 0.75rem 0; }",
+        "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
+        "    @media screen and (max-width: 600px) {",
+        "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
+        "      .main-wrap { margin: 0; padding: 16px 12px; border-radius: 0; border-left: none; border-right: none; max-width: 100%; box-sizing: border-box; }",
+        "      .trip { margin: 12px 0; padding: 14px 12px; border-radius: 12px; }",
+        "      .global-section { margin-top: 1.25rem; padding: 14px 12px; border-radius: 12px; }",
+        "      .section-heading { margin: 1.25rem 0 0.5rem 0; }",
+        "      .footer-note { margin-top: 1.5rem; padding: 12px 0 0 0; }",
+        "    }",
         "  </style>",
         "</head>",
         "<body>",
+        "  <div class=\"main-wrap\">",
+        "  <!-- Duplicate style in body so email clients that ignore head still apply Trivago-style layout -->",
+        "  <style>",
+        "    body { margin: 0; padding: 1rem; background-color: #cdcdcd; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }",
+        "    .main-wrap { max-width: 700px; margin: 0 auto; background: #ffffff; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid #cdcdcd; }",
+        "    h1 { font-size: 1.75rem; font-weight: 700; color: #000; margin-bottom: 0.25rem; line-height: 1.3; }",
+        "    .tagline { color: #555; font-size: 1rem; line-height: 1.5; margin-bottom: 0.75rem; }",
+        "    .trip { margin: 1rem 0; padding: 1.25rem; background: #fff; border: 1px solid #cdcdcd; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }",
+        "    .trip-header { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.5rem; color: #000; }",
+        "    .trip-details { color: #444; font-size: 0.95rem; line-height: 1.5; }",
+        "    a.trip-link { color: #008513; text-decoration: none; }",
+        "    a.trip-link:hover { text-decoration: underline; }",
+        "    .hotel { margin: 0.35rem 0; }",
+        "    .hotel a { color: #008513; }",
+        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
+        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
+        "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
+        "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
+        "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
+        "    .preheader { font-size: 0.95rem; color: #555; margin-bottom: 1rem; line-height: 1.4; }",
+        "    .intro { color: #333; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
+        "    .section-heading { font-size: 1.125rem; font-weight: 700; color: #000; margin: 1.5rem 0 0.75rem 0; }",
+        "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
+        "    @media screen and (max-width: 600px) {",
+        "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
+        "      .main-wrap { margin: 0; padding: 16px 12px; border-radius: 0; border-left: none; border-right: none; max-width: 100%; box-sizing: border-box; }",
+        "      .trip { margin: 12px 0; padding: 14px 12px; border-radius: 12px; }",
+        "      .global-section { margin-top: 1.25rem; padding: 14px 12px; border-radius: 12px; }",
+        "      .section-heading { margin: 1.25rem 0 0.5rem 0; }",
+        "      .footer-note { margin-top: 1.5rem; padding: 12px 0 0 0; }",
+        "    }",
+        "  </style>",
+    ]
+    # Preheader (shows in email preview) and intro
+    num_deals = len(hotel_results) if hotel_results else len(cheapest_flights)
+    if num_deals:
+        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze &amp; Köln — next {days_ahead} days, {num_deals} deal{'s' if num_deals != 1 else ''} inside.</p>")
+        lines.append(f"  <p class=\"intro\">Here are today's top deals (up to {num_cheapest_flights} round trips, {days_ahead}-day window). Click any flight or hotel link to compare and book.</p>")
+    else:
+        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze &amp; Köln — next {days_ahead} days.</p>")
+    lines.extend([
         f"  <h1>{html.escape(title)}</h1>",
         f"  <p class=\"tagline\">{html.escape(tagline)}</p>",
-    ]
+    ])
     if hotel_results:
+        lines.append("  <h2 class=\"section-heading\">Top deals (flight + hotel)</h2>")
         for i, r in enumerate(hotel_results, 1):
             outbound = r["flight"]
             ret = r["return_flight"]
@@ -1098,7 +1157,7 @@ def _build_html(
             lines.append("    </div>")
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
             lines.append("    <div class=\"hotels\">")
-            lines.append("      <div class=\"hotels-title\">Hotels</div>")
+            lines.append("      <div class=\"hotels-title\">Hotels (click to compare on Trivago)</div>")
             for hotel in r["hotels"]:
                 name = hotel.get("Accommodation Name") or hotel.get("accommodation_name") or "—"
                 url = hotel.get("Accommodation URL") or hotel.get("accommodation_url") or ""
@@ -1110,6 +1169,7 @@ def _build_html(
             lines.append("    </div>")
             lines.append("  </div>")
     else:
+        lines.append("  <h2 class=\"section-heading\">Top deals (flights only)</h2>")
         for i, (ob, ib, price) in enumerate(cheapest_flights, 1):
             dest_city = ob.destinationFull.split(",")[0] if "," in ob.destinationFull else ob.destinationFull
             total = price + ib.price
@@ -1154,15 +1214,17 @@ def _build_html(
             for line in section_lines:
                 lines.append(f"    <div>{html.escape(line)}</div>")
             lines.append("  </div>")
-    lines.append("  <p class=\"timings-note\">")
-    lines.append(f"    Generated: {html.escape(generated_at)}")
+    lines.append("  <p class=\"footer-note\">")
+    lines.append(f"    Report generated on {html.escape(generated_at)}.")
     if timings:
         total_s = timings.get("total") or 0
         flights_s = timings.get("flights") or 0
         weather_s = timings.get("weather_attractions") or 0
         hotels_s = timings.get("hotels") or 0
-        lines.append(f"    Total execution time: {total_s:.1f}s. Flights: {flights_s:.1f}s, Weather &amp; attractions: {weather_s:.1f}s, Hotels: {hotels_s:.1f}s.")
+        lines.append(f"    Total run: {total_s:.1f}s (flights {flights_s:.1f}s, weather &amp; attractions {weather_s:.1f}s, hotels {hotels_s:.1f}s).")
+    lines.append("    Reply to this email if you have questions.")
     lines.append("  </p>")
+    lines.append("  </div>")
     lines.append("</body>")
     lines.append("</html>")
     return "\n".join(lines)
@@ -1174,9 +1236,14 @@ def _print_html(
     adults: int = 2,
     travel_data: dict | None = None,
     timings: dict | None = None,
+    num_cheapest_flights: int = 100,
+    days_ahead: int = 90,
 ) -> None:
     """Write results to travel_helper.html and print path."""
-    html_str = _build_html(cheapest_flights, hotel_results, adults, travel_data, timings)
+    html_str = _build_html(
+        cheapest_flights, hotel_results, adults, travel_data, timings,
+        num_cheapest_flights=num_cheapest_flights, days_ahead=days_ahead,
+    )
     filename = "travel_helper.html"
     path = Path(filename).resolve()
     path.write_text(html_str, encoding="utf-8")
@@ -1298,7 +1365,7 @@ def run(
     fetch_hotels: bool = True,
     adults: int = 2,
     rooms: int = 1,
-    num_cheapest_flights: int = 10,
+    num_cheapest_flights: int = 100,
     hotels_per_flight: int = 3,
     days_ahead: int | None = None,
     email: str | None = None,
@@ -1451,6 +1518,8 @@ def run(
             adults=adults,
             travel_data=travel_data,
             timings=timings,
+            num_cheapest_flights=num_cheapest_flights,
+            days_ahead=days_ahead or 90,
         )
         if not email:
             return
@@ -1461,6 +1530,8 @@ def run(
             adults=adults,
             travel_data=travel_data,
             timings=timings,
+            num_cheapest_flights=num_cheapest_flights,
+            days_ahead=days_ahead or 90,
         )
         _send_email_html(html_str, email)
         if output_html:
@@ -1615,9 +1686,9 @@ def main() -> None:
     parser.add_argument(
         "--num-cheapest-flights",
         type=int,
-        default=10,
+        default=100,
         metavar="N",
-        help="Number of cheapest round trips to show and fetch hotels for (default: 10)",
+        help="Number of cheapest round trips to show and fetch hotels for (default: 100)",
     )
     parser.add_argument(
         "--cheapest-hotels-per-flight",
@@ -1629,9 +1700,9 @@ def main() -> None:
     parser.add_argument(
         "--days-ahead",
         type=int,
-        default=120,
+        default=90,
         metavar="N",
-        help="Search for departures in the next N days (default: 120)",
+        help="Search for departures in the next N days (default: 90)",
     )
     parser.add_argument(
         "--email",
