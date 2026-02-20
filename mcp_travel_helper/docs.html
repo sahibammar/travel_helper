@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Helper MCP Server - Documentation</title>
+  <style>
+    :root { --bg: #fff; --text: #1a1a1a; --muted: #555; --accent: #0d6efd; --border: #dee2e6; --code-bg: #f5f5f5; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #1a1a1a; --text: #e0e0e0; --muted: #aaa; --accent: #6ea8fe; --border: #333; --code-bg: #2d2d2d; } }
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); margin: 0; padding: 2rem; max-width: 48rem; margin-left: auto; margin-right: auto; }
+    h1 { font-size: 1.75rem; margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; margin-top: 2rem; }
+    p { margin: 0.75rem 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace; background: var(--code-bg); padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; }
+    pre { padding: 1rem; overflow-x: auto; }
+    pre code { padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { text-align: left; padding: 0.5rem 0.75rem; border: 1px solid var(--border); }
+    th { background: var(--code-bg); font-weight: 600; }
+    ul { margin: 0.75rem 0; padding-left: 1.5rem; }
+    .badge { display: inline-block; padding: 0.2em 0.5em; border-radius: 4px; font-size: 0.85rem; background: var(--accent); color: var(--bg); }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Travel Helper MCP Server</h1>
+  <p class="muted">Provide agents and LLMs with flight deals and destination info from <code>travel_helper.json</code>.</p>
+
+  <h2>Introduction</h2>
+  <p>The Travel Helper MCP Server follows the <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">Model Context Protocol</a>, allowing agents and LLMs to query cheap round-trip flight deals (from Weeze/Köln/Dortmund to Europe) and destination details. Data is read from a local <code>travel_helper.json</code> file produced by <code>travel_helper.py</code> — no external APIs are called.</p>
+
+  <h2>Overview</h2>
+  <p>The Model Context Protocol is a standardized protocol that enables code agents and LLMs to connect to MCP servers to manage resources and complete tasks using natural language prompts.</p>
+  <p>An MCP client is an application that connects to an MCP server, such as <strong>Windsurf</strong>, <strong>Cursor</strong>, <strong>Claude</strong>, or <strong>VS Code Copilot</strong>. This server supports:</p>
+  <ul>
+    <li><strong>STDIO mode</strong> — for clients that run the server as a subprocess (e.g. Cursor, Claude Desktop).</li>
+    <li><strong>Streamable HTTP mode</strong> — for clients that connect via URL (e.g. <code>https://mcp.trivago.com/mcp</code>-style). Endpoint: <code>/mcp</code>.</li>
+  </ul>
+
+  <h2>Sample Prompts</h2>
+  <p>Here are some examples of how you can use the Travel Helper MCP Server:</p>
+  <ul>
+    <li>"What are the cheapest flight deals right now?"</li>
+    <li>"List flight deals to Barcelona."</li>
+    <li>"Show me full details and flight options for Manchester."</li>
+    <li>"What are the top 5 cheapest destinations?"</li>
+    <li>"Find flights to Olsztyn with outbound dates in March 2026."</li>
+  </ul>
+
+  <h2>Available Tools</h2>
+  <p>The Travel Helper MCP Server offers the following tools:</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Tool Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>travel_deals_data_status</code></td>
+        <td>Show which data file is loaded and how many deals (use if you see no results).</td>
+      </tr>
+      <tr>
+        <td><code>travel_deals_list</code></td>
+        <td>List all destination deal groups (optional <code>limit</code>).</td>
+      </tr>
+      <tr>
+        <td><code>travel_deals_search</code></td>
+        <td>Search deal groups by destination name (substring, case-insensitive).</td>
+      </tr>
+      <tr>
+        <td><code>travel_deals_destination</code></td>
+        <td>Full details for one destination (flights + destination_info, weather, attractions).</td>
+      </tr>
+      <tr>
+        <td><code>travel_deals_cheapest</code></td>
+        <td>Top N cheapest deals by <code>min_total_eur</code>.</td>
+      </tr>
+      <tr>
+        <td><code>travel_deals_flights_for_destination</code></td>
+        <td>Flight options for a destination, with optional outbound date range filter.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Travel Helper MCP Configuration</h2>
+  <p>You can add the Travel Helper MCP server in two ways:</p>
+
+  <p><strong>1. Streamable HTTP (URL)</strong> — when the server is running with <code>--transport streamable-http</code>:</p>
+  <pre><code>{
+  "mcpServers": {
+    "travel-helper": {
+      "url": "http://127.0.0.1:8000/mcp"
+    }
+  }
+}</code></pre>
+
+  <p><strong>2. STDIO (command)</strong> — for Cursor, Claude Desktop, and similar clients that spawn the server:</p>
+  <pre><code>{
+  "mcpServers": {
+    "travel-helper": {
+      "command": "/path/to/travel_helper/.venv-travel/bin/python",
+      "args": ["-m", "mcp_travel_helper"],
+      "cwd": "/path/to/travel_helper",
+      "env": {}
+    }
+  }
+}</code></pre>
+  <p>Optional: set <code>TRAVEL_HELPER_JSON</code> in <code>env</code> if your JSON file is in a different path.</p>
+
+  <h2>Running the Server</h2>
+  <p>From the project root with the virtual environment activated:</p>
+  <ul>
+    <li><strong>STDIO</strong> (default): <code>python -m mcp_travel_helper</code></li>
+    <li><strong>Streamable HTTP</strong>: <code>python -m mcp_travel_helper --transport streamable-http [--host 127.0.0.1] [--port 8000]</code></li>
+  </ul>
+  <p>When using Streamable HTTP, documentation is available at <code>/docs</code> (this page).</p>
+
+  <h2>Installation Guide</h2>
+  <p><strong>Cursor</strong> — Add the Travel Helper MCP server in Cursor settings (MCP) using the STDIO configuration above. Use the full path to your <code>python</code> and <code>cwd</code>.</p>
+  <p><strong>VS Code</strong> — Configure MCP in your editor settings and point to either the server URL (Streamable HTTP) or the command (STDIO). See the <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">Model Context Protocol documentation</a> for client-specific steps.</p>
+
+  <h2>Need Help?</h2>
+  <p>For more details, see the <a href="https://github.com/modelcontextprotocol/specification" target="_blank" rel="noopener">Model Context Protocol documentation</a> or the project <code>README.md</code> in the Travel Helper repository.</p>
+</body>
+</html>

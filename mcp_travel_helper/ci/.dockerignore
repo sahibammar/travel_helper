@@ -1,0 +1,22 @@
+# Docker build context (run from repo root: docker build -f mcp_travel_helper/ci/Dockerfile .)
+.venv-travel/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.git/
+.pytest_cache/
+.coverage
+htmlcov/
+*.html
+!mcp_travel_helper/docs.html
+.idea/
+.vscode/
+*.md
+!mcp_travel_helper/README.md
+geotemp/
+trivago/
+ryanair/
+travel_helper.py
+.github/
+*.yml

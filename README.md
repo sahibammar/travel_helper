@@ -193,6 +193,18 @@ Used by `search_by_activity`, `multi_activity_search`, `plan_trip` (among others
 
 ---
 
+## Travel Helper MCP Server (file-based)
+
+A **local MCP server** that reads **travel_helper.json** (the JSON produced by `travel_helper.py`) and exposes tools to list and search deals — no Trivago/GeoTemp APIs, data comes from the file.
+
+- **Package**: `mcp_travel_helper/` (run with `python -m mcp_travel_helper`).
+- **Data**: `travel_helper.json` (default path; override with `TRAVEL_HELPER_JSON`).
+- **Tools**: `travel_deals_list`, `travel_deals_search`, `travel_deals_destination`, `travel_deals_cheapest`, `travel_deals_flights_for_destination`.
+
+See [mcp_travel_helper/README.md](mcp_travel_helper/README.md) for tool descriptions and Cursor/VS Code MCP config. **Docker**: [mcp_travel_helper/ci/README.md](mcp_travel_helper/ci/README.md) — build and run the MCP server in a container.
+
+---
+
 ## How to Run
 
 ### One-off (recommended: use venv)
@@ -259,6 +271,15 @@ The generated HTML report is uploaded as an artifact (retention 14 days). To run
 ```
 travel_helper/
 ├── travel_helper.py       # Main script: Ryanair + Trivago + GeoTemp orchestration
+├── travel_helper.json     # Generated JSON (consumed by mcp_travel_helper)
+├── mcp_travel_helper/     # MCP server: reads travel_helper.json, exposes deal tools (stdio + streamable-http)
+│   ├── server.py
+│   ├── __main__.py
+│   ├── README.md
+│   └── ci/                # Docker: Dockerfile and sample data for MCP server image
+│       ├── Dockerfile
+│       ├── .dockerignore
+│       └── README.md
 ├── geotemp/               # GeoTemp MCP client (SSE, 13 tools)
 │   └── geotemp_fetch_mcp.py
 ├── trivago/
@@ -281,5 +302,6 @@ travel_helper/
 | **Ryanair** | REST (`services-api.ryanair.com`) | None | Cheapest return flights NRN/CGN/DTM → Europe |
 | **Trivago MCP** | MCP over Streamable HTTP (`mcp.trivago.com`) | None | Location suggestions + accommodation search |
 | **GeoTemp MCP** | MCP over SSE (`mcp-travel-data.onrender.com/sse`) | None | Weather, attractions, city/destination intelligence, trip ideas |
+| **Travel Helper MCP** | MCP over stdio (local) | None | Query `travel_helper.json`: list/search deals, destination details, cheapest |
 
-All three are integrated in `travel_helper.py`; Trivago and GeoTemp are optional and degrade gracefully if the MCP stack is not installed.
+All three external services are integrated in `travel_helper.py`; Trivago and GeoTemp are optional and degrade gracefully if the MCP stack is not installed. The Travel Helper MCP server is a separate process that reads the generated JSON.
