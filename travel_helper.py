@@ -438,6 +438,11 @@ def _display_airport(code: str) -> str:
     return code
 
 
+def _flight_route_label_display(ob: object, ret: object) -> str:
+    """Like _flight_route_label but uses display airport codes (e.g. NRN not WEE)."""
+    return f" ({_display_airport(ob.origin)}→{_display_airport(ob.destination)}→{_display_airport(ret.destination)})"
+
+
 def _aggregate_hotel_results(hotel_results: list[dict]) -> list[dict]:
     """Group hotel_results by (destination, days, nights). Each group has trips sorted by total price (cheapest first)."""
     groups: dict[tuple[str, int, int], list[dict]] = {}
@@ -1162,6 +1167,7 @@ def _build_html(
     timings: dict | None = None,
     num_cheapest_trips: int = 100,
     days_ahead: int = 90,
+    summary_only: bool = False,
 ) -> str:
     """Build results as HTML string (same content as --html file)."""
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -1282,7 +1288,7 @@ def _build_html(
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
-            for r in g["trips"]:
+            for r in (g["trips"][:1] if summary_only else g["trips"]):
                 outbound = r["flight"]
                 ret = r["return_flight"]
                 out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
@@ -1297,11 +1303,12 @@ def _build_html(
                 hotel_url = first_hotel.get("Accommodation URL") or first_hotel.get("accommodation_url") or ""
                 hotel_price = first_hotel.get("Price Per Stay") or first_hotel.get("price_per_stay") or ""
                 hotel_part = f"  |  <a class=\"trip-details trip-link\" href=\"{html.escape(hotel_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(hotel_name)}</a> {html.escape(hotel_price)}" if hotel_url else (f"  |  {html.escape(hotel_name)} {html.escape(hotel_price)}" if hotel_name or hotel_price else "")
+                trip_total = outbound.price + ret.price
                 lines.append("      <div class=\"flight-option\">")
                 if "booking_url" in urls:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>{hotel_part}")
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a> ({trip_total:.2f}€){hotel_part}")
                 else:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>{hotel_part}")
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a> ({trip_total:.2f}€){hotel_part}")
                 lines.append("      </div>")
             lines.append("    </div>")
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
@@ -1318,7 +1325,7 @@ def _build_html(
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
-            for ob, ib, price in flights:
+            for ob, ib, price in (flights[:1] if summary_only else flights):
                 out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 out_dur = _flight_duration_str(ob.origin, ob.destination)
@@ -1326,11 +1333,12 @@ def _build_html(
                 out_leg = f"{out_weekday}{out_dur}  {price}€  {_display_airport(ob.origin)}→{_display_airport(ob.destination)}"
                 ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {_display_airport(ib.origin)}→{_display_airport(ib.destination)}"
                 urls = _booking_urls_for_trip(ob, ib, adults)
+                trip_total = price + ib.price
                 lines.append("      <div class=\"flight-option\">")
                 if "booking_url" in urls:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a>")
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a> ({trip_total:.2f}€)")
                 else:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a>")
+                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a> ({trip_total:.2f}€)")
                 lines.append("      </div>")
             lines.append("    </div>")
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
@@ -1377,11 +1385,13 @@ def _print_html(
     timings: dict | None = None,
     num_cheapest_trips: int = 100,
     days_ahead: int = 90,
+    summary_only: bool = False,
 ) -> None:
     """Write results to travel_helper.html and print path."""
     html_str = _build_html(
         cheapest_flights, hotel_results, adults, travel_data, timings,
         num_cheapest_trips=num_cheapest_trips, days_ahead=days_ahead,
+        summary_only=summary_only,
     )
     filename = "travel_helper.html"
     path = Path(filename).resolve()
@@ -1508,6 +1518,7 @@ def run(
     days_ahead: int | None = None,
     email: str | None = None,
     json_file: str | None = None,
+    summary_only: bool = False,
 ) -> None:
     t_start = time.perf_counter()
 
@@ -1616,7 +1627,7 @@ def run(
                                 "hotels": r["hotels"],
                                 "total_eur": round(r["price"] + r["return_flight"].price, 2),
                             }
-                            for r in g["trips"]
+                            for r in (g["trips"][:1] if summary_only else g["trips"])
                         ],
                         "destination_info": _geotemp_destination_info(
                             travel_data, g["destination"], g["trips"][0]["arrival"], g["trips"][0]["departure"]
@@ -1641,7 +1652,7 @@ def run(
                                 **_booking_urls_for_trip(ob, ib, adults),
                                 "total_eur": round(price + ib.price, 2),
                             }
-                            for ob, ib, price in flights
+                            for ob, ib, price in (flights[:1] if summary_only else flights)
                         ],
                         "destination_info": _geotemp_destination_info(
                             travel_data, dest,
@@ -1678,6 +1689,7 @@ def run(
             timings=timings,
             num_cheapest_trips=num_cheapest_trips,
             days_ahead=days_ahead or 90,
+            summary_only=summary_only,
         )
         if not email:
             return
@@ -1690,6 +1702,7 @@ def run(
             timings=timings,
             num_cheapest_trips=num_cheapest_trips,
             days_ahead=days_ahead or 90,
+            summary_only=summary_only,
         )
         _send_email_html(html_str, email)
         if output_html:
@@ -1725,8 +1738,8 @@ def run(
             first = g["trips"][0]
             arrival, departure = first["arrival"], first["departure"]
             print(f"{i}. {dest_city} (from {min_total:.2f}€) — {days} days, {nights} nights")
-            print("Flight")
-            for r in g["trips"]:
+            print("Flight" + _flight_route_label_display(first["flight"], first["return_flight"]))
+            for r in (g["trips"][:1] if summary_only else g["trips"]):
                 outbound = r["flight"]
                 ret = r["return_flight"]
                 out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
@@ -1738,7 +1751,8 @@ def run(
                 ret_dest_city = ret.destinationFull.split(",")[0].strip() if "," in ret.destinationFull else ret.destination
                 out_leg = f"{out_weekday}{out_dur}  {outbound.price}€  {origin_city} ({_display_airport(getattr(outbound, '_origin_code', outbound.origin))})→{dest_city} ({_display_airport(outbound.destination)})"
                 ret_leg = f"{ret_weekday}{ret_dur}  {ret.price}€  {ret_origin_city} ({_display_airport(ret.origin)})→{ret_dest_city} ({_display_airport(ret.destination)})"
-                print(f"   {out_leg}{LEG_SEP}{ret_leg}")
+                trip_total = outbound.price + ret.price
+                print(f"   {out_leg}{LEG_SEP}{ret_leg} ({trip_total:.2f}€)")
                 urls = _booking_urls_for_trip(outbound, ret, adults)
                 if "booking_url" in urls:
                     print(f"   {urls['booking_url']}")
@@ -1758,8 +1772,8 @@ def run(
             ob, ib, price = flights[0]
             min_total = price + ib.price
             print(f"{i}. {dest_city} (from {min_total:.2f}€) — {days} days, {nights} nights")
-            print("Flight")
-            for ob, ib, price in flights:
+            print("Flight" + _flight_route_label_display(ob, ib))
+            for ob, ib, price in (flights[:1] if summary_only else flights):
                 out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 out_dur = _flight_duration_str(ob.origin, ob.destination)
@@ -1769,7 +1783,8 @@ def run(
                 ret_dest_city = ib.destinationFull.split(",")[0] if "," in ib.destinationFull else ib.destination
                 out_leg = f"{out_weekday}{out_dur}  {price}€  {origin_city} ({_display_airport(getattr(ob, '_origin_code', ob.origin))})→{dest_city} ({_display_airport(ob.destination)})"
                 ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {ret_origin_city} ({_display_airport(ib.origin)})→{ret_dest_city} ({_display_airport(ib.destination)})"
-                print(f"   {out_leg}{LEG_SEP}{ret_leg}")
+                trip_total = price + ib.price
+                print(f"   {out_leg}{LEG_SEP}{ret_leg} ({trip_total:.2f}€)")
                 urls = _booking_urls_for_trip(ob, ib, adults)
                 if "booking_url" in urls:
                     print(f"   {urls['booking_url']}")
@@ -1857,6 +1872,12 @@ def main() -> None:
         metavar="ADDRESS",
         help="Send results as HTML email to ADDRESS (Gmail: set GMAIL_USER and GMAIL_APP_PASSWORD). Example: --email you@example.com",
     )
+    parser.add_argument(
+        "--cheapest",
+        action="store_true",
+        dest="cheapest_only",
+        help="Show only the cheapest trip per destination (one flight option per deal)",
+    )
     args = parser.parse_args()
     run(
         output_json=args.json,
@@ -1868,6 +1889,7 @@ def main() -> None:
         days_ahead=args.days_ahead,
         email=args.email,
         json_file=args.json_file,
+        summary_only=args.cheapest_only,
     )
 
 
