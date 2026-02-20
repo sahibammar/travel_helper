@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Travel helper: cheap round-trip flights from Düsseldorf Weeze / Köln, then hotels.
+Travel helper: cheap round-trip flights from Düsseldorf Weeze / Köln / Dortmund, then hotels.
 
-1. Collects return trips from Weeze (NRN) and Köln (CGN). Only the departure (outbound) must
-   match the schedule: Thursday after 5 pm or Friday after 11 am. Return is 2–4 nights later
+1. Collects return trips from Weeze (NRN), Köln (CGN), and Dortmund (DTM). Only the departure (outbound) must
+   match the schedule: Wednesday after 6 pm, Thursday after 5 pm, or Friday after 11 am. Return is 2–4 nights later
    (any time); no schedule restriction on the return flight.
 2. Picks the 10 cheapest such trips by outbound price.
 3. For each, fetches hotels for 2–4 nights from the Trivago MCP server.
@@ -132,21 +132,24 @@ except ImportError:
     get_dataset_stats = None
     GEOTEMP_MCP_URL = None
 
-# --------------- Config: Weeze + Köln, Thu eve / Fri late outbound, 2–4 nights ---------------
+# --------------- Config: Weeze + Köln + Dortmund, Wed eve / Thu eve / Fri late outbound, 2–4 nights ---------------
 ORIGIN_AIRPORTS = [
     ("CGN", "Köln"),
     ("NRN", "Düsseldorf Weeze"),
+    ("DTM", "Dortmund"),
 ]
-DAYS_AHEAD = 90  # search ahead for Thu/Fri departures
+DAYS_AHEAD = 90  # search ahead for Wed/Thu/Fri departures
 RETURN_DAYS_MIN = 2  # 2 nights at destination
 RETURN_DAYS_MAX = 4  # 4 nights at destination
 HOTEL_NIGHTS = 4  # legacy; hotel stay now matches return flight (arrival = outbound date, departure = return date)
 TRIVAGO_MCP_URL = "https://mcp.trivago.com/mcp"
 
-# Only the departure (outbound) is restricted: Thursday >= 17:00, or Friday >= 11:00 (11 am).
+# Only the departure (outbound) is restricted: Wednesday >= 18:00, Thursday >= 17:00, or Friday >= 11:00 (11 am).
 # Return flight is 2–4 nights later with no time-of-day restriction. Monday=0 in weekday().
+WEDNESDAY = 2
 THURSDAY = 3
 FRIDAY = 4
+OUTBOUND_WEDNESDAY_AFTER_HOUR = 18  # 6 pm
 OUTBOUND_THURSDAY_AFTER_HOUR = 17
 OUTBOUND_FRIDAY_AFTER_HOUR = 11  # 11 am
 
@@ -194,14 +197,19 @@ def _ryanair_booking_url_one_way(
 
 
 def _booking_urls_for_trip(ob: object, ret: object, adults: int = 2) -> dict:
-    """Return booking URL(s): one round-trip URL for same-airport, or two one-way URLs for open-jaw."""
+    """Return booking URL(s): one round-trip URL for same-airport, or two one-way URLs for open-jaw.
+    Uses display airport codes (e.g. NRN not WEE) so Ryanair booking links work."""
     date_out = ob.departureTime.date().isoformat()
     date_in = ret.departureTime.date().isoformat()
+    origin_out = _display_airport(ob.origin)
+    dest_out = _display_airport(ob.destination)
+    origin_ret = _display_airport(ret.origin)
+    dest_ret = _display_airport(ret.destination)
     if ob.origin == ret.destination:
-        return {"booking_url": _ryanair_booking_url(ob.origin, ob.destination, date_out, date_in, adults)}
+        return {"booking_url": _ryanair_booking_url(origin_out, dest_out, date_out, date_in, adults)}
     return {
-        "booking_url_outbound": _ryanair_booking_url_one_way(ob.origin, ob.destination, date_out, adults),
-        "booking_url_return": _ryanair_booking_url_one_way(ret.origin, ret.destination, date_in, adults),
+        "booking_url_outbound": _ryanair_booking_url_one_way(origin_out, dest_out, date_out, adults),
+        "booking_url_return": _ryanair_booking_url_one_way(origin_ret, dest_ret, date_in, adults),
     }
 
 
@@ -211,9 +219,11 @@ def _flight_route_label(ob: object, ret: object) -> str:
 
 
 def _outbound_departure_allowed(dt: datetime) -> bool:
-    """True if outbound departure is Thursday after 5 pm or Friday after 11 am (only departure is restricted)."""
+    """True if outbound departure is Wed after 6 pm, Thu after 5 pm, or Fri after 11 am (only departure is restricted)."""
     wd = dt.weekday()
     hour = dt.hour
+    if wd == WEDNESDAY:
+        return hour >= OUTBOUND_WEDNESDAY_AFTER_HOUR
     if wd == THURSDAY:
         return hour >= OUTBOUND_THURSDAY_AFTER_HOUR
     if wd == FRIDAY:
@@ -1172,7 +1182,7 @@ def _build_html(
     """Build results as HTML string (same content as --html file)."""
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     title = "Fly cheap, stay cheap — your daily Ryanair + Trivago deals"
-    tagline = f"Top {num_cheapest_trips} round trips from Weeze & Köln (Thu eve / Fri) over the next {days_ahead} days. Lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
+    tagline = f"Top {num_cheapest_trips} round trips from Weeze, Köln & Dortmund (Wed eve / Thu eve / Fri) over the next {days_ahead} days. Lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
     weather_by_key = (travel_data or {}).get("weather") or {}
     attractions_by_dest = (travel_data or {}).get("attractions") or {}
     city_profiles_by_dest = (travel_data or {}).get("city_profiles") or {}
@@ -1266,10 +1276,10 @@ def _build_html(
     agg_flights = _aggregate_cheapest_flights(cheapest_flights) if not hotel_results and cheapest_flights else []
     num_deals = len(agg_hotel) if agg_hotel else len(agg_flights)
     if num_deals:
-        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze &amp; Köln — next {days_ahead} days, {num_deals} deal{'s' if num_deals != 1 else ''} inside.</p>")
+        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze, Köln &amp; Dortmund — next {days_ahead} days, {num_deals} deal{'s' if num_deals != 1 else ''} inside.</p>")
         lines.append(f"  <p class=\"intro\">Here are today's top deals (up to {num_cheapest_trips} round trips, {days_ahead}-day window). Click any flight or hotel link to compare and book.</p>")
     else:
-        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze &amp; Köln — next {days_ahead} days.</p>")
+        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze, Köln &amp; Dortmund — next {days_ahead} days.</p>")
     lines.extend([
         f"  <h1>{html.escape(title)}</h1>",
         f"  <p class=\"tagline\">{html.escape(tagline)}</p>",
@@ -1286,9 +1296,14 @@ def _build_html(
             route_label = _flight_route_label(first["flight"], first["return_flight"])
             lines.append("  <div class=\"trip\">")
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
+            today = datetime.today().date()
+            future_trips = [r for r in g["trips"] if r["flight"].departureTime.date() >= today]
+            if not future_trips:
+                continue
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
-            for r in (g["trips"][:1] if summary_only else g["trips"]):
+            trips_to_show = future_trips[:1] if summary_only else sorted(future_trips, key=lambda r: r["flight"].departureTime)
+            for r in trips_to_show:
                 outbound = r["flight"]
                 ret = r["return_flight"]
                 out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
@@ -1323,9 +1338,14 @@ def _build_html(
             route_label = _flight_route_label(ob, ib)
             lines.append("  <div class=\"trip\">")
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
+            today = datetime.today().date()
+            future_flights = [(ob, ib, price) for ob, ib, price in flights if ob.departureTime.date() >= today]
+            if not future_flights:
+                continue
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
-            for ob, ib, price in (flights[:1] if summary_only else flights):
+            flights_to_show = future_flights[:1] if summary_only else sorted(future_flights, key=lambda x: x[0].departureTime)
+            for ob, ib, price in flights_to_show:
                 out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 out_dur = _flight_duration_str(ob.origin, ob.destination)
@@ -1430,10 +1450,10 @@ def _send_email_html(html_body: str, to_email: str, subject: str | None = None) 
 
 
 def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object, object, float]]:
-    """Collect return trips from Weeze/Köln. Only the departure must match: Thu after 5pm or Fri after 11am.
+    """Collect return trips from Weeze/Köln/Dortmund. Only the departure must match: Wed after 6pm, Thu after 5pm, or Fri after 11am.
     Return is 2–4 nights later (any time of day). Includes:
-    - Same-airport round trips: NRN↔NRN, CGN↔CGN.
-    - Open-jaw: outbound from Weeze, return to Köln (NRN→dest→CGN) and vice versa (CGN→dest→NRN).
+    - Same-airport round trips: NRN↔NRN, CGN↔CGN, DTM↔DTM.
+    - Open-jaw: outbound from A, return to B (A≠B), e.g. NRN→dest→CGN, CGN→dest→DTM, etc.
     Returns list of (outbound, return_flight, outbound_price).
     """
     api = Ryanair(currency="EUR")
@@ -1445,7 +1465,9 @@ def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object
         for day_offset in range(0, n_days):
             search_date = datetime.today().date() + timedelta(days=day_offset)
             wd = search_date.weekday()
-            if wd == THURSDAY:
+            if wd == WEDNESDAY:
+                outbound_time_from, outbound_time_to = "18:00", "23:59"
+            elif wd == THURSDAY:
                 outbound_time_from, outbound_time_to = "17:00", "23:59"
             elif wd == FRIDAY:
                 outbound_time_from, outbound_time_to = "11:00", "23:59"
@@ -1472,37 +1494,41 @@ def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object
     # 2) Open-jaw: outbound from A, return to B (A != B)
     airport_list = list(ORIGIN_AIRPORTS)
     for i, (out_code, out_name) in enumerate(airport_list):
-        return_code, return_name = airport_list[1 - i]
-        for day_offset in range(0, n_days):
-            search_date = datetime.today().date() + timedelta(days=day_offset)
-            wd = search_date.weekday()
-            if wd == THURSDAY:
-                outbound_time_from, outbound_time_to = "17:00", "23:59"
-            elif wd == FRIDAY:
-                outbound_time_from, outbound_time_to = "11:00", "23:59"
-            else:
+        for j, (return_code, return_name) in enumerate(airport_list):
+            if i == j:
                 continue
-            return_date_from = search_date + timedelta(days=RETURN_DAYS_MIN)
-            return_date_to = search_date + timedelta(days=RETURN_DAYS_MAX)
-            outbounds_oneway = api.get_cheapest_flights(
-                out_code,
-                search_date,
-                search_date,
-                departure_time_from=outbound_time_from,
-                departure_time_to=outbound_time_to,
-            )
-            for ob in outbounds_oneway:
-                dest = ob.destination
-                returns_oneway = api.get_cheapest_flights(
-                    dest,
-                    return_date_from,
-                    return_date_to,
-                    destination_airport=return_code,
+            for day_offset in range(0, n_days):
+                search_date = datetime.today().date() + timedelta(days=day_offset)
+                wd = search_date.weekday()
+                if wd == WEDNESDAY:
+                    outbound_time_from, outbound_time_to = "18:00", "23:59"
+                elif wd == THURSDAY:
+                    outbound_time_from, outbound_time_to = "17:00", "23:59"
+                elif wd == FRIDAY:
+                    outbound_time_from, outbound_time_to = "11:00", "23:59"
+                else:
+                    continue
+                return_date_from = search_date + timedelta(days=RETURN_DAYS_MIN)
+                return_date_to = search_date + timedelta(days=RETURN_DAYS_MAX)
+                outbounds_oneway = api.get_cheapest_flights(
+                    out_code,
+                    search_date,
+                    search_date,
+                    departure_time_from=outbound_time_from,
+                    departure_time_to=outbound_time_to,
                 )
-                for ret in returns_oneway:
-                    ob._origin_airport = out_name
-                    ob._origin_code = out_code
-                    outbound.append((ob, ret, ob.price))
+                for ob in outbounds_oneway:
+                    dest = ob.destination
+                    returns_oneway = api.get_cheapest_flights(
+                        dest,
+                        return_date_from,
+                        return_date_to,
+                        destination_airport=return_code,
+                    )
+                    for ret in returns_oneway:
+                        ob._origin_airport = out_name
+                        ob._origin_code = out_code
+                        outbound.append((ob, ret, ob.price))
 
     outbound.sort(key=lambda x: (x[2] + x[1].price, x[0].departureTime.date(), x[0].destination))
     return outbound
@@ -1522,7 +1548,7 @@ def run(
 ) -> None:
     t_start = time.perf_counter()
 
-    # 1. Collect return trips (only departure restricted: Thu after 5pm / Fri after 11am; return 2–4 nights later, any time)
+    # 1. Collect return trips (only departure restricted: Wed after 6pm / Thu after 5pm / Fri after 11am; return 2–4 nights later, any time)
     print("Fetching flights from Ryanair...", file=sys.stderr)
     t0 = time.perf_counter()
     outbound_flights = collect_outbound_flights(days_ahead=days_ahead)
@@ -1607,62 +1633,69 @@ def run(
                 "nearby_destinations": (td.get("nearby_destinations") or {}).get(dest_city),
             }
 
-        # Prefer hotel_results when present; otherwise output flight-only from cheapest_flights (aggregated by dest, days, nights)
+        # Prefer hotel_results when present; otherwise output flight-only from cheapest_flights (aggregated by dest, days, nights).
+        # Only include flights with outbound date >= today so booking links work on Ryanair.
+        json_today = datetime.today().date()
         if hotel_results:
             agg = _aggregate_hotel_results(hotel_results)
-            out = {
-                "cheapest_flights_with_hotels": [
-                    {
-                        "destination": g["destination"],
-                        "days": g["days"],
-                        "nights": g["nights"],
-                        "min_total_eur": round(g["min_total"], 2),
-                        "flights": [
-                            {
-                                "outbound": _flight_leg_json(r["flight"], r["price"]),
-                                "return": _flight_leg_json(r["return_flight"]),
-                                **_booking_urls_for_trip(r["flight"], r["return_flight"], adults),
-                                "hotel_arrival": r["arrival"],
-                                "hotel_departure": r["departure"],
-                                "hotels": r["hotels"],
-                                "total_eur": round(r["price"] + r["return_flight"].price, 2),
-                            }
-                            for r in (g["trips"][:1] if summary_only else g["trips"])
-                        ],
-                        "destination_info": _geotemp_destination_info(
-                            travel_data, g["destination"], g["trips"][0]["arrival"], g["trips"][0]["departure"]
-                        ),
-                    }
-                    for g in agg
-                ],
-            }
+            cheapest_with_hotels = []
+            for g in agg:
+                future_trips = [r for r in g["trips"] if r["flight"].departureTime.date() >= json_today]
+                if not future_trips:
+                    continue
+                trips_sorted = future_trips[:1] if summary_only else sorted(future_trips, key=lambda r: r["flight"].departureTime)
+                cheapest_with_hotels.append({
+                    "destination": g["destination"],
+                    "days": g["days"],
+                    "nights": g["nights"],
+                    "min_total_eur": round(g["min_total"], 2),
+                    "flights": [
+                        {
+                            "outbound": _flight_leg_json(r["flight"], r["price"]),
+                            "return": _flight_leg_json(r["return_flight"]),
+                            **_booking_urls_for_trip(r["flight"], r["return_flight"], adults),
+                            "hotel_arrival": r["arrival"],
+                            "hotel_departure": r["departure"],
+                            "hotels": r["hotels"],
+                            "total_eur": round(r["price"] + r["return_flight"].price, 2),
+                        }
+                        for r in trips_sorted
+                    ],
+                    "destination_info": _geotemp_destination_info(
+                        travel_data, g["destination"], g["trips"][0]["arrival"], g["trips"][0]["departure"]
+                    ),
+                })
+            out = {"cheapest_flights_with_hotels": cheapest_with_hotels}
         else:
             agg = _aggregate_cheapest_flights(cheapest_flights)
-            out = {
-                "cheapest_flights": [
-                    {
-                        "destination": dest,
-                        "days": days,
-                        "nights": nights,
-                        "min_total_eur": round(flights[0][2] + flights[0][1].price, 2),
-                        "flights": [
-                            {
-                                "outbound": _flight_leg_json(ob, None),
-                                "return": _flight_leg_json(ib),
-                                **_booking_urls_for_trip(ob, ib, adults),
-                                "total_eur": round(price + ib.price, 2),
-                            }
-                            for ob, ib, price in (flights[:1] if summary_only else flights)
-                        ],
-                        "destination_info": _geotemp_destination_info(
-                            travel_data, dest,
-                            flights[0][0].departureTime.date().isoformat(),
-                            flights[0][1].departureTime.date().isoformat(),
-                        ),
-                    }
-                    for dest, days, nights, flights in agg
-                ],
-            }
+            cheapest_flights_list = []
+            for dest, days, nights, flights in agg:
+                future_flights = [(ob, ib, price) for ob, ib, price in flights if ob.departureTime.date() >= json_today]
+                if not future_flights:
+                    continue
+                flights_sorted = future_flights[:1] if summary_only else sorted(future_flights, key=lambda x: x[0].departureTime)
+                ob0, ib0, price0 = flights_sorted[0]
+                cheapest_flights_list.append({
+                    "destination": dest,
+                    "days": days,
+                    "nights": nights,
+                    "min_total_eur": round(price0 + ib0.price, 2),
+                    "flights": [
+                        {
+                            "outbound": _flight_leg_json(ob, None),
+                            "return": _flight_leg_json(ib),
+                            **_booking_urls_for_trip(ob, ib, adults),
+                            "total_eur": round(price + ib.price, 2),
+                        }
+                        for ob, ib, price in flights_sorted
+                    ],
+                    "destination_info": _geotemp_destination_info(
+                        travel_data, dest,
+                        ob0.departureTime.date().isoformat(),
+                        ib0.departureTime.date().isoformat(),
+                    ),
+                })
+            out = {"cheapest_flights": cheapest_flights_list}
         # Global GeoTemp data (dataset, trip ideas, compare, etc.)
         if travel_data:
             out["geotemp_global"] = {
@@ -1724,7 +1757,7 @@ def run(
     search_destinations_result = (travel_data or {}).get("search_destinations_result")
     search_by_activity_result = (travel_data or {}).get("search_by_activity_result")
     multi_activity_search_result = (travel_data or {}).get("multi_activity_search_result")
-    print("Fly cheap, stay cheap — Ryanair + Trivago deals from Weeze & Köln (Thu eve / Fri, 2–4 nights)")
+    print("Fly cheap, stay cheap — Ryanair + Trivago deals from Weeze, Köln & Dortmund (Wed eve / Thu eve / Fri, 2–4 nights)")
     print("=" * 80)
     print("CHEAPEST ROUND TRIPS" + (" + HOTELS" if hotel_results else " (flights only)"))
     print("-" * 80)
@@ -1737,9 +1770,14 @@ def run(
             min_total = g["min_total"]
             first = g["trips"][0]
             arrival, departure = first["arrival"], first["departure"]
+            today = datetime.today().date()
+            future_trips = [r for r in g["trips"] if r["flight"].departureTime.date() >= today]
+            if not future_trips:
+                continue
             print(f"{i}. {dest_city} (from {min_total:.2f}€) — {days} days, {nights} nights")
             print("Flight" + _flight_route_label_display(first["flight"], first["return_flight"]))
-            for r in (g["trips"][:1] if summary_only else g["trips"]):
+            trips_to_show = future_trips[:1] if summary_only else sorted(future_trips, key=lambda r: r["flight"].departureTime)
+            for r in trips_to_show:
                 outbound = r["flight"]
                 ret = r["return_flight"]
                 out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
@@ -1771,9 +1809,14 @@ def run(
         for i, (dest_city, days, nights, flights) in enumerate(agg_flights_print, 1):
             ob, ib, price = flights[0]
             min_total = price + ib.price
+            today = datetime.today().date()
+            future_flights = [(ob, ib, price) for ob, ib, price in flights if ob.departureTime.date() >= today]
+            if not future_flights:
+                continue
             print(f"{i}. {dest_city} (from {min_total:.2f}€) — {days} days, {nights} nights")
             print("Flight" + _flight_route_label_display(ob, ib))
-            for ob, ib, price in (flights[:1] if summary_only else flights):
+            flights_to_show = future_flights[:1] if summary_only else sorted(future_flights, key=lambda x: x[0].departureTime)
+            for ob, ib, price in flights_to_show:
                 out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 out_dur = _flight_duration_str(ob.origin, ob.destination)
@@ -1794,7 +1837,7 @@ def run(
             _print_weather_attractions_text(dest_city, flights[0][0].departureTime.date(), flights[0][1].departureTime.date(), weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, seasonal_calendar_by_dest, nearby_destinations_by_dest)
         print()
     else:
-        print("(No round trips found for Thu after 5pm / Fri after 11am from Weeze or Köln.)")
+        print("(No round trips found for Wed after 6pm / Thu after 5pm / Fri after 11am from Weeze, Köln or Dortmund.)")
     # Global GeoTemp sections
     for section_title, data, formatter in [
         ("Dataset", dataset_stats, _format_dataset_stats),
@@ -1824,7 +1867,7 @@ def run(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Round trips from Weeze/Köln (Thu after 5pm or Fri after 11am outbound, 2–4 nights, return). N cheapest; one cheapest hotel per trip (near attractions) when not --no-hotels.",
+        description="Round trips from Weeze/Köln/Dortmund (Wed after 6pm, Thu after 5pm, or Fri after 11am outbound, 2–4 nights, return). N cheapest; one cheapest hotel per trip (near attractions) when not --no-hotels.",
     )
     parser.add_argument(
         "--json",

@@ -22,7 +22,7 @@ This document is for **developers**: technical details of the Ryanair API, Triva
 
 The app:
 
-1. **Flights** — Queries Ryanair's public services API (no API key) for round trips from **Düsseldorf Weeze (NRN)** and **Köln (CGN)**. Outbound: **Thursday after 17:00** or **Friday after 23:00**; return 2–4 nights later.
+1. **Flights** — Queries Ryanair's public services API (no API key) for round trips from **Düsseldorf Weeze (NRN)**, **Köln (CGN)**, and **Dortmund (DTM)**. Outbound: **Wednesday after 18:00**, **Thursday after 17:00**, or **Friday after 11:00**; return 2–4 nights later.
 2. **Hotels** — Uses the **Trivago MCP server** (Streamable HTTP) to resolve city → location and fetch accommodations for each trip's dates.
 3. **Weather & destinations** — Uses the **GeoTemp Travel MCP server** (SSE) for weather, attractions, city profiles, similar/nearby cities, trip planning, and dataset stats.
 
@@ -66,7 +66,7 @@ The project uses the **ryanair-py** library (or a vendored `ryanair/`), which ca
 - **Client**: `ryanair.Ryanair(currency="EUR")`.
 - **Method**: `get_cheapest_return_flights(source_airport, date_from, date_to, return_date_from, return_date_to, ...)`.
 - **Time windows** (used by travel_helper):
-  - Outbound: Thursday ≥ 17:00 or Friday ≥ 23:00 (`outboundDepartureTimeFrom` / `outboundDepartureTimeTo`).
+  - Outbound: Wednesday ≥ 18:00, Thursday ≥ 17:00, or Friday ≥ 11:00 (`outboundDepartureTimeFrom` / `outboundDepartureTimeTo`).
   - Inbound: unrestricted (full day).
 - **Return structure**: list of `(outbound, inbound, outbound_price)` where each leg is a `Flight`-like object with `departureTime`, `origin`, `destination`, `originFull`, `destinationFull`, `price`, `currency`, etc.
 
@@ -278,7 +278,7 @@ travel_helper/
 
 | Component | Protocol / API | Auth | Role |
 |-----------|----------------|------|------|
-| **Ryanair** | REST (`services-api.ryanair.com`) | None | Cheapest return flights NRN/CGN → Europe |
+| **Ryanair** | REST (`services-api.ryanair.com`) | None | Cheapest return flights NRN/CGN/DTM → Europe |
 | **Trivago MCP** | MCP over Streamable HTTP (`mcp.trivago.com`) | None | Location suggestions + accommodation search |
 | **GeoTemp MCP** | MCP over SSE (`mcp-travel-data.onrender.com/sse`) | None | Weather, attractions, city/destination intelligence, trip ideas |
 
