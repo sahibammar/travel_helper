@@ -2,7 +2,7 @@
 
 MCP server that reads **travel_helper.json** (produced by `travel_helper.py`) and exposes tools to list and search flight deals and destination info. No external APIs — data comes from the local file.
 
-Inspired by the [Trivago MCP server](https://mcp.trivago.com/docs); supports **STDIO** (for Cursor/Claude Desktop) and **Streamable HTTP** (URL-based, for remote clients).
+Supports **STDIO** (for Cursor/Claude Desktop) and **Streamable HTTP** (URL-based, for remote clients).
 
 ---
 
@@ -53,7 +53,7 @@ python -m mcp_travel_helper --transport streamable-http --host 0.0.0.0 --port 80
 
 **Endpoint URL**: `http://<host>:<port>/mcp` (e.g. `http://127.0.0.1:8000/mcp`).
 
-**Documentation**: When running Streamable HTTP, open `http://<host>:<port>/docs` in a browser for Trivago-style docs (intro, sample prompts, tools table, configuration, installation). See [Trivago MCP docs](https://mcp.trivago.com/docs) for the style reference.
+**Documentation**: When running Streamable HTTP, open `http://<host>:<port>/docs` in a browser (intro, sample prompts, tools table, configuration, installation).
 
 Environment variables (optional): `TRAVEL_HELPER_MCP_TRANSPORT`, `TRAVEL_HELPER_MCP_HOST`, `TRAVEL_HELPER_MCP_PORT`.
 
