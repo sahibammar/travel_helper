@@ -544,7 +544,7 @@
             "origin_full": "Dusseldorf Weeze, Germany",
             "destination": "SZY",
             "destination_full": "Olsztyn - Mazury, Poland",
-            "price_eur": 24.99
+            "price_eur": 25.99
           },
           "return": {
             "departure": "2026-07-05T20:25:00",
@@ -559,7 +559,7 @@
             "price_eur": 24.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-07-01&dateIn=2026-07-05&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=SZY&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-07-01&tpEndDate=2026-07-05&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=SZY",
-          "total_eur": 49.98
+          "total_eur": 50.98
         },
         {
           "outbound": {
@@ -948,10 +948,10 @@
             "origin_full": "Olsztyn - Mazury, Poland",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 86.99
+            "price_eur": 87.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-10-07&dateIn=2026-10-11&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=SZY&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-10-07&tpEndDate=2026-10-11&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=SZY",
-          "total_eur": 163.98
+          "total_eur": 164.98
         },
         {
           "outbound": {
@@ -1043,7 +1043,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "STN",
             "destination_full": "London Stansted, United Kingdom",
-            "price_eur": 38.99
+            "price_eur": 39.99
           },
           "return": {
             "departure": "2026-03-09T08:30:00",
@@ -1058,7 +1058,7 @@
             "price_eur": 16.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-06&dateIn=2026-03-09&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-06&tpEndDate=2026-03-09&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
-          "total_eur": 55.98
+          "total_eur": 56.98
         },
         {
           "outbound": {
@@ -1139,10 +1139,10 @@
             "origin_full": "London Stansted, United Kingdom",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 25.99
+            "price_eur": 26.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-23&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-20&tpEndDate=2026-03-23&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
-          "total_eur": 66.54
+          "total_eur": 67.54
         },
         {
           "outbound": {
@@ -1311,6 +1311,34 @@
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-03&dateIn=2026-06-06&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-03&tpEndDate=2026-06-06&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
           "total_eur": 187.98
+        },
+        {
+          "outbound": {
+            "departure": "2026-06-19T13:45:00",
+            "departure_time": "13:45",
+            "duration_minutes": 75,
+            "duration": "1h 15m",
+            "flight_number": "FR 2813",
+            "origin": "CGN",
+            "origin_full": "Cologne, Germany",
+            "destination": "STN",
+            "destination_full": "London Stansted, United Kingdom",
+            "price_eur": 47.99
+          },
+          "return": {
+            "departure": "2026-06-22T08:35:00",
+            "departure_time": "08:35",
+            "duration_minutes": 75,
+            "duration": "1h 15m",
+            "flight_number": "FR 2816",
+            "origin": "STN",
+            "origin_full": "London Stansted, United Kingdom",
+            "destination": "CGN",
+            "destination_full": "Cologne, Germany",
+            "price_eur": 25.63
+          },
+          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-19&dateIn=2026-06-22&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-19&tpEndDate=2026-06-22&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
+          "total_eur": 73.62
         },
         {
           "outbound": {
@@ -1674,62 +1702,6 @@
             "price_eur": 34.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-01-29&dateIn=2027-02-01&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2027-01-29&tpEndDate=2027-02-01&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
-          "total_eur": 69.98
-        },
-        {
-          "outbound": {
-            "departure": "2027-02-05T17:50:00",
-            "departure_time": "17:50",
-            "duration_minutes": 75,
-            "duration": "1h 15m",
-            "flight_number": "FR 2353",
-            "origin": "CGN",
-            "origin_full": "Cologne, Germany",
-            "destination": "STN",
-            "destination_full": "London Stansted, United Kingdom",
-            "price_eur": 34.99
-          },
-          "return": {
-            "departure": "2027-02-08T20:25:00",
-            "departure_time": "20:25",
-            "duration_minutes": 75,
-            "duration": "1h 15m",
-            "flight_number": "FR 2841",
-            "origin": "STN",
-            "origin_full": "London Stansted, United Kingdom",
-            "destination": "CGN",
-            "destination_full": "Cologne, Germany",
-            "price_eur": 34.99
-          },
-          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-02-05&dateIn=2027-02-08&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2027-02-05&tpEndDate=2027-02-08&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
-          "total_eur": 69.98
-        },
-        {
-          "outbound": {
-            "departure": "2027-02-12T19:35:00",
-            "departure_time": "19:35",
-            "duration_minutes": 75,
-            "duration": "1h 15m",
-            "flight_number": "FR 2813",
-            "origin": "CGN",
-            "origin_full": "Cologne, Germany",
-            "destination": "STN",
-            "destination_full": "London Stansted, United Kingdom",
-            "price_eur": 34.99
-          },
-          "return": {
-            "departure": "2027-02-15T20:25:00",
-            "departure_time": "20:25",
-            "duration_minutes": 75,
-            "duration": "1h 15m",
-            "flight_number": "FR 2841",
-            "origin": "STN",
-            "origin_full": "London Stansted, United Kingdom",
-            "destination": "CGN",
-            "destination_full": "Cologne, Germany",
-            "price_eur": 34.99
-          },
-          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-02-12&dateIn=2027-02-15&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2027-02-12&tpEndDate=2027-02-15&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
           "total_eur": 69.98
         }
       ],
@@ -7092,11 +7064,11 @@
             "price_eur": 47.99
           },
           "return": {
-            "departure": "2026-10-06T09:35:00",
-            "departure_time": "09:35",
+            "departure": "2026-10-06T19:45:00",
+            "departure_time": "19:45",
             "duration_minutes": 119,
             "duration": "1h 59m",
-            "flight_number": "FR 6414",
+            "flight_number": "FR 6425",
             "origin": "ZAD",
             "origin_full": "Zadar, Croatia",
             "destination": "NRN",
@@ -7149,11 +7121,11 @@
             "price_eur": 49.99
           },
           "return": {
-            "departure": "2026-10-06T09:35:00",
-            "departure_time": "09:35",
+            "departure": "2026-10-06T19:45:00",
+            "departure_time": "19:45",
             "duration_minutes": 119,
             "duration": "1h 59m",
-            "flight_number": "FR 6414",
+            "flight_number": "FR 6425",
             "origin": "ZAD",
             "origin_full": "Zadar, Croatia",
             "destination": "NRN",
@@ -10054,11 +10026,11 @@
             "price_eur": 99.19
           },
           "return": {
-            "departure": "2026-03-31T20:40:00",
-            "departure_time": "20:40",
+            "departure": "2026-03-31T14:30:00",
+            "departure_time": "14:30",
             "duration_minutes": 121,
             "duration": "2h 01m",
-            "flight_number": "FR 8474",
+            "flight_number": "FR 6391",
             "origin": "GRO",
             "origin_full": "Barcelona Girona, Spain",
             "destination": "NRN",
@@ -12339,7 +12311,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "MAN",
             "destination_full": "Manchester, United Kingdom",
-            "price_eur": 45.99
+            "price_eur": 46.99
           },
           "return": {
             "departure": "2026-03-09T22:15:00",
@@ -12354,7 +12326,7 @@
             "price_eur": 16.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-05&dateIn=2026-03-09&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=MAN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-05&tpEndDate=2026-03-09&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=MAN",
-          "total_eur": 62.98
+          "total_eur": 63.98
         },
         {
           "outbound": {
@@ -18113,10 +18085,10 @@
             "origin_full": "Milan Bergamo, Italy",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 15.81
+            "price_eur": 16.35
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-22&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=BGY&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-20&tpEndDate=2026-03-22&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=BGY",
-          "total_eur": 104.85
+          "total_eur": 105.39
         },
         {
           "outbound": {
@@ -18534,7 +18506,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "BGY",
             "destination_full": "Milan Bergamo, Italy",
-            "price_eur": 50.84
+            "price_eur": 59.29
           },
           "return": {
             "departure": "2026-06-14T14:55:00",
@@ -18550,7 +18522,7 @@
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-12&dateIn=2026-06-12&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=BGY",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-14&dateIn=2026-06-14&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=BGY&destinationIata=NRN",
-          "total_eur": 101.83
+          "total_eur": 110.28
         },
         {
           "outbound": {
@@ -20506,7 +20478,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "BGY",
             "destination_full": "Milan Bergamo, Italy",
-            "price_eur": 50.84
+            "price_eur": 59.29
           },
           "return": {
             "departure": "2026-06-15T06:50:00",
@@ -20521,7 +20493,7 @@
             "price_eur": 23.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-12&dateIn=2026-06-15&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=BGY&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-12&tpEndDate=2026-06-15&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=BGY",
-          "total_eur": 74.83
+          "total_eur": 83.28
         },
         {
           "outbound": {
@@ -27131,34 +27103,6 @@
         },
         {
           "outbound": {
-            "departure": "2026-06-19T13:45:00",
-            "departure_time": "13:45",
-            "duration_minutes": 75,
-            "duration": "1h 15m",
-            "flight_number": "FR 2813",
-            "origin": "CGN",
-            "origin_full": "Cologne, Germany",
-            "destination": "STN",
-            "destination_full": "London Stansted, United Kingdom",
-            "price_eur": 47.99
-          },
-          "return": {
-            "departure": "2026-06-23T16:00:00",
-            "departure_time": "16:00",
-            "duration_minutes": 75,
-            "duration": "1h 15m",
-            "flight_number": "FR 2814",
-            "origin": "STN",
-            "origin_full": "London Stansted, United Kingdom",
-            "destination": "CGN",
-            "destination_full": "Cologne, Germany",
-            "price_eur": 26.45
-          },
-          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-19&dateIn=2026-06-23&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-19&tpEndDate=2026-06-23&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
-          "total_eur": 74.44
-        },
-        {
-          "outbound": {
             "departure": "2026-06-26T13:45:00",
             "departure_time": "13:45",
             "duration_minutes": 75,
@@ -28459,11 +28403,11 @@
             "price_eur": 34.99
           },
           "return": {
-            "departure": "2027-02-08T13:20:00",
-            "departure_time": "13:20",
+            "departure": "2027-02-08T20:25:00",
+            "departure_time": "20:25",
             "duration_minutes": 75,
             "duration": "1h 15m",
-            "flight_number": "FR 2814",
+            "flight_number": "FR 2841",
             "origin": "STN",
             "origin_full": "London Stansted, United Kingdom",
             "destination": "CGN",
@@ -28471,6 +28415,34 @@
             "price_eur": 34.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-02-04&dateIn=2027-02-08&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2027-02-04&tpEndDate=2027-02-08&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
+          "total_eur": 69.98
+        },
+        {
+          "outbound": {
+            "departure": "2027-02-05T19:35:00",
+            "departure_time": "19:35",
+            "duration_minutes": 75,
+            "duration": "1h 15m",
+            "flight_number": "FR 2813",
+            "origin": "CGN",
+            "origin_full": "Cologne, Germany",
+            "destination": "STN",
+            "destination_full": "London Stansted, United Kingdom",
+            "price_eur": 34.99
+          },
+          "return": {
+            "departure": "2027-02-09T08:15:00",
+            "departure_time": "08:15",
+            "duration_minutes": 75,
+            "duration": "1h 15m",
+            "flight_number": "FR 2352",
+            "origin": "STN",
+            "origin_full": "London Stansted, United Kingdom",
+            "destination": "CGN",
+            "destination_full": "Cologne, Germany",
+            "price_eur": 34.99
+          },
+          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-02-05&dateIn=2027-02-09&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2027-02-05&tpEndDate=2027-02-09&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
           "total_eur": 69.98
         },
         {
@@ -28527,6 +28499,34 @@
             "price_eur": 34.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-02-11&dateIn=2027-02-15&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2027-02-11&tpEndDate=2027-02-15&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
+          "total_eur": 69.98
+        },
+        {
+          "outbound": {
+            "departure": "2027-02-12T17:50:00",
+            "departure_time": "17:50",
+            "duration_minutes": 75,
+            "duration": "1h 15m",
+            "flight_number": "FR 2353",
+            "origin": "CGN",
+            "origin_full": "Cologne, Germany",
+            "destination": "STN",
+            "destination_full": "London Stansted, United Kingdom",
+            "price_eur": 34.99
+          },
+          "return": {
+            "departure": "2027-02-16T18:05:00",
+            "departure_time": "18:05",
+            "duration_minutes": 75,
+            "duration": "1h 15m",
+            "flight_number": "FR 2814",
+            "origin": "STN",
+            "origin_full": "London Stansted, United Kingdom",
+            "destination": "CGN",
+            "destination_full": "Cologne, Germany",
+            "price_eur": 34.99
+          },
+          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-02-12&dateIn=2027-02-16&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2027-02-12&tpEndDate=2027-02-16&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=STN",
           "total_eur": 69.98
         }
       ],
@@ -32383,11 +32383,11 @@
             "origin_full": "Faro, Portugal",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 44.84
+            "price_eur": 52.18
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-06&dateIn=2026-03-06&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=FAO",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-08&dateIn=2026-03-08&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=FAO&destinationIata=CGN",
-          "total_eur": 73.66
+          "total_eur": 81.0
         },
         {
           "outbound": {
@@ -32583,10 +32583,10 @@
             "origin_full": "Faro, Portugal",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 28.3
+            "price_eur": 28.62
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-18&dateIn=2026-03-20&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=FAO&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-18&tpEndDate=2026-03-20&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=FAO",
-          "total_eur": 59.04
+          "total_eur": 59.36
         },
         {
           "outbound": {
@@ -33888,7 +33888,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "PMI",
             "destination_full": "Palma de Mallorca, Spain",
-            "price_eur": 51.82
+            "price_eur": 52.82
           },
           "return": {
             "departure": "2026-03-13T05:50:00",
@@ -33903,7 +33903,7 @@
             "price_eur": 14.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-11&dateIn=2026-03-13&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=PMI&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-11&tpEndDate=2026-03-13&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=PMI",
-          "total_eur": 66.81
+          "total_eur": 67.81
         },
         {
           "outbound": {
@@ -33916,7 +33916,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "PMI",
             "destination_full": "Palma de Mallorca, Spain",
-            "price_eur": 51.82
+            "price_eur": 52.82
           },
           "return": {
             "departure": "2026-03-13T09:30:00",
@@ -33932,7 +33932,7 @@
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-11&dateIn=2026-03-11&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=PMI",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-13&dateIn=2026-03-13&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=PMI&destinationIata=NRN",
-          "total_eur": 85.81
+          "total_eur": 86.81
         },
         {
           "outbound": {
@@ -36505,20 +36505,20 @@
             "price_eur": 81.99
           },
           "return": {
-            "departure": "2026-04-20T09:20:00",
-            "departure_time": "09:20",
+            "departure": "2026-04-20T20:00:00",
+            "departure_time": "20:00",
             "duration_minutes": 140,
             "duration": "2h 20m",
-            "flight_number": "FR 6219",
+            "flight_number": "FR 8347",
             "origin": "PMI",
             "origin_full": "Palma de Mallorca, Spain",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 44.99
+            "price_eur": 45.99
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-04-16&dateIn=2026-04-16&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=PMI",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-04-20&dateIn=2026-04-20&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=PMI&destinationIata=NRN",
-          "total_eur": 126.98
+          "total_eur": 127.98
         },
         {
           "outbound": {
@@ -37941,35 +37941,6 @@
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-07-03&dateIn=2026-07-07&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=PMI&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-07-03&tpEndDate=2026-07-07&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=PMI",
           "total_eur": 94.98
-        },
-        {
-          "outbound": {
-            "departure": "2026-07-03T22:00:00",
-            "departure_time": "22:00",
-            "duration_minutes": 140,
-            "duration": "2h 20m",
-            "flight_number": "FR 6218",
-            "origin": "NRN",
-            "origin_full": "Dusseldorf Weeze, Germany",
-            "destination": "PMI",
-            "destination_full": "Palma de Mallorca, Spain",
-            "price_eur": 57.99
-          },
-          "return": {
-            "departure": "2026-07-07T08:45:00",
-            "departure_time": "08:45",
-            "duration_minutes": 136,
-            "duration": "2h 16m",
-            "flight_number": "FR 7211",
-            "origin": "PMI",
-            "origin_full": "Palma de Mallorca, Spain",
-            "destination": "CGN",
-            "destination_full": "Cologne, Germany",
-            "price_eur": 49.99
-          },
-          "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-07-03&dateIn=2026-07-03&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=PMI",
-          "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-07-07&dateIn=2026-07-07&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=PMI&destinationIata=CGN",
-          "total_eur": 107.98
         },
         {
           "outbound": {
@@ -40404,10 +40375,10 @@
             "origin_full": "Barcelona, Spain",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 42.99
+            "price_eur": 43.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-04-15&dateIn=2026-04-17&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=BCN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-04-15&tpEndDate=2026-04-17&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=BCN",
-          "total_eur": 64.98
+          "total_eur": 65.98
         },
         {
           "outbound": {
@@ -45633,10 +45604,10 @@
             "origin_full": "Stockholm Arlanda, Sweden",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 43.99
+            "price_eur": 44.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-25&dateIn=2026-06-29&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=ARN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-25&tpEndDate=2026-06-29&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=ARN",
-          "total_eur": 74.98
+          "total_eur": 75.98
         },
         {
           "outbound": {
@@ -47710,6 +47681,35 @@
         },
         {
           "outbound": {
+            "departure": "2026-08-21T20:45:00",
+            "departure_time": "20:45",
+            "duration_minutes": 185,
+            "duration": "3h 05m",
+            "flight_number": "FR 5781",
+            "origin": "NRN",
+            "origin_full": "Dusseldorf Weeze, Germany",
+            "destination": "FAO",
+            "destination_full": "Faro, Portugal",
+            "price_eur": 61.99
+          },
+          "return": {
+            "departure": "2026-08-24T06:20:00",
+            "departure_time": "06:20",
+            "duration_minutes": 184,
+            "duration": "3h 04m",
+            "flight_number": "FR 2659",
+            "origin": "FAO",
+            "origin_full": "Faro, Portugal",
+            "destination": "CGN",
+            "destination_full": "Cologne, Germany",
+            "price_eur": 137.99
+          },
+          "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-08-21&dateIn=2026-08-21&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=FAO",
+          "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-08-24&dateIn=2026-08-24&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=FAO&destinationIata=CGN",
+          "total_eur": 199.98
+        },
+        {
+          "outbound": {
             "departure": "2026-08-28T20:45:00",
             "departure_time": "20:45",
             "duration_minutes": 185,
@@ -49329,10 +49329,10 @@
             "origin_full": "Kaunas, Lithuania",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 33.79
+            "price_eur": 34.79
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-26&dateIn=2026-06-29&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=KUN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-26&tpEndDate=2026-06-29&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=KUN",
-          "total_eur": 103.78
+          "total_eur": 104.78
         },
         {
           "outbound": {
@@ -58051,10 +58051,10 @@
             "origin_full": "Tangier, Morocco",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 76.62
+            "price_eur": 77.62
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-24&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=TNG&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-20&tpEndDate=2026-03-24&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=TNG",
-          "total_eur": 116.99
+          "total_eur": 117.99
         },
         {
           "outbound": {
@@ -59715,10 +59715,10 @@
             "origin_full": "Edinburgh, United Kingdom",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 56.99
+            "price_eur": 58.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-04-03&dateIn=2026-04-07&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=EDI&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-04-03&tpEndDate=2026-04-07&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=EDI",
-          "total_eur": 137.84
+          "total_eur": 139.84
         },
         {
           "outbound": {
@@ -59911,10 +59911,10 @@
             "origin_full": "Edinburgh, United Kingdom",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 19.99
+            "price_eur": 21.19
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-05-08&dateIn=2026-05-12&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=EDI&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-05-08&tpEndDate=2026-05-12&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=EDI",
-          "total_eur": 99.98
+          "total_eur": 101.18
         },
         {
           "outbound": {
@@ -60111,34 +60111,6 @@
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-12&dateIn=2026-06-16&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=EDI&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-12&tpEndDate=2026-06-16&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=EDI",
           "total_eur": 89.37
-        },
-        {
-          "outbound": {
-            "departure": "2026-06-18T19:05:00",
-            "departure_time": "19:05",
-            "duration_minutes": 97,
-            "duration": "1h 37m",
-            "flight_number": "FR 5688",
-            "origin": "NRN",
-            "origin_full": "Dusseldorf Weeze, Germany",
-            "destination": "EDI",
-            "destination_full": "Edinburgh, United Kingdom",
-            "price_eur": 146.99
-          },
-          "return": {
-            "departure": "2026-06-22T12:00:00",
-            "departure_time": "12:00",
-            "duration_minutes": 97,
-            "duration": "1h 37m",
-            "flight_number": "FR 5687",
-            "origin": "EDI",
-            "origin_full": "Edinburgh, United Kingdom",
-            "destination": "NRN",
-            "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 52.99
-          },
-          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-18&dateIn=2026-06-22&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=EDI&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-18&tpEndDate=2026-06-22&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=EDI",
-          "total_eur": 199.98
         },
         {
           "outbound": {
@@ -64636,7 +64608,7 @@
       "destination": "Oujda",
       "days": 4,
       "nights": 3,
-      "min_total_eur": 125.48,
+      "min_total_eur": 129.06,
       "flights": [
         {
           "outbound": {
@@ -64661,10 +64633,10 @@
             "origin_full": "Oujda, Morocco",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 33.49
+            "price_eur": 37.07
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-02-27&dateIn=2026-03-02&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=OUD&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-02-27&tpEndDate=2026-03-02&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=OUD",
-          "total_eur": 125.48
+          "total_eur": 129.06
         },
         {
           "outbound": {
@@ -64705,7 +64677,7 @@
             "origin_full": "Dusseldorf Weeze, Germany",
             "destination": "OUD",
             "destination_full": "Oujda, Morocco",
-            "price_eur": 69.56
+            "price_eur": 79.73
           },
           "return": {
             "departure": "2026-03-16T09:45:00",
@@ -64720,7 +64692,7 @@
             "price_eur": 30.74
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-13&dateIn=2026-03-16&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=OUD&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-13&tpEndDate=2026-03-16&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=OUD",
-          "total_eur": 100.3
+          "total_eur": 110.47
         },
         {
           "outbound": {
@@ -64733,7 +64705,7 @@
             "origin_full": "Dusseldorf Weeze, Germany",
             "destination": "OUD",
             "destination_full": "Oujda, Morocco",
-            "price_eur": 128.13
+            "price_eur": 129.13
           },
           "return": {
             "departure": "2026-03-30T18:20:00",
@@ -64748,7 +64720,7 @@
             "price_eur": 34.59
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-27&dateIn=2026-03-30&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=OUD&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-27&tpEndDate=2026-03-30&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=OUD",
-          "total_eur": 162.72
+          "total_eur": 163.72
         }
       ],
       "destination_info": {
@@ -65802,7 +65774,7 @@
       "destination": "Faro",
       "days": 5,
       "nights": 4,
-      "min_total_eur": 140.3,
+      "min_total_eur": 150.4,
       "flights": [
         {
           "outbound": {
@@ -65827,11 +65799,11 @@
             "origin_full": "Faro, Portugal",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 68.31
+            "price_eur": 78.41
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-02-25&dateIn=2026-02-25&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=FAO",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-01&dateIn=2026-03-01&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=FAO&destinationIata=CGN",
-          "total_eur": 140.3
+          "total_eur": 150.4
         },
         {
           "outbound": {
@@ -70713,10 +70685,10 @@
             "origin_full": "Thessaloniki, Greece",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 24.13
+            "price_eur": 24.37
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-06&dateIn=2026-03-10&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=SKG&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-06&tpEndDate=2026-03-10&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=SKG",
-          "total_eur": 75.27
+          "total_eur": 75.51
         },
         {
           "outbound": {
@@ -72722,7 +72694,7 @@
             "origin_full": "Dusseldorf Weeze, Germany",
             "destination": "TIA",
             "destination_full": "Tirana, Albania",
-            "price_eur": 114.99
+            "price_eur": 115.99
           },
           "return": {
             "departure": "2026-10-11T19:05:00",
@@ -72734,10 +72706,10 @@
             "origin_full": "Tirana, Albania",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 82.37
+            "price_eur": 83.37
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-10-09&dateIn=2026-10-11&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=TIA&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-10-09&tpEndDate=2026-10-11&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=TIA",
-          "total_eur": 197.36
+          "total_eur": 199.36
         },
         {
           "outbound": {
@@ -75192,7 +75164,7 @@
             "origin_full": "Dusseldorf Weeze, Germany",
             "destination": "ALC",
             "destination_full": "Alicante, Spain",
-            "price_eur": 72.99
+            "price_eur": 74.99
           },
           "return": {
             "departure": "2026-03-24T07:10:00",
@@ -75204,39 +75176,11 @@
             "origin_full": "Alicante, Spain",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 26.34
+            "price_eur": 27.21
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-20&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=ALC",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-24&dateIn=2026-03-24&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=ALC&destinationIata=CGN",
-          "total_eur": 99.33
-        },
-        {
-          "outbound": {
-            "departure": "2026-03-20T16:50:00",
-            "departure_time": "16:50",
-            "duration_minutes": 156,
-            "duration": "2h 36m",
-            "flight_number": "FR 8525",
-            "origin": "NRN",
-            "origin_full": "Dusseldorf Weeze, Germany",
-            "destination": "ALC",
-            "destination_full": "Alicante, Spain",
-            "price_eur": 72.99
-          },
-          "return": {
-            "departure": "2026-03-24T15:55:00",
-            "departure_time": "15:55",
-            "duration_minutes": 156,
-            "duration": "2h 36m",
-            "flight_number": "FR 6213",
-            "origin": "ALC",
-            "origin_full": "Alicante, Spain",
-            "destination": "NRN",
-            "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 47.12
-          },
-          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-24&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=ALC&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-20&tpEndDate=2026-03-24&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=ALC",
-          "total_eur": 120.11
+          "total_eur": 102.2
         },
         {
           "outbound": {
@@ -75261,39 +75205,10 @@
             "origin_full": "Alicante, Spain",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 26.34
+            "price_eur": 27.21
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-24&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=ALC&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-20&tpEndDate=2026-03-24&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=ALC",
-          "total_eur": 94.33
-        },
-        {
-          "outbound": {
-            "departure": "2026-03-20T19:15:00",
-            "departure_time": "19:15",
-            "duration_minutes": 152,
-            "duration": "2h 32m",
-            "flight_number": "FR 1355",
-            "origin": "CGN",
-            "origin_full": "Cologne, Germany",
-            "destination": "ALC",
-            "destination_full": "Alicante, Spain",
-            "price_eur": 67.99
-          },
-          "return": {
-            "departure": "2026-03-24T15:55:00",
-            "departure_time": "15:55",
-            "duration_minutes": 156,
-            "duration": "2h 36m",
-            "flight_number": "FR 6213",
-            "origin": "ALC",
-            "origin_full": "Alicante, Spain",
-            "destination": "NRN",
-            "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 47.12
-          },
-          "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-20&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=ALC",
-          "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-24&dateIn=2026-03-24&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=ALC&destinationIata=NRN",
-          "total_eur": 115.11
+          "total_eur": 95.2
         },
         {
           "outbound": {
@@ -75449,7 +75364,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "ALC",
             "destination_full": "Alicante, Spain",
-            "price_eur": 48.99
+            "price_eur": 50.99
           },
           "return": {
             "departure": "2026-04-14T06:10:00",
@@ -75465,7 +75380,7 @@
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-04-10&dateIn=2026-04-10&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=ALC",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-04-14&dateIn=2026-04-14&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=ALC&destinationIata=NRN",
-          "total_eur": 91.98
+          "total_eur": 93.98
         },
         {
           "outbound": {
@@ -85733,7 +85648,7 @@
             "origin_full": "Dusseldorf Weeze, Germany",
             "destination": "TNG",
             "destination_full": "Tangier, Morocco",
-            "price_eur": 73.99
+            "price_eur": 75.99
           },
           "return": {
             "departure": "2026-04-04T18:15:00",
@@ -85748,7 +85663,7 @@
             "price_eur": 52.99
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-04-02&dateIn=2026-04-04&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=TNG&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-04-02&tpEndDate=2026-04-04&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=TNG",
-          "total_eur": 126.98
+          "total_eur": 128.98
         },
         {
           "outbound": {
@@ -87560,35 +87475,6 @@
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-04&dateIn=2026-06-08&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=OPO&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-06-04&tpEndDate=2026-06-08&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=OPO",
           "total_eur": 169.05
-        },
-        {
-          "outbound": {
-            "departure": "2026-06-05T21:55:00",
-            "departure_time": "21:55",
-            "duration_minutes": 159,
-            "duration": "2h 39m",
-            "flight_number": "FR 9326",
-            "origin": "CGN",
-            "origin_full": "Cologne, Germany",
-            "destination": "OPO",
-            "destination_full": "Porto, Portugal",
-            "price_eur": 74.74
-          },
-          "return": {
-            "departure": "2026-06-09T19:10:00",
-            "departure_time": "19:10",
-            "duration_minutes": 159,
-            "duration": "2h 39m",
-            "flight_number": "FR 5488",
-            "origin": "OPO",
-            "origin_full": "Porto, Portugal",
-            "destination": "NRN",
-            "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 83.84
-          },
-          "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-05&dateIn=2026-06-05&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=OPO",
-          "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-09&dateIn=2026-06-09&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=OPO&destinationIata=NRN",
-          "total_eur": 158.58
         },
         {
           "outbound": {
@@ -90952,7 +90838,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "AGP",
             "destination_full": "Malaga, Spain",
-            "price_eur": 66.94
+            "price_eur": 67.94
           },
           "return": {
             "departure": "2026-03-13T09:50:00",
@@ -90968,7 +90854,7 @@
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-11&dateIn=2026-03-11&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=AGP",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-13&dateIn=2026-03-13&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=AGP&destinationIata=NRN",
-          "total_eur": 93.89
+          "total_eur": 94.89
         },
         {
           "outbound": {
@@ -90981,7 +90867,7 @@
             "origin_full": "Cologne, Germany",
             "destination": "AGP",
             "destination_full": "Malaga, Spain",
-            "price_eur": 66.94
+            "price_eur": 67.94
           },
           "return": {
             "departure": "2026-03-13T09:40:00",
@@ -90996,7 +90882,7 @@
             "price_eur": 44.73
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-11&dateIn=2026-03-13&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=CGN&destinationIata=AGP&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-11&tpEndDate=2026-03-13&tpDiscount=0&tpPromoCode=&tpOriginIata=CGN&tpDestinationIata=AGP",
-          "total_eur": 111.67
+          "total_eur": 112.67
         },
         {
           "outbound": {
@@ -95053,6 +94939,63 @@
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-13&dateIn=2026-03-13&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=ALC",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-16&dateIn=2026-03-16&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=ALC&destinationIata=NRN",
           "total_eur": 94.98
+        },
+        {
+          "outbound": {
+            "departure": "2026-03-20T16:50:00",
+            "departure_time": "16:50",
+            "duration_minutes": 156,
+            "duration": "2h 36m",
+            "flight_number": "FR 8525",
+            "origin": "NRN",
+            "origin_full": "Dusseldorf Weeze, Germany",
+            "destination": "ALC",
+            "destination_full": "Alicante, Spain",
+            "price_eur": 74.99
+          },
+          "return": {
+            "departure": "2026-03-23T09:40:00",
+            "departure_time": "09:40",
+            "duration_minutes": 156,
+            "duration": "2h 36m",
+            "flight_number": "FR 8524",
+            "origin": "ALC",
+            "origin_full": "Alicante, Spain",
+            "destination": "NRN",
+            "destination_full": "Dusseldorf Weeze, Germany",
+            "price_eur": 48.99
+          },
+          "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-23&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=ALC&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-03-20&tpEndDate=2026-03-23&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=ALC",
+          "total_eur": 123.98
+        },
+        {
+          "outbound": {
+            "departure": "2026-03-20T19:15:00",
+            "departure_time": "19:15",
+            "duration_minutes": 152,
+            "duration": "2h 32m",
+            "flight_number": "FR 1355",
+            "origin": "CGN",
+            "origin_full": "Cologne, Germany",
+            "destination": "ALC",
+            "destination_full": "Alicante, Spain",
+            "price_eur": 67.99
+          },
+          "return": {
+            "departure": "2026-03-23T09:40:00",
+            "departure_time": "09:40",
+            "duration_minutes": 156,
+            "duration": "2h 36m",
+            "flight_number": "FR 8524",
+            "origin": "ALC",
+            "origin_full": "Alicante, Spain",
+            "destination": "NRN",
+            "destination_full": "Dusseldorf Weeze, Germany",
+            "price_eur": 48.99
+          },
+          "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-20&dateIn=2026-03-20&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=ALC",
+          "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-03-23&dateIn=2026-03-23&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=ALC&destinationIata=NRN",
+          "total_eur": 116.98
         },
         {
           "outbound": {
@@ -99920,6 +99863,35 @@
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-12&dateIn=2026-06-12&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=PMI",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-15&dateIn=2026-06-15&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=PMI&destinationIata=CGN",
           "total_eur": 119.56
+        },
+        {
+          "outbound": {
+            "departure": "2026-07-03T22:00:00",
+            "departure_time": "22:00",
+            "duration_minutes": 140,
+            "duration": "2h 20m",
+            "flight_number": "FR 6218",
+            "origin": "NRN",
+            "origin_full": "Dusseldorf Weeze, Germany",
+            "destination": "PMI",
+            "destination_full": "Palma de Mallorca, Spain",
+            "price_eur": 57.99
+          },
+          "return": {
+            "departure": "2026-07-06T06:35:00",
+            "departure_time": "06:35",
+            "duration_minutes": 136,
+            "duration": "2h 16m",
+            "flight_number": "FR 5519",
+            "origin": "PMI",
+            "origin_full": "Palma de Mallorca, Spain",
+            "destination": "CGN",
+            "destination_full": "Cologne, Germany",
+            "price_eur": 49.99
+          },
+          "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-07-03&dateIn=2026-07-03&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=PMI",
+          "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-07-06&dateIn=2026-07-06&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=PMI&destinationIata=CGN",
+          "total_eur": 107.98
         },
         {
           "outbound": {
@@ -105363,10 +105335,10 @@
             "origin_full": "Tenerife South, Spain",
             "destination": "NRN",
             "destination_full": "Dusseldorf Weeze, Germany",
-            "price_eur": 146.51
+            "price_eur": 134.31
           },
           "booking_url": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-05-06&dateIn=2026-05-09&isConnectedFlight=false&discount=0&promoCode=&isReturn=true&originIata=NRN&destinationIata=TFS&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2026-05-06&tpEndDate=2026-05-09&tpDiscount=0&tpPromoCode=&tpOriginIata=NRN&tpDestinationIata=TFS",
-          "total_eur": 179.75
+          "total_eur": 167.55
         },
         {
           "outbound": {
@@ -111473,6 +111445,35 @@
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-05-07&dateIn=2026-05-07&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=OPO",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-05-10&dateIn=2026-05-10&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=OPO&destinationIata=CGN",
           "total_eur": 139.93
+        },
+        {
+          "outbound": {
+            "departure": "2026-06-05T21:55:00",
+            "departure_time": "21:55",
+            "duration_minutes": 159,
+            "duration": "2h 39m",
+            "flight_number": "FR 9326",
+            "origin": "CGN",
+            "origin_full": "Cologne, Germany",
+            "destination": "OPO",
+            "destination_full": "Porto, Portugal",
+            "price_eur": 74.74
+          },
+          "return": {
+            "departure": "2026-06-08T09:35:00",
+            "departure_time": "09:35",
+            "duration_minutes": 159,
+            "duration": "2h 39m",
+            "flight_number": "FR 5488",
+            "origin": "OPO",
+            "origin_full": "Porto, Portugal",
+            "destination": "NRN",
+            "destination_full": "Dusseldorf Weeze, Germany",
+            "price_eur": 83.84
+          },
+          "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-05&dateIn=2026-06-05&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=CGN&destinationIata=OPO",
+          "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-08&dateIn=2026-06-08&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=OPO&destinationIata=NRN",
+          "total_eur": 158.58
         },
         {
           "outbound": {
@@ -130115,11 +130116,11 @@
             "origin_full": "Agadir, Morocco",
             "destination": "CGN",
             "destination_full": "Cologne, Germany",
-            "price_eur": 136.62
+            "price_eur": 128.37
           },
           "booking_url_outbound": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-11&dateIn=2026-06-11&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=NRN&destinationIata=AGA",
           "booking_url_return": "https://www.ryanair.com/de/de/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2026-06-14&dateIn=2026-06-14&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=AGA&destinationIata=CGN",
-          "total_eur": 182.61
+          "total_eur": 174.36
         },
         {
           "outbound": {
@@ -145908,7 +145909,7 @@
   "geotemp_global": {
     "dataset_stats": {
       "dataset": "GeoTemp Travel Dataset",
-      "total_cities": 1300,
+      "total_cities": 1299,
       "total_countries": 166,
       "total_continents": 8,
       "continent_breakdown": {
@@ -145916,16 +145917,16 @@
         "Asia": 372,
         "Africa": 243,
         "North America": 130,
-        "South America": 122,
+        "South America": 121,
         "Middle East": 127,
         "Oceania": 21,
         "Unknown": 2
       },
       "coastal_cities": 184,
-      "inland_cities": 1116,
-      "weather_records": 433094,
+      "inland_cities": 1115,
+      "weather_records": 432280,
       "attractions": 32678,
-      "city_features": 23522,
+      "city_features": 23498,
       "data_year": 2025,
       "available_tools": [
         "search_destinations",
@@ -146121,163 +146122,72 @@
       "comparison_month": "March",
       "cities": [
         {
-          "city": "London",
-          "country": "United Kingdom",
+          "city": "Corfu",
+          "country": "Greece",
           "continent": "Europe",
-          "daily_budget_usd": 150,
+          "daily_budget_usd": 75,
           "safety_score": 4,
-          "is_coastal": false,
-          "population": 8982000,
-          "weather_Mar": {
-            "avg_temperature_mean": 8.2,
-            "total_precipitation_mm": 12.7,
-            "avg_sunshine_hours": 8.7,
-            "avg_humidity_mean": 75.5
-          },
-          "sea_water_temp_c": null,
-          "features": [
-            "adventure_sports",
-            "autumn_foliage",
-            "capital_city",
-            "cherry_blossom",
-            "city_break",
-            "cultural_sightseeing",
-            "cycling",
-            "digital_nomad",
-            "family_friendly",
-            "food_tourism",
-            "golf",
-            "hiking",
-            "historic_architecture",
-            "long_summer_days",
-            "nightlife",
-            "oceanic_mild",
-            "photography",
-            "road_trip",
-            "rock_climbing",
-            "romantic_getaway",
-            "running_jogging",
-            "shopping",
-            "spa_wellness",
-            "wildlife_viewing",
-            "wine_tasting",
-            "yoga_retreat"
-          ]
-        },
-        {
-          "city": "Oujda",
-          "country": "Morocco",
-          "continent": "Africa",
-          "daily_budget_usd": 40,
-          "safety_score": 3,
-          "is_coastal": false,
-          "population": 494000,
-          "weather_Mar": {
-            "avg_temperature_mean": 14.1,
-            "total_precipitation_mm": 58.4,
-            "avg_sunshine_hours": 10.3,
-            "avg_humidity_mean": 59.5
-          },
-          "sea_water_temp_c": null,
-          "features": [
-            "adventure_sports",
-            "city_break",
-            "cultural_sightseeing",
-            "cycling",
-            "digital_nomad",
-            "eco_tourism",
-            "family_friendly",
-            "food_tourism",
-            "golf",
-            "hiking",
-            "nightlife",
-            "photography",
-            "road_trip",
-            "rock_climbing",
-            "romantic_getaway",
-            "running_jogging",
-            "semi_arid",
-            "spa_wellness",
-            "wildlife_viewing",
-            "wine_tasting",
-            "yoga_retreat"
-          ]
-        },
-        {
-          "city": "Olsztyn",
-          "error": "not found"
-        },
-        {
-          "city": "Dublin",
-          "country": "Ireland",
-          "continent": "Europe",
-          "daily_budget_usd": 110,
-          "safety_score": 5,
           "is_coastal": true,
-          "population": 1228000,
+          "population": 32000,
           "weather_Mar": {
-            "avg_temperature_mean": 8.5,
-            "total_precipitation_mm": 23.9,
-            "avg_sunshine_hours": 8.1,
-            "avg_humidity_mean": 78.6
+            "avg_temperature_mean": 14.2,
+            "total_precipitation_mm": 139.9,
+            "avg_sunshine_hours": 8.5,
+            "avg_humidity_mean": 75.6
           },
-          "sea_water_temp_c": 9.0,
+          "sea_water_temp_c": null,
           "features": [
             "adventure_sports",
-            "autumn_foliage",
             "beach",
             "beach_holiday",
-            "capital_city",
-            "city_break",
             "cultural_sightseeing",
             "cycling",
-            "digital_nomad",
+            "diving",
+            "eco_tourism",
             "family_friendly",
             "fishing",
             "food_tourism",
             "golf",
             "hiking",
             "historic_architecture",
-            "long_summer_days",
-            "nightlife",
-            "oceanic_mild",
+            "mediterranean",
             "photography",
-            "rainy_season",
             "road_trip",
             "rock_climbing",
             "romantic_getaway",
             "running_jogging",
             "sailing",
-            "shopping",
+            "scuba_visibility",
+            "snorkeling",
             "spa_wellness",
             "surfing",
+            "swimming",
+            "water_sports",
             "wildlife_viewing",
             "wine_tasting",
             "yoga_retreat"
           ]
         },
         {
-          "city": "Valletta",
-          "country": "Malta",
+          "city": "Tenerife",
+          "country": "Spain",
           "continent": "Europe",
-          "daily_budget_usd": 80,
-          "safety_score": 5,
+          "daily_budget_usd": 85,
+          "safety_score": 4,
           "is_coastal": true,
-          "population": 394000,
+          "population": 222000,
           "weather_Mar": {
-            "avg_temperature_mean": 16.0,
-            "total_precipitation_mm": 62.4,
-            "avg_sunshine_hours": 9.9,
-            "avg_humidity_mean": 75.2
+            "avg_temperature_mean": 17.3,
+            "total_precipitation_mm": 72.0,
+            "avg_sunshine_hours": 10.3,
+            "avg_humidity_mean": 76.6
           },
-          "sea_water_temp_c": 16.6,
+          "sea_water_temp_c": null,
           "features": [
             "adventure_sports",
             "autumn_foliage",
             "beach",
             "beach_holiday",
-            "capital_city",
-            "city_break",
             "cultural_sightseeing",
             "cycling",
             "digital_nomad",
@@ -146297,9 +146207,111 @@
             "romantic_getaway",
             "running_jogging",
             "sailing",
+            "snorkeling",
+            "spa_wellness",
+            "stargazing",
+            "surfing",
+            "swimming",
+            "water_sports",
+            "whale_watching",
+            "wildlife_viewing",
+            "wine_tasting",
+            "yoga_retreat"
+          ]
+        },
+        {
+          "city": "Rome Fiumicino",
+          "error": "not found"
+        },
+        {
+          "city": "Thessaloniki",
+          "country": "Greece",
+          "continent": "Europe",
+          "daily_budget_usd": 75,
+          "safety_score": 4,
+          "is_coastal": true,
+          "population": 814000,
+          "weather_Mar": {
+            "avg_temperature_mean": 12.0,
+            "total_precipitation_mm": 73.1,
+            "avg_sunshine_hours": 8.6,
+            "avg_humidity_mean": 76.5
+          },
+          "sea_water_temp_c": 12.2,
+          "features": [
+            "adventure_sports",
+            "ancient_ruins",
+            "autumn_foliage",
+            "beach",
+            "beach_holiday",
+            "city_break",
+            "cultural_sightseeing",
+            "cycling",
+            "digital_nomad",
+            "diving",
+            "family_friendly",
+            "fishing",
+            "food_tourism",
+            "golf",
+            "hiking",
+            "historic_architecture",
+            "nightlife",
+            "oceanic_mild",
+            "photography",
+            "road_trip",
+            "rock_climbing",
+            "romantic_getaway",
+            "running_jogging",
+            "sailing",
             "scuba_visibility",
             "shopping",
             "snorkeling",
+            "spa_wellness",
+            "swimming",
+            "water_sports",
+            "whale_watching",
+            "wildlife_viewing",
+            "wine_tasting",
+            "yoga_retreat"
+          ]
+        },
+        {
+          "city": "Milan",
+          "country": "Italy",
+          "continent": "Europe",
+          "daily_budget_usd": 110,
+          "safety_score": 4,
+          "is_coastal": false,
+          "population": 1396000,
+          "weather_Mar": {
+            "avg_temperature_mean": 10.2,
+            "total_precipitation_mm": 113.7,
+            "avg_sunshine_hours": 8.3,
+            "avg_humidity_mean": 76.2
+          },
+          "sea_water_temp_c": null,
+          "features": [
+            "adventure_sports",
+            "ancient_ruins",
+            "autumn_foliage",
+            "city_break",
+            "cultural_sightseeing",
+            "cycling",
+            "digital_nomad",
+            "family_friendly",
+            "food_scene",
+            "food_tourism",
+            "golf",
+            "hiking",
+            "historic_architecture",
+            "nightlife",
+            "oceanic_mild",
+            "photography",
+            "road_trip",
+            "rock_climbing",
+            "romantic_getaway",
+            "running_jogging",
+            "shopping",
             "spa_wellness",
             "swimming",
             "water_sports",
@@ -146491,11 +146503,11 @@
       "count": 5,
       "destinations": [
         {
-          "city": "Hyderabad",
-          "country": "India",
-          "continent": "Asia",
-          "daily_budget_usd": 25,
-          "safety_score": 3,
+          "city": "Rome",
+          "country": "Italy",
+          "continent": "Europe",
+          "daily_budget_usd": 105,
+          "safety_score": 4,
           "matching_features": [
             {
               "feature": "city_break",
@@ -146505,80 +146517,6 @@
                 3,
                 4,
                 5,
-                6,
-                11,
-                12
-              ],
-              "description": "Weekend city break, short cultural getaway",
-              "monthly_scores": {
-                "1": 71,
-                "2": 71,
-                "3": 67,
-                "4": 63,
-                "5": 63,
-                "6": 67,
-                "7": 59,
-                "8": 50,
-                "9": 50,
-                "10": 59,
-                "11": 71,
-                "12": 71
-              }
-            }
-          ],
-          "month_score": 67
-        },
-        {
-          "city": "Havana",
-          "country": "Cuba",
-          "continent": "North America",
-          "daily_budget_usd": 50,
-          "safety_score": 3,
-          "matching_features": [
-            {
-              "feature": "city_break",
-              "best_months": [
-                1,
-                2,
-                3,
-                4,
-                5,
-                11,
-                12
-              ],
-              "description": "Weekend city break, short cultural getaway",
-              "monthly_scores": {
-                "1": 67,
-                "2": 67,
-                "3": 67,
-                "4": 67,
-                "5": 67,
-                "6": 50,
-                "7": 57,
-                "8": 49,
-                "9": 50,
-                "10": 50,
-                "11": 71,
-                "12": 67
-              }
-            }
-          ],
-          "month_score": 67
-        },
-        {
-          "city": "Tokyo",
-          "country": "Japan",
-          "continent": "Asia",
-          "daily_budget_usd": 110,
-          "safety_score": 5,
-          "matching_features": [
-            {
-              "feature": "city_break",
-              "best_months": [
-                1,
-                2,
-                3,
-                4,
                 6,
                 7,
                 8,
@@ -146589,22 +146527,22 @@
               ],
               "description": "Weekend city break, short cultural getaway",
               "monthly_scores": {
-                "1": 81,
-                "2": 86,
-                "3": 60,
-                "4": 70,
-                "5": 50,
-                "6": 70,
-                "7": 69,
-                "8": 74,
-                "9": 60,
-                "10": 60,
-                "11": 86,
-                "12": 81
+                "1": 65,
+                "2": 65,
+                "3": 65,
+                "4": 87,
+                "5": 76,
+                "6": 93,
+                "7": 87,
+                "8": 87,
+                "9": 65,
+                "10": 76,
+                "11": 93,
+                "12": 76
               }
             }
           ],
-          "month_score": 60
+          "month_score": 65
         },
         {
           "city": "Dhaka",
@@ -146642,11 +146580,11 @@
           "month_score": 70
         },
         {
-          "city": "Medellín",
-          "country": "Colombia",
-          "continent": "South America",
-          "daily_budget_usd": 35,
-          "safety_score": 3,
+          "city": "Budapest",
+          "country": "Hungary",
+          "continent": "Europe",
+          "daily_budget_usd": 65,
+          "safety_score": 4,
           "matching_features": [
             {
               "feature": "city_break",
@@ -146664,22 +146602,104 @@
               ],
               "description": "Weekend city break, short cultural getaway",
               "monthly_scores": {
-                "1": 41,
-                "2": 50,
-                "3": 67,
-                "4": 67,
-                "5": 67,
-                "6": 67,
-                "7": 67,
-                "8": 67,
-                "9": 67,
-                "10": 67,
-                "11": 67,
-                "12": 71
+                "1": 51,
+                "2": 56,
+                "3": 62,
+                "4": 71,
+                "5": 71,
+                "6": 75,
+                "7": 71,
+                "8": 71,
+                "9": 71,
+                "10": 71,
+                "11": 71,
+                "12": 68
               }
             }
           ],
-          "month_score": 67
+          "month_score": 62
+        },
+        {
+          "city": "Vienna",
+          "country": "Austria",
+          "continent": "Europe",
+          "daily_budget_usd": 100,
+          "safety_score": 5,
+          "matching_features": [
+            {
+              "feature": "city_break",
+              "best_months": [
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "description": "Weekend city break, short cultural getaway",
+              "monthly_scores": {
+                "1": 56,
+                "2": 67,
+                "3": 77,
+                "4": 77,
+                "5": 77,
+                "6": 77,
+                "7": 67,
+                "8": 77,
+                "9": 67,
+                "10": 77,
+                "11": 82,
+                "12": 67
+              }
+            }
+          ],
+          "month_score": 77
+        },
+        {
+          "city": "New York",
+          "country": "United States",
+          "continent": "North America",
+          "daily_budget_usd": 170,
+          "safety_score": 4,
+          "matching_features": [
+            {
+              "feature": "city_break",
+              "best_months": [
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "description": "Weekend city break, short cultural getaway",
+              "monthly_scores": {
+                "1": 55,
+                "2": 60,
+                "3": 65,
+                "4": 87,
+                "5": 65,
+                "6": 87,
+                "7": 76,
+                "8": 93,
+                "9": 76,
+                "10": 76,
+                "11": 93,
+                "12": 60
+              }
+            }
+          ],
+          "month_score": 65
         }
       ]
     },
