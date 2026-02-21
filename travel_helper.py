@@ -433,6 +433,16 @@ def _city_name_for_api(dest: str) -> str:
     return s
 
 
+def _anchor_slug(dest_city: str, days: int, nights: int) -> str:
+    """URL-safe anchor id for a deal section (destination + days/nights)."""
+    base = re.sub(
+        r"[^a-z0-9-]",
+        "",
+        dest_city.lower().replace(" - ", "-").replace(" ", "-"),
+    )
+    return f"{base}-{days}-{nights}" if base else f"deal-{days}-{nights}"
+
+
 def _dest_city_from_flight(ob: object) -> str:
     """Destination city string for a trip (for GeoTemp / display)."""
     dest_full = getattr(ob, "destinationFull", None) or ""
@@ -1226,6 +1236,11 @@ def _build_html(
         "    .preheader { font-size: 0.95rem; color: #555; margin-bottom: 1rem; line-height: 1.4; }",
         "    .intro { color: #333; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
         "    .section-heading { font-size: 1.125rem; font-weight: 700; color: #000; margin: 1.5rem 0 0.75rem 0; }",
+        "    .deals-summary-box { margin-bottom: 1rem; padding: 0.75rem 1rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
+        "    .deals-summary-heading { font-size: 1rem; font-weight: 700; color: #000; margin-bottom: 0.5rem; }",
+        "    .deals-summary { font-size: 0.95rem; font-weight: bold; color: #444; line-height: 1.6; margin: 0; }",
+        "    a.deals-summary-link { color: #008513; text-decoration: none; }",
+        "    a.deals-summary-link:hover { text-decoration: underline; }",
         "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
         "    @media screen and (max-width: 600px) {",
         "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
@@ -1262,6 +1277,11 @@ def _build_html(
         "    .preheader { font-size: 0.95rem; color: #555; margin-bottom: 1rem; line-height: 1.4; }",
         "    .intro { color: #333; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
         "    .section-heading { font-size: 1.125rem; font-weight: 700; color: #000; margin: 1.5rem 0 0.75rem 0; }",
+        "    .deals-summary-box { margin-bottom: 1rem; padding: 0.75rem 1rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
+        "    .deals-summary-heading { font-size: 1rem; font-weight: 700; color: #000; margin-bottom: 0.5rem; }",
+        "    .deals-summary { font-size: 0.95rem; font-weight: bold; color: #444; line-height: 1.6; margin: 0; }",
+        "    a.deals-summary-link { color: #008513; text-decoration: none; }",
+        "    a.deals-summary-link:hover { text-decoration: underline; }",
         "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
         "    @media screen and (max-width: 600px) {",
         "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
@@ -1287,6 +1307,19 @@ def _build_html(
         f"  <p class=\"tagline\">{html.escape(tagline)}</p>",
     ])
     if agg_hotel:
+        summary_parts = []
+        for g in agg_hotel:
+            dest_city = g["destination"]
+            days, nights = g["days"], g["nights"]
+            min_total = g["min_total"]
+            n = len(g["trips"])
+            slug = _anchor_slug(dest_city, days, nights)
+            text = f"{html.escape(dest_city)} ({n} deal{'s' if n != 1 else ''} from {min_total:.2f}€)"
+            summary_parts.append(f'<a href="#{html.escape(slug)}" class="deals-summary-link">{text}</a>')
+        lines.append("  <div class=\"deals-summary-box\">")
+        lines.append("  <div class=\"deals-summary-heading\">Summary</div>")
+        lines.append("  <p class=\"deals-summary\">" + " . ".join(summary_parts) + "</p>")
+        lines.append("  </div>")
         lines.append("  <h2 class=\"section-heading\">Top deals (flight + hotel)</h2>")
         for g in agg_hotel:
             dest_city = g["destination"]
@@ -1296,7 +1329,8 @@ def _build_html(
             out_date = first["flight"].departureTime.date()
             ret_date = first["return_flight"].departureTime.date()
             route_label = _flight_route_label(first["flight"], first["return_flight"])
-            lines.append("  <div class=\"trip\">")
+            slug = _anchor_slug(dest_city, days, nights)
+            lines.append(f"  <div class=\"trip\" id=\"{html.escape(slug)}\">")
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             today = datetime.today().date()
             future_trips = [r for r in g["trips"] if r["flight"].departureTime.date() >= today]
@@ -1333,6 +1367,18 @@ def _build_html(
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
             lines.append("  </div>")
     elif agg_flights:
+        summary_parts = []
+        for dest_city, days, nights, flights in agg_flights:
+            ob, ib, price = flights[0]
+            min_total = price + ib.price
+            n = len(flights)
+            slug = _anchor_slug(dest_city, days, nights)
+            text = f"{html.escape(dest_city)} ({n} deal{'s' if n != 1 else ''} from {min_total:.2f}€)"
+            summary_parts.append(f'<a href="#{html.escape(slug)}" class="deals-summary-link">{text}</a>')
+        lines.append("  <div class=\"deals-summary-box\">")
+        lines.append("  <div class=\"deals-summary-heading\">Summary</div>")
+        lines.append("  <p class=\"deals-summary\">" + " . ".join(summary_parts) + "</p>")
+        lines.append("  </div>")
         lines.append("  <h2 class=\"section-heading\">Top deals (flights only)</h2>")
         for dest_city, days, nights, flights in agg_flights:
             ob, ib, price = flights[0]
@@ -1340,7 +1386,8 @@ def _build_html(
             out_date = ob.departureTime.date()
             ret_date = ib.departureTime.date()
             route_label = _flight_route_label(ob, ib)
-            lines.append("  <div class=\"trip\">")
+            slug = _anchor_slug(dest_city, days, nights)
+            lines.append(f"  <div class=\"trip\" id=\"{html.escape(slug)}\">")
             lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             today = datetime.today().date()
             future_flights = [(ob, ib, price) for ob, ib, price in flights if ob.departureTime.date() >= today]
