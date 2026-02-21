@@ -1218,7 +1218,8 @@ def _build_html(
         "    .hotel a { color: #008513; }",
         "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
         "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
-        "    .flight-option { margin-bottom: 0.35rem; }",
+        "    .flight-option { margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
+        "    .flight-option-cheapest { font-weight: bold; }",
         "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
         "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
@@ -1253,7 +1254,8 @@ def _build_html(
         "    .hotel a { color: #008513; }",
         "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
         "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
-        "    .flight-option { margin-bottom: 0.35rem; }",
+        "    .flight-option { margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
+        "    .flight-option-cheapest { font-weight: bold; }",
         "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
         "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
         "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
@@ -1303,6 +1305,7 @@ def _build_html(
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
             trips_to_show = future_trips[:1] if summary_only else sorted(future_trips, key=lambda r: r["flight"].departureTime)
+            cheapest_total = min(r["flight"].price + r["return_flight"].price for r in trips_to_show) if trips_to_show else 0
             for r in trips_to_show:
                 outbound = r["flight"]
                 ret = r["return_flight"]
@@ -1319,7 +1322,8 @@ def _build_html(
                 hotel_price = first_hotel.get("Price Per Stay") or first_hotel.get("price_per_stay") or ""
                 hotel_part = f"  |  <a class=\"trip-details trip-link\" href=\"{html.escape(hotel_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(hotel_name)}</a> {html.escape(hotel_price)}" if hotel_url else (f"  |  {html.escape(hotel_name)} {html.escape(hotel_price)}" if hotel_name or hotel_price else "")
                 trip_total = outbound.price + ret.price
-                lines.append("      <div class=\"flight-option\">")
+                opt_class = "flight-option flight-option-cheapest" if trip_total == cheapest_total else "flight-option"
+                lines.append(f"      <div class=\"{opt_class}\">")
                 if "booking_url" in urls:
                     lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a> ({trip_total:.2f}€){hotel_part}")
                 else:
@@ -1345,6 +1349,7 @@ def _build_html(
             lines.append("    <div class=\"flight\">")
             lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
             flights_to_show = future_flights[:1] if summary_only else sorted(future_flights, key=lambda x: x[0].departureTime)
+            cheapest_total = min(price + ib.price for ob, ib, price in flights_to_show) if flights_to_show else 0
             for ob, ib, price in flights_to_show:
                 out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
@@ -1354,7 +1359,8 @@ def _build_html(
                 ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {_display_airport(ib.origin)}→{_display_airport(ib.destination)}"
                 urls = _booking_urls_for_trip(ob, ib, adults)
                 trip_total = price + ib.price
-                lines.append("      <div class=\"flight-option\">")
+                opt_class = "flight-option flight-option-cheapest" if trip_total == cheapest_total else "flight-option"
+                lines.append(f"      <div class=\"{opt_class}\">")
                 if "booking_url" in urls:
                     lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a> ({trip_total:.2f}€)")
                 else:
