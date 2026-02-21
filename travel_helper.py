@@ -1241,6 +1241,10 @@ def _build_html(
         "    .deals-summary { font-size: 0.95rem; font-weight: bold; color: #444; line-height: 1.6; margin: 0; }",
         "    a.deals-summary-link { color: #008513; text-decoration: none; }",
         "    a.deals-summary-link:hover { text-decoration: underline; }",
+        "    .deals-summary-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }",
+        "    .deals-summary-table th, .deals-summary-table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid #e0e0e0; }",
+        "    .deals-summary-table th { font-weight: 700; color: #000; background: #f5f5f5; }",
+        "    .deals-summary-table td:last-child { white-space: nowrap; }",
         "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
         "    @media screen and (max-width: 600px) {",
         "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
@@ -1282,6 +1286,10 @@ def _build_html(
         "    .deals-summary { font-size: 0.95rem; font-weight: bold; color: #444; line-height: 1.6; margin: 0; }",
         "    a.deals-summary-link { color: #008513; text-decoration: none; }",
         "    a.deals-summary-link:hover { text-decoration: underline; }",
+        "    .deals-summary-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }",
+        "    .deals-summary-table th, .deals-summary-table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid #e0e0e0; }",
+        "    .deals-summary-table th { font-weight: 700; color: #000; background: #f5f5f5; }",
+        "    .deals-summary-table td:last-child { white-space: nowrap; }",
         "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
         "    @media screen and (max-width: 600px) {",
         "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
@@ -1307,18 +1315,21 @@ def _build_html(
         f"  <p class=\"tagline\">{html.escape(tagline)}</p>",
     ])
     if agg_hotel:
-        summary_parts = []
+        summary_rows = []
         for g in agg_hotel:
             dest_city = g["destination"]
             days, nights = g["days"], g["nights"]
             min_total = g["min_total"]
             n = len(g["trips"])
             slug = _anchor_slug(dest_city, days, nights)
-            text = f"{html.escape(dest_city)} ({n} deal{'s' if n != 1 else ''} from {min_total:.2f}€)"
-            summary_parts.append(f'<a href="#{html.escape(slug)}" class="deals-summary-link">{text}</a>')
+            link = f'<a href="#{html.escape(slug)}" class="deals-summary-link">{html.escape(dest_city)}</a>'
+            deals_str = f"{n} deal{'s' if n != 1 else ''}"
+            summary_rows.append(f"    <tr><td>{link}</td><td>{deals_str}</td><td>{min_total:.2f}€</td></tr>")
         lines.append("  <div class=\"deals-summary-box\">")
         lines.append("  <div class=\"deals-summary-heading\">Summary</div>")
-        lines.append("  <p class=\"deals-summary\">" + " . ".join(summary_parts) + "</p>")
+        lines.append("  <table class=\"deals-summary-table\"><thead><tr><th>Destination</th><th>Deals</th><th>From</th></tr></thead><tbody>")
+        lines.extend(summary_rows)
+        lines.append("  </tbody></table>")
         lines.append("  </div>")
         lines.append("  <h2 class=\"section-heading\">Top deals (flight + hotel)</h2>")
         for g in agg_hotel:
@@ -1367,17 +1378,20 @@ def _build_html(
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
             lines.append("  </div>")
     elif agg_flights:
-        summary_parts = []
+        summary_rows = []
         for dest_city, days, nights, flights in agg_flights:
             ob, ib, price = flights[0]
             min_total = price + ib.price
             n = len(flights)
             slug = _anchor_slug(dest_city, days, nights)
-            text = f"{html.escape(dest_city)} ({n} deal{'s' if n != 1 else ''} from {min_total:.2f}€)"
-            summary_parts.append(f'<a href="#{html.escape(slug)}" class="deals-summary-link">{text}</a>')
+            link = f'<a href="#{html.escape(slug)}" class="deals-summary-link">{html.escape(dest_city)}</a>'
+            deals_str = f"{n} deal{'s' if n != 1 else ''}"
+            summary_rows.append(f"    <tr><td>{link}</td><td>{deals_str}</td><td>{min_total:.2f}€</td></tr>")
         lines.append("  <div class=\"deals-summary-box\">")
         lines.append("  <div class=\"deals-summary-heading\">Summary</div>")
-        lines.append("  <p class=\"deals-summary\">" + " . ".join(summary_parts) + "</p>")
+        lines.append("  <table class=\"deals-summary-table\"><thead><tr><th>Destination</th><th>Deals</th><th>From</th></tr></thead><tbody>")
+        lines.extend(summary_rows)
+        lines.append("  </tbody></table>")
         lines.append("  </div>")
         lines.append("  <h2 class=\"section-heading\">Top deals (flights only)</h2>")
         for dest_city, days, nights, flights in agg_flights:
