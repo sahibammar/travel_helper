@@ -1179,6 +1179,141 @@ def _add_weather_attractions_html(
         lines.append("    </div>")
 
 
+def _rating_pill_color(score: float) -> str:
+    """Return background color for a hotel review rating pill."""
+    if score >= 9:
+        return "#0079c2"
+    if score >= 8:
+        return "#24a3ec"
+    if score >= 7:
+        return "#47a7ef"
+    if score >= 6:
+        return "#ff9128"
+    return "#8d8d8b"
+
+
+def _rating_label_text(score: float) -> str:
+    """Return human-readable label for a hotel review score."""
+    if score >= 9:
+        return "Exceptional"
+    if score >= 8.5:
+        return "Superb"
+    if score >= 8:
+        return "Very good"
+    if score >= 7:
+        return "Good"
+    if score >= 6:
+        return "Pleasant"
+    return "Reviewed"
+
+
+def _append_flight_leg_table(
+    lines: list[str],
+    origin: str,
+    origin_full: str,
+    dep_time: str,
+    destination: str,
+    dest_full: str,
+    dur_str: str,
+    flight_num: str,
+    price: float,
+    is_return: bool,
+) -> None:
+    """Append a single flight leg (outbound or return) as an HTML table row."""
+    track = "&#x2190;&nbsp;&#x2708;" if is_return else "&#x2708;&nbsp;&#x2192;"
+    dur_clean = dur_str.strip().lstrip("(").rstrip(")")
+    lines.append('            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">')
+    lines.append('              <tr>')
+    lines.append('                <td style="width:84px;vertical-align:middle;padding:0;">')
+    lines.append(f'                  <div style="font-size:20px;font-weight:700;color:#171717;line-height:1;">{html.escape(origin)}</div>')
+    lines.append(f'                  <div style="font-size:12px;color:#6c6c6b;margin-top:2px;">{html.escape(dep_time)}</div>')
+    lines.append(f'                  <div style="font-size:10px;color:#8d8d8b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:84px;">{html.escape(origin_full)}</div>')
+    lines.append('                </td>')
+    lines.append('                <td style="padding:0 8px;text-align:center;vertical-align:middle;">')
+    if dur_clean:
+        lines.append(f'                  <div style="font-size:10px;color:#8d8d8b;margin-bottom:3px;">{html.escape(dur_clean)}</div>')
+    lines.append(f'                  <div style="color:#24a3ec;font-size:13px;line-height:1;">{track}</div>')
+    lines.append(f'                  <div style="font-size:10px;color:#bbbbb9;margin-top:3px;">{html.escape(flight_num)} &bull; &euro;{price}</div>')
+    lines.append('                </td>')
+    lines.append('                <td style="width:84px;text-align:right;vertical-align:middle;padding:0;">')
+    lines.append(f'                  <div style="font-size:20px;font-weight:700;color:#171717;line-height:1;">{html.escape(destination)}</div>')
+    lines.append(f'                  <div style="font-size:10px;color:#8d8d8b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:84px;text-align:right;">{html.escape(dest_full)}</div>')
+    lines.append('                </td>')
+    lines.append('              </tr>')
+    lines.append('            </table>')
+
+
+def _append_hotel_card_html(
+    lines: list[str],
+    hotel_name: str,
+    hotel_url: str,
+    hotel_price: str,
+    hotel_rating: str,
+    dest_city: str,
+) -> None:
+    """Append a Trivago-style hotel card to lines."""
+    lines.append('      <div style="border-top:1px solid #f2f2f1;padding:12px 20px 16px;background:#fafafa;">')
+    lines.append('        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#8d8d8b;margin-bottom:8px;">Suggested hotel at destination</div>')
+    lines.append('        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);">')
+    lines.append('          <tr>')
+    lines.append('            <td style="padding:12px 16px;vertical-align:top;width:58%;">')
+    lines.append(f'              <a href="{html.escape(hotel_url)}" target="_blank" rel="noopener" style="font-size:15px;font-weight:700;color:#171717;text-decoration:none;">{html.escape(hotel_name)}</a>')
+    lines.append(f'              <div style="font-size:13px;color:#6c6c6b;margin-top:4px;">&#128205; {html.escape(dest_city)}</div>')
+    if hotel_rating:
+        try:
+            score = float(hotel_rating)
+            color = _rating_pill_color(score)
+            label = _rating_label_text(score)
+            lines.append(f'              <div style="margin-top:8px;"><span style="background:{color};color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;display:inline-block;">{html.escape(str(hotel_rating))}</span>&nbsp;<span style="font-size:13px;color:#6c6c6b;">{html.escape(label)}</span></div>')
+        except (ValueError, TypeError):
+            pass
+    lines.append('            </td>')
+    lines.append('            <td style="vertical-align:top;width:42%;padding:8px;">')
+    lines.append('              <div style="background:#e5f5ff;border-radius:10px;padding:12px;">')
+    if hotel_price:
+        lines.append(f'                <div style="font-size:18px;font-weight:700;color:#171717;">{html.escape(hotel_price)}</div>')
+        lines.append('                <div style="font-size:12px;color:#6c6c6b;margin-top:2px;">total stay</div>')
+    lines.append(f'                <a href="{html.escape(hotel_url)}" target="_blank" rel="noopener" style="display:inline-block;background:#0079c2;color:#fff;font-size:13px;font-weight:700;padding:7px 14px;border-radius:8px;text-decoration:none;margin-top:10px;white-space:nowrap;">View deal &#x2192;</a>')
+    lines.append('              </div>')
+    lines.append('            </td>')
+    lines.append('          </tr>')
+    lines.append('        </table>')
+    lines.append('      </div>')
+
+
+_TRIVAGO_CSS = """    body { margin:0; padding:16px; background:#f2f2f1; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:#171717; font-size:16px; line-height:1.5; }
+    .main-wrap { max-width:750px; margin:0 auto; }
+    h1 { font-size:22px; font-weight:700; color:#171717; margin:0 0 4px 0; line-height:1.3; }
+    .tagline { color:#6c6c6b; font-size:14px; line-height:1.5; margin:0 0 12px 0; }
+    .preheader { font-size:14px; color:#6c6c6b; margin-bottom:12px; line-height:1.4; }
+    .intro { color:#4d4d4c; font-size:14px; line-height:1.5; margin-bottom:16px; }
+    .page-header { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.09); overflow:hidden; margin-bottom:20px; padding:16px 24px; border:1px solid #d9d8d6; }
+    .logo { font-size:20px; font-weight:700; color:#0079c2; letter-spacing:-0.02em; margin-bottom:8px; }
+    .section-heading { font-size:18px; font-weight:700; color:#171717; margin:24px 0 12px 0; }
+    .deals-summary-box { margin-bottom:16px; padding:16px; background:#fff; border-radius:12px; border:1px solid #d9d8d6; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .deals-summary-heading { font-size:16px; font-weight:700; color:#171717; margin-bottom:12px; }
+    .deals-summary-table { width:100%; border-collapse:collapse; font-size:14px; }
+    .deals-summary-table th,.deals-summary-table td { padding:8px 12px; text-align:left; border-bottom:1px solid #f2f2f1; }
+    .deals-summary-table th { font-weight:700; color:#171717; background:#fafafa; }
+    a.deals-summary-link { color:#0079c2; text-decoration:none; font-weight:600; }
+    a.deals-summary-link:hover { text-decoration:underline; }
+    .trip { background:#fff; border:1px solid #d9d8d6; border-radius:12px; margin-bottom:16px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .flight-option { border-top:1px solid #f2f2f1; }
+    .flight-option-cheapest { background:#f5fbff; }
+    .global-section { margin-top:16px; padding:16px; border:1px solid #d9d8d6; border-radius:12px; background:#fff; }
+    .global-section-title { font-weight:700; font-size:14px; margin-bottom:8px; color:#0079c2; }
+    .footer-note { margin-top:24px; padding-top:12px; border-top:1px solid #f2f2f1; font-size:13px; color:#6c6c6b; line-height:1.5; }
+    .flight-title,.weather-title,.attractions-title,.hotels-title,.destination-title,.best-months-title,.similar-cities-title,.nearby-destinations-title,.activities-title,.seasonal-calendar-title,.tip-title { font-weight:700; font-size:13px; margin-bottom:4px; color:#171717; }
+    .flight,.weather,.attractions,.hotels,.destination,.best-months,.similar-cities,.nearby-destinations,.activities,.seasonal-calendar,.tip { margin-top:8px; font-size:13px; color:#6c6c6b; line-height:1.5; padding:12px 20px; border-top:1px solid #f2f2f1; }
+    @media screen and (max-width:600px) {
+      body { padding:0; -webkit-text-size-adjust:100%; }
+      .main-wrap { margin:0; }
+      .trip { border-radius:0; border-left:none; border-right:none; margin-bottom:8px; }
+      .deals-summary-box { border-radius:0; border-left:none; border-right:none; }
+      h1 { font-size:18px; }
+    }"""
+
+
 def _build_html(
     cheapest_flights: list[tuple[object, object, float]],
     hotel_results: list[dict],
@@ -1206,7 +1341,6 @@ def _build_html(
     search_destinations_result = (travel_data or {}).get("search_destinations_result")
     search_by_activity_result = (travel_data or {}).get("search_by_activity_result")
     multi_activity_search_result = (travel_data or {}).get("multi_activity_search_result")
-    # Styles inspired by Trivago offer email: #cdcdcd background, white cards, #008513 accent, rounded corners
     lines = [
         "<!DOCTYPE html>",
         "<html lang=\"en\">",
@@ -1215,105 +1349,27 @@ def _build_html(
         "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
         f"  <title>{html.escape(title)}</title>",
         "  <style>",
-        "    body { margin: 0; padding: 1rem; background-color: #cdcdcd; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }",
-        "    .main-wrap { max-width: 700px; margin: 0 auto; background: #ffffff; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid #cdcdcd; }",
-        "    h1 { font-size: 1.75rem; font-weight: 700; color: #000; margin-bottom: 0.25rem; line-height: 1.3; }",
-        "    .tagline { color: #555; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
-        "    .trip { margin: 1rem 0; padding: 1.25rem; background: #fff; border: 1px solid #cdcdcd; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }",
-        "    .trip-header { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.5rem; color: #000; }",
-        "    .trip-details { color: #444; font-size: 0.95rem; line-height: 1.5; }",
-        "    a.trip-link { color: #008513; text-decoration: none; }",
-        "    a.trip-link:hover { text-decoration: underline; }",
-        "    .hotel { margin: 0.35rem 0; }",
-        "    .hotel a { color: #008513; }",
-        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
-        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
-        "    .flight-option { margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
-        "    .flight-option-cheapest { font-weight: bold; }",
-        "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
-        "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
-        "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
-        "    .preheader { font-size: 0.95rem; color: #555; margin-bottom: 1rem; line-height: 1.4; }",
-        "    .intro { color: #333; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
-        "    .section-heading { font-size: 1.125rem; font-weight: 700; color: #000; margin: 1.5rem 0 0.75rem 0; }",
-        "    .deals-summary-box { margin-bottom: 1rem; padding: 0.75rem 1rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
-        "    .deals-summary-heading { font-size: 1rem; font-weight: 700; color: #000; margin-bottom: 0.5rem; }",
-        "    .deals-summary { font-size: 0.95rem; font-weight: bold; color: #444; line-height: 1.6; margin: 0; }",
-        "    a.deals-summary-link { color: #008513; text-decoration: none; }",
-        "    a.deals-summary-link:hover { text-decoration: underline; }",
-        "    .deals-summary-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }",
-        "    .deals-summary-table th, .deals-summary-table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid #e0e0e0; }",
-        "    .deals-summary-table th { font-weight: 700; color: #000; background: #f5f5f5; }",
-        "    .deals-summary-table td:last-child { white-space: nowrap; }",
-        "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
-        "    @media screen and (max-width: 600px) {",
-        "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
-        "      .main-wrap { margin: 0; padding: 16px 12px; border-radius: 0; border-left: none; border-right: none; max-width: 100%; box-sizing: border-box; }",
-        "      .trip { margin: 12px 0; padding: 14px 12px; border-radius: 12px; }",
-        "      .global-section { margin-top: 1.25rem; padding: 14px 12px; border-radius: 12px; }",
-        "      .section-heading { margin: 1.25rem 0 0.5rem 0; }",
-        "      .footer-note { margin-top: 1.5rem; padding: 12px 0 0 0; }",
-        "    }",
+        _TRIVAGO_CSS,
         "  </style>",
         "</head>",
         "<body>",
         "  <div class=\"main-wrap\">",
-        "  <!-- Duplicate style in body so email clients that ignore head still apply Trivago-style layout -->",
+        "  <!-- Duplicate style block so email clients that strip <head> still apply layout -->",
         "  <style>",
-        "    body { margin: 0; padding: 1rem; background-color: #cdcdcd; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }",
-        "    .main-wrap { max-width: 700px; margin: 0 auto; background: #ffffff; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid #cdcdcd; }",
-        "    h1 { font-size: 1.75rem; font-weight: 700; color: #000; margin-bottom: 0.25rem; line-height: 1.3; }",
-        "    .tagline { color: #555; font-size: 1rem; line-height: 1.5; margin-bottom: 0.75rem; }",
-        "    .trip { margin: 1rem 0; padding: 1.25rem; background: #fff; border: 1px solid #cdcdcd; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }",
-        "    .trip-header { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.5rem; color: #000; }",
-        "    .trip-details { color: #444; font-size: 0.95rem; line-height: 1.5; }",
-        "    a.trip-link { color: #008513; text-decoration: none; }",
-        "    a.trip-link:hover { text-decoration: underline; }",
-        "    .hotel { margin: 0.35rem 0; }",
-        "    .hotel a { color: #008513; }",
-        "    .flight-title, .weather-title, .attractions-title, .hotels-title, .destination-title, .best-months-title, .similar-cities-title, .nearby-destinations-title, .activities-title, .seasonal-calendar-title, .tip-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: #000; }",
-        "    .flight, .weather, .attractions, .hotels, .destination, .best-months, .similar-cities, .nearby-destinations, .activities, .seasonal-calendar, .tip { margin-top: 0.5rem; font-size: 0.9rem; color: #444; line-height: 1.5; }",
-        "    .flight-option { margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
-        "    .flight-option-cheapest { font-weight: bold; }",
-        "    .global-section { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #cdcdcd; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }",
-        "    .global-section-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.4rem; color: #008513; }",
-        "    .timings-note { margin-top: 2rem; font-size: 0.85rem; color: #666; }",
-        "    .preheader { font-size: 0.95rem; color: #555; margin-bottom: 1rem; line-height: 1.4; }",
-        "    .intro { color: #333; font-size: 1rem; line-height: 1.5; margin-bottom: 1.25rem; }",
-        "    .section-heading { font-size: 1.125rem; font-weight: 700; color: #000; margin: 1.5rem 0 0.75rem 0; }",
-        "    .deals-summary-box { margin-bottom: 1rem; padding: 0.75rem 1rem; border: 1px solid #cdcdcd; border-radius: 8px; background: #fafafa; }",
-        "    .deals-summary-heading { font-size: 1rem; font-weight: 700; color: #000; margin-bottom: 0.5rem; }",
-        "    .deals-summary { font-size: 0.95rem; font-weight: bold; color: #444; line-height: 1.6; margin: 0; }",
-        "    a.deals-summary-link { color: #008513; text-decoration: none; }",
-        "    a.deals-summary-link:hover { text-decoration: underline; }",
-        "    .deals-summary-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }",
-        "    .deals-summary-table th, .deals-summary-table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid #e0e0e0; }",
-        "    .deals-summary-table th { font-weight: 700; color: #000; background: #f5f5f5; }",
-        "    .deals-summary-table td:last-child { white-space: nowrap; }",
-        "    .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0e0e0; font-size: 0.85rem; color: #666; line-height: 1.5; }",
-        "    @media screen and (max-width: 600px) {",
-        "      body { padding: 0; -webkit-text-size-adjust: 100%; }",
-        "      .main-wrap { margin: 0; padding: 16px 12px; border-radius: 0; border-left: none; border-right: none; max-width: 100%; box-sizing: border-box; }",
-        "      .trip { margin: 12px 0; padding: 14px 12px; border-radius: 12px; }",
-        "      .global-section { margin-top: 1.25rem; padding: 14px 12px; border-radius: 12px; }",
-        "      .section-heading { margin: 1.25rem 0 0.5rem 0; }",
-        "      .footer-note { margin-top: 1.5rem; padding: 12px 0 0 0; }",
-        "    }",
+        _TRIVAGO_CSS,
         "  </style>",
     ]
-    # Preheader (shows in email preview) and intro (count = aggregated groups)
     agg_hotel = _aggregate_hotel_results(hotel_results) if hotel_results else []
     agg_flights = _aggregate_cheapest_flights(cheapest_flights) if not hotel_results and cheapest_flights else []
     num_deals = len(agg_hotel) if agg_hotel else len(agg_flights)
+    # Page header card (logo + title)
+    lines.append('  <div class="page-header">')
+    lines.append('    <div class="logo">trivago flights</div>')
+    lines.append(f'    <h1>{html.escape(title)}</h1>')
+    lines.append(f'    <p class="tagline">{html.escape(tagline)}</p>')
     if num_deals:
-        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze, Köln &amp; Dortmund — next {days_ahead} days, {num_deals} deal{'s' if num_deals != 1 else ''} inside.</p>")
-        lines.append(f"  <p class=\"intro\">Here are today's top deals (up to {num_cheapest_trips} round trips, {days_ahead}-day window). Click any flight or hotel link to compare and book.</p>")
-    else:
-        lines.append(f"  <p class=\"preheader\">Your daily flight + hotel deals from Weeze, Köln &amp; Dortmund — next {days_ahead} days.</p>")
-    lines.extend([
-        f"  <h1>{html.escape(title)}</h1>",
-        f"  <p class=\"tagline\">{html.escape(tagline)}</p>",
-    ])
+        lines.append(f'    <p class="preheader">Your daily flight + hotel deals from Weeze, K&ouml;ln &amp; Dortmund &mdash; next {days_ahead} days, {num_deals} deal{"s" if num_deals != 1 else ""} inside.</p>')
+    lines.append('  </div>')
     if agg_hotel:
         summary_rows = []
         for g in agg_hotel:
@@ -1339,44 +1395,71 @@ def _build_html(
             first = g["trips"][0]
             out_date = first["flight"].departureTime.date()
             ret_date = first["return_flight"].departureTime.date()
-            route_label = _flight_route_label(first["flight"], first["return_flight"])
             slug = _anchor_slug(dest_city, days, nights)
-            lines.append(f"  <div class=\"trip\" id=\"{html.escape(slug)}\">")
-            lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             today = datetime.today().date()
             future_trips = [r for r in g["trips"] if r["flight"].departureTime.date() >= today]
             if not future_trips:
                 continue
-            lines.append("    <div class=\"flight\">")
-            lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
+            lines.append(f'  <div class="trip" id="{html.escape(slug)}">')
+            # Destination header — blue bar
+            route_info = f"{_display_airport(first['flight'].origin)} &rarr; {_display_airport(first['flight'].destination)} &bull; {days}&nbsp;days, {nights}&nbsp;nights"
+            first_weather = weather_by_key.get((dest_city, out_date.isoformat(), ret_date.isoformat())) or []
+            temp_pill = ""
+            if first_weather and isinstance(first_weather[0], dict):
+                summary = first_weather[0].get("weather_summary") or {}
+                avg_t = summary.get("avg_temperature_mean") or summary.get("avg_temp")
+                if avg_t is not None:
+                    month_str = first["flight"].departureTime.strftime("%B")
+                    temp_pill = f'<span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;background:rgba(255,255,255,0.15);border-radius:8px;padding:4px 10px;white-space:nowrap;">&#x1F321; {html.escape(str(avg_t))}&deg;C avg &bull; {html.escape(month_str)}</span>'
+            lines.append('    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0079c2;color:#fff;">')
+            lines.append('      <div>')
+            lines.append(f'        <div style="font-size:18px;font-weight:700;line-height:1;">{html.escape(dest_city)}</div>')
+            lines.append(f'        <div style="font-size:12px;opacity:0.75;margin-top:2px;">{route_info} &bull; from &euro;{min_total:.2f}</div>')
+            lines.append('      </div>')
+            if temp_pill:
+                lines.append(f'      {temp_pill}')
+            lines.append('    </div>')
+            # Flight option cards
             trips_to_show = future_trips[:1] if summary_only else sorted(future_trips, key=lambda r: r["flight"].departureTime)
             cheapest_total = min(r["flight"].price + r["return_flight"].price for r in trips_to_show) if trips_to_show else 0
             for r in trips_to_show:
                 outbound = r["flight"]
                 ret = r["return_flight"]
-                out_weekday = outbound.departureTime.strftime("%Y-%m-%d %A %H:%M")
-                ret_weekday = ret.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 out_dur = _flight_duration_str(outbound.origin, outbound.destination)
                 ret_dur = _flight_duration_str(ret.origin, ret.destination)
-                out_leg = f"{out_weekday}{out_dur}  {outbound.price}€  {_display_airport(outbound.origin)}→{_display_airport(outbound.destination)}"
-                ret_leg = f"{ret_weekday}{ret_dur}  {ret.price}€  {_display_airport(ret.origin)}→{_display_airport(ret.destination)}"
                 urls = _booking_urls_for_trip(outbound, ret, adults)
                 first_hotel = r["hotels"][0] if r["hotels"] else {}
-                hotel_name = first_hotel.get("Accommodation Name") or first_hotel.get("accommodation_name") or "—"
+                hotel_name = first_hotel.get("Accommodation Name") or first_hotel.get("accommodation_name") or ""
                 hotel_url = first_hotel.get("Accommodation URL") or first_hotel.get("accommodation_url") or ""
                 hotel_price = first_hotel.get("Price Per Stay") or first_hotel.get("price_per_stay") or ""
-                hotel_part = f"  |  <a class=\"trip-details trip-link\" href=\"{html.escape(hotel_url)}\" target=\"_blank\" rel=\"noopener\">{html.escape(hotel_name)}</a> {html.escape(hotel_price)}" if hotel_url else (f"  |  {html.escape(hotel_name)} {html.escape(hotel_price)}" if hotel_name or hotel_price else "")
+                hotel_rating = first_hotel.get("Review Rating") or first_hotel.get("review_rating") or ""
                 trip_total = outbound.price + ret.price
                 opt_class = "flight-option flight-option-cheapest" if trip_total == cheapest_total else "flight-option"
-                lines.append(f"      <div class=\"{opt_class}\">")
-                if "booking_url" in urls:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a> ({trip_total:.2f}€){hotel_part}")
-                else:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a> ({trip_total:.2f}€){hotel_part}")
-                lines.append("      </div>")
-            lines.append("    </div>")
+                booking_url = urls.get("booking_url") or urls.get("booking_url_outbound") or ""
+                out_dep_str = outbound.departureTime.strftime("%a %d %b %Y")
+                ret_dep_str = ret.departureTime.strftime("%a %d %b %Y")
+                lines.append(f'    <div class="{opt_class}">')
+                lines.append('      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">')
+                lines.append('        <tr>')
+                lines.append('          <td style="padding:16px 20px;vertical-align:top;">')
+                lines.append(f'            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#8d8d8b;margin-bottom:4px;">Outbound &bull; {html.escape(out_dep_str)}</div>')
+                _append_flight_leg_table(lines, outbound.origin, outbound.originFull, outbound.departureTime.strftime("%H:%M"), outbound.destination, outbound.destinationFull, out_dur, outbound.flightNumber, outbound.price, False)
+                lines.append('            <div style="height:1px;background:#f2f2f1;margin:8px 0;"></div>')
+                lines.append(f'            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#8d8d8b;margin-bottom:4px;">Return &bull; {html.escape(ret_dep_str)}</div>')
+                _append_flight_leg_table(lines, ret.origin, ret.originFull, ret.departureTime.strftime("%H:%M"), ret.destination, ret.destinationFull, ret_dur, ret.flightNumber, ret.price, True)
+                lines.append('          </td>')
+                lines.append('          <td style="width:150px;border-left:1px solid #f2f2f1;padding:16px;vertical-align:middle;text-align:right;">')
+                lines.append(f'            <div style="font-size:24px;font-weight:700;color:#171717;line-height:1;">&euro;{trip_total:.2f}</div>')
+                lines.append('            <div style="font-size:10px;color:#8d8d8b;margin-top:2px;">per person, return</div>')
+                lines.append(f'            <a href="{html.escape(booking_url)}" target="_blank" rel="noopener" style="display:inline-block;background:#0079c2;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;border-radius:8px;text-decoration:none;margin-top:12px;white-space:nowrap;">Book on Ryanair</a>')
+                lines.append('          </td>')
+                lines.append('        </tr>')
+                lines.append('      </table>')
+                if hotel_name and hotel_url:
+                    _append_hotel_card_html(lines, hotel_name, hotel_url, hotel_price, hotel_rating, dest_city)
+                lines.append('    </div>')
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
-            lines.append("  </div>")
+            lines.append('  </div>')
     elif agg_flights:
         summary_rows = []
         for dest_city, days, nights, flights in agg_flights:
@@ -1399,37 +1482,61 @@ def _build_html(
             min_total = price + ib.price
             out_date = ob.departureTime.date()
             ret_date = ib.departureTime.date()
-            route_label = _flight_route_label(ob, ib)
             slug = _anchor_slug(dest_city, days, nights)
-            lines.append(f"  <div class=\"trip\" id=\"{html.escape(slug)}\">")
-            lines.append(f"    <div class=\"trip-header\">{html.escape(dest_city)} (from {min_total:.2f}€) — {days} days, {nights} nights</div>")
             today = datetime.today().date()
             future_flights = [(ob, ib, price) for ob, ib, price in flights if ob.departureTime.date() >= today]
             if not future_flights:
                 continue
-            lines.append("    <div class=\"flight\">")
-            lines.append(f"      <div class=\"flight-title\">Flight{html.escape(route_label)}</div>")
+            lines.append(f'  <div class="trip" id="{html.escape(slug)}">')
+            # Destination header
+            route_info = f"{_display_airport(ob.origin)} &rarr; {_display_airport(ob.destination)} &bull; {days}&nbsp;days, {nights}&nbsp;nights"
+            first_weather = weather_by_key.get((dest_city, out_date.isoformat(), ret_date.isoformat())) or []
+            temp_pill = ""
+            if first_weather and isinstance(first_weather[0], dict):
+                summary = first_weather[0].get("weather_summary") or {}
+                avg_t = summary.get("avg_temperature_mean") or summary.get("avg_temp")
+                if avg_t is not None:
+                    month_str = ob.departureTime.strftime("%B")
+                    temp_pill = f'<span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;background:rgba(255,255,255,0.15);border-radius:8px;padding:4px 10px;white-space:nowrap;">&#x1F321; {html.escape(str(avg_t))}&deg;C avg &bull; {html.escape(month_str)}</span>'
+            lines.append('    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0079c2;color:#fff;">')
+            lines.append('      <div>')
+            lines.append(f'        <div style="font-size:18px;font-weight:700;line-height:1;">{html.escape(dest_city)}</div>')
+            lines.append(f'        <div style="font-size:12px;opacity:0.75;margin-top:2px;">{route_info} &bull; from &euro;{min_total:.2f}</div>')
+            lines.append('      </div>')
+            if temp_pill:
+                lines.append(f'      {temp_pill}')
+            lines.append('    </div>')
             flights_to_show = future_flights[:1] if summary_only else sorted(future_flights, key=lambda x: x[0].departureTime)
-            cheapest_total = min(price + ib.price for ob, ib, price in flights_to_show) if flights_to_show else 0
+            cheapest_total = min(p + i.price for _, i, p in flights_to_show) if flights_to_show else 0
             for ob, ib, price in flights_to_show:
-                out_weekday = ob.departureTime.strftime("%Y-%m-%d %A %H:%M")
-                ret_weekday = ib.departureTime.strftime("%Y-%m-%d %A %H:%M")
                 out_dur = _flight_duration_str(ob.origin, ob.destination)
                 ret_dur = _flight_duration_str(ib.origin, ib.destination)
-                out_leg = f"{out_weekday}{out_dur}  {price}€  {_display_airport(ob.origin)}→{_display_airport(ob.destination)}"
-                ret_leg = f"{ret_weekday}{ret_dur}  {ib.price}€  {_display_airport(ib.origin)}→{_display_airport(ib.destination)}"
                 urls = _booking_urls_for_trip(ob, ib, adults)
                 trip_total = price + ib.price
                 opt_class = "flight-option flight-option-cheapest" if trip_total == cheapest_total else "flight-option"
-                lines.append(f"      <div class=\"{opt_class}\">")
-                if "booking_url" in urls:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}  |  {html.escape(ret_leg)}</a> ({trip_total:.2f}€)")
-                else:
-                    lines.append(f"      <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_outbound'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(out_leg)}</a>  |  <a class=\"trip-details trip-link\" href=\"{html.escape(urls['booking_url_return'])}\" target=\"_blank\" rel=\"noopener\">{html.escape(ret_leg)}</a> ({trip_total:.2f}€)")
-                lines.append("      </div>")
-            lines.append("    </div>")
+                booking_url = urls.get("booking_url") or urls.get("booking_url_outbound") or ""
+                out_dep_str = ob.departureTime.strftime("%a %d %b %Y")
+                ret_dep_str = ib.departureTime.strftime("%a %d %b %Y")
+                lines.append(f'    <div class="{opt_class}">')
+                lines.append('      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">')
+                lines.append('        <tr>')
+                lines.append('          <td style="padding:16px 20px;vertical-align:top;">')
+                lines.append(f'            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#8d8d8b;margin-bottom:4px;">Outbound &bull; {html.escape(out_dep_str)}</div>')
+                _append_flight_leg_table(lines, ob.origin, ob.originFull, ob.departureTime.strftime("%H:%M"), ob.destination, ob.destinationFull, out_dur, ob.flightNumber, price, False)
+                lines.append('            <div style="height:1px;background:#f2f2f1;margin:8px 0;"></div>')
+                lines.append(f'            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#8d8d8b;margin-bottom:4px;">Return &bull; {html.escape(ret_dep_str)}</div>')
+                _append_flight_leg_table(lines, ib.origin, ib.originFull, ib.departureTime.strftime("%H:%M"), ib.destination, ib.destinationFull, ret_dur, ib.flightNumber, ib.price, True)
+                lines.append('          </td>')
+                lines.append('          <td style="width:150px;border-left:1px solid #f2f2f1;padding:16px;vertical-align:middle;text-align:right;">')
+                lines.append(f'            <div style="font-size:24px;font-weight:700;color:#171717;line-height:1;">&euro;{trip_total:.2f}</div>')
+                lines.append('            <div style="font-size:10px;color:#8d8d8b;margin-top:2px;">per person, return</div>')
+                lines.append(f'            <a href="{html.escape(booking_url)}" target="_blank" rel="noopener" style="display:inline-block;background:#0079c2;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;border-radius:8px;text-decoration:none;margin-top:12px;white-space:nowrap;">Book on Ryanair</a>')
+                lines.append('          </td>')
+                lines.append('        </tr>')
+                lines.append('      </table>')
+                lines.append('    </div>')
             _add_weather_attractions_html(lines, dest_city, out_date, ret_date, weather_by_key, attractions_by_dest, city_profiles_by_dest, best_months_by_dest, similar_cities_by_dest, nearby_destinations_by_dest, seasonal_calendar_by_dest)
-            lines.append("  </div>")
+            lines.append('  </div>')
     if not agg_hotel and not agg_flights:
         lines.append("  <p>(No round trips found.)</p>")
     # Global GeoTemp sections
