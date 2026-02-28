@@ -17,6 +17,7 @@ jobs:
     env:
       GMAIL_USER: sahib.ammar@gmail.com
       GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+      GEOTEMP_API_KEY: ${{ secrets.GEOTEMP_API_KEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,16 +47,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: travel-helper-report
-          path: travel_helper.json
+          path: data/travel_helper.json
           retention-days: 14
 
       - name: Commit and push JSON to repo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add travel_helper.json
+          git add data/travel_helper.json
           if git diff --staged --quiet; then
-            echo "No changes to travel_helper.json"
+            echo "No changes to data/travel_helper.json"
           else
             git commit -m "Daily travel helper report [skip ci]"
             git push origin HEAD:master

@@ -1,6 +1,6 @@
 # Travel Helper MCP Server
 
-MCP server that reads **travel_helper.json** (produced by `travel_helper.py`) and exposes tools to list and search flight deals and destination info. No external APIs — data comes from the local file.
+MCP server that reads **data/travel_helper.json** (produced by `travel_helper.py`) and exposes tools to list and search flight deals and destination info. No external APIs — data comes from the local file.
 
 Supports **STDIO** (for Cursor/Claude Desktop) and **Streamable HTTP** (URL-based, for remote clients).
 
@@ -8,7 +8,7 @@ Supports **STDIO** (for Cursor/Claude Desktop) and **Streamable HTTP** (URL-base
 
 ## Data source
 
-- **File**: `travel_helper.json` (by default next to the repo root, or set `TRAVEL_HELPER_JSON`).
+- **File**: `data/travel_helper.json` (by default in repo `data/` folder, or set `TRAVEL_HELPER_JSON`).
 - **Root keys**: `cheapest_flights` or `cheapest_flights_with_hotels` (list of destination groups).
 - **Each group**: `destination`, `days`, `nights`, `min_total_eur`, `flights[]`, optional `destination_info` (weather, attractions, etc.).
 
@@ -71,7 +71,7 @@ python -m mcp_travel_helper
 python -m mcp_travel_helper --transport streamable-http [--host 127.0.0.1] [--port 8000]
 
 # Custom JSON path (any mode)
-TRAVEL_HELPER_JSON=/path/to/travel_helper.json python -m mcp_travel_helper
+TRAVEL_HELPER_JSON=/path/to/data/travel_helper.json python -m mcp_travel_helper
 ```
 
 ---
@@ -130,13 +130,13 @@ If tools return empty lists (`[]` or `{"result":[]}`):
 
 2. **Running in Docker** — The image uses empty sample data unless you mount your file:
    ```bash
-   docker run -p 8000:8000 -v "$(pwd)/travel_helper.json:/app/travel_helper.json" travel-helper-mcp
+   docker run -p 8000:8000 -v "$(pwd)/data/travel_helper.json:/app/data/travel_helper.json" travel-helper-mcp
    ```
-   Run from the repo root so `$(pwd)/travel_helper.json` exists.
+   Run from the repo root so `$(pwd)/data/travel_helper.json` exists.
 
-3. **Running locally** — Start the server from the **repository root** so it finds `travel_helper.json`, or set the path explicitly:
+3. **Running locally** — Start the server from the **repository root** so it finds `data/travel_helper.json`, or set the path explicitly:
    ```bash
-   TRAVEL_HELPER_JSON=/full/path/to/travel_helper.json python -m mcp_travel_helper --transport streamable-http
+   TRAVEL_HELPER_JSON=/full/path/to/data/travel_helper.json python -m mcp_travel_helper --transport streamable-http
    ```
 
 4. **Generate data** — If you don’t have `travel_helper.json` yet, create it with:

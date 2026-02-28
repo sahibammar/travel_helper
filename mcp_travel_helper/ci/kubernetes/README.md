@@ -64,16 +64,16 @@ To expose the service outside the cluster, either:
 1. **Change Service type to LoadBalancer** (edit `service.yaml`, set `type: LoadBalancer`), or
 2. **Add an Ingress** pointing to `travel-helper-mcp:8000`.
 
-## Mount real data (travel_helper.json)
+## Mount real data (data/travel_helper.json)
 
 1. Create a ConfigMap from your JSON file:
    ```bash
-   kubectl create configmap travel-helper-mcp-data --from-file=travel_helper.json=/path/to/travel_helper.json
+   kubectl create configmap travel-helper-mcp-data --from-file=travel_helper.json=/path/to/data/travel_helper.json
    ```
 2. In `deployment.yaml`, uncomment the `volumeMounts` under the container and the `volumes` section at the bottom.
 3. Apply: `kubectl apply -f mcp_travel_helper/ci/kubernetes/deployment.yaml`
 
-If the JSON is large, consider a PersistentVolumeClaim and mount it at `/app/travel_helper.json` instead of a ConfigMap.
+If the JSON is large, consider a PersistentVolumeClaim and mount it at `/app/data/travel_helper.json` instead of a ConfigMap.
 
 ## Remove
 

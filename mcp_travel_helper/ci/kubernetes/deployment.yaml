@@ -33,7 +33,7 @@ spec:
           # Optional: mount data from ConfigMap (replace with your ConfigMap name if using real data)
           # volumeMounts:
           #   - name: data
-          #     mountPath: /app/travel_helper.json
+          #     mountPath: /app/data/travel_helper.json
           #     subPath: travel_helper.json
           resources:
             requests:
@@ -54,7 +54,7 @@ spec:
               port: 8000
             initialDelaySeconds: 5
             periodSeconds: 10
-      # Optional: mount ConfigMap for travel_helper.json
+      # Optional: mount ConfigMap for data/travel_helper.json
       # volumes:
       #   - name: data
       #     configMap:

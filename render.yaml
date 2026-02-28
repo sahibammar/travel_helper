@@ -1,0 +1,15 @@
+# Render Blueprint — deploy the Travel Deals Assistant as a web service.
+# See https://render.com/docs/deploys and https://render.com/docs/blueprint-spec
+#
+# To deploy: connect this repo in the Render Dashboard, or use "New > Blueprint"
+# and point to this file. Set GROQ_API_KEY in the service Environment.
+services:
+  - type: web
+    runtime: python
+    name: travel-assistant
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 travel_assistant:app
+    healthCheckPath: /
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false

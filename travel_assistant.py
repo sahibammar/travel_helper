@@ -1,13 +1,12 @@
 """Travel Deals AI Assistant — Flask web app.
 
 Usage:
-    export NVIDIA_API_KEY=nvapi-...
+    export GROQ_API_KEY=gsk_...
     python travel_assistant.py
     # open http://localhost:5001  (or set PORT=... to override)
 
 Environment variables:
-    NVIDIA_API_KEY   — NVIDIA NIM API key (required)
-    LLM_BASE_URL     — override LLM endpoint (default: https://integrate.api.nvidia.com/v1)
+    GROQ_API_KEY     — Groq API key for LLM
     PORT             — HTTP port (default 5001; 5000 often used by macOS AirPlay)
 """
 from __future__ import annotations
@@ -49,40 +48,127 @@ except Exception:
 # ---------------------------------------------------------------------------
 # Local mcp_travel_helper server  (Streamable-HTTP on loopback)
 # ---------------------------------------------------------------------------
-_LOCAL_MCP_PORT = int(os.environ.get("TRAVEL_HELPER_MCP_PORT", "8001"))
-_LOCAL_MCP_URL  = f"http://127.0.0.1:{_LOCAL_MCP_PORT}/mcp"
+# Port may be updated if default is in use so we start our own server with correct data path
+_MCP_PORT = int(os.environ.get("TRAVEL_HELPER_MCP_PORT", "8001"))
+
+
+def _local_mcp_url() -> str:
+    return f"http://127.0.0.1:{_MCP_PORT}/mcp"
+
+
+def _count_deals_from_json(json_path: Path) -> tuple[str, int, list[str]]:
+    """Read data/travel_helper.json directly and return (abs_path, deal_count, destination_names)."""
+    abs_path = str(json_path.resolve())
+    deals_count = 0
+    destination_names: list[str] = []
+    with open(json_path, encoding="utf-8") as f:
+        data = json.load(f)
+    deals = data.get("cheapest_flights_with_hotels") or data.get("cheapest_flights") or []
+    if isinstance(deals, list):
+        deals_count = len(deals)
+        for g in deals:
+            if isinstance(g, dict) and g.get("destination"):
+                destination_names.append(str(g["destination"]))
+    return abs_path, deals_count, destination_names
+
+
+def _get_destination_chips(json_path: Path) -> list[dict]:
+    """Read data/travel_helper.json and return list of {destination, min_total_eur} for chips."""
+    out: list[dict] = []
+    try:
+        with open(json_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return out
+    deals = data.get("cheapest_flights_with_hotels") or data.get("cheapest_flights") or []
+    if not isinstance(deals, list):
+        return out
+    for g in deals:
+        if not isinstance(g, dict) or not g.get("destination"):
+            continue
+        min_eur = g.get("min_total_eur")
+        if min_eur is None:
+            continue
+        try:
+            min_eur = float(min_eur)
+        except (TypeError, ValueError):
+            continue
+        out.append({"destination": str(g["destination"]), "min_total_eur": round(min_eur, 2)})
+    return out
+
+
+def _log_data_status() -> None:
+    """At startup: log absolute path of travel_helper.json and total deal count (read directly from file)."""
+    app_dir = Path(__file__).resolve().parent
+    json_path = app_dir / "data" / "travel_helper.json"
+    try:
+        abs_path, deals_count, destination_names = _count_deals_from_json(json_path)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Travel Assistant: could not load data: {e}", file=sys.stderr)
+        sys.stderr.flush()
+        return
+    print(
+        f"Travel Assistant: data/travel_helper.json = {abs_path}  deals = {deals_count}",
+        file=sys.stderr,
+    )
+    if destination_names:
+        print(f"Travel Assistant: destinations: {', '.join(destination_names)}", file=sys.stderr)
+    sys.stderr.flush()
 
 
 def _start_local_mcp_server() -> None:
-    """Launch mcp_travel_helper as Streamable-HTTP in a daemon thread."""
-    # Skip if already listening (e.g. manual start or hot-reload)
-    try:
-        with socket.create_connection(("127.0.0.1", _LOCAL_MCP_PORT), timeout=0.3):
-            return
-    except OSError:
-        pass
+    """Launch mcp_travel_helper as Streamable-HTTP in a daemon thread.
+    If the default port is in use (e.g. old server with wrong data path), tries the next
+    free port so we always run a server that has TRAVEL_HELPER_JSON set to data/travel_helper.json.
+    """
+    global _MCP_PORT
+    _app_dir = Path(__file__).resolve().parent
+    _json_path = _app_dir / "data" / "travel_helper.json"
+    env = os.environ.copy()
+    env["TRAVEL_HELPER_JSON"] = str(_json_path)
 
-    def _run() -> None:
-        subprocess.run(
-            [
-                sys.executable, "-m", "mcp_travel_helper",
-                "--transport", "streamable-http",
-                "--host", "127.0.0.1",
-                "--port", str(_LOCAL_MCP_PORT),
-            ],
-            cwd=str(Path(__file__).parent),
-        )
-
-    threading.Thread(target=_run, daemon=True).start()
-
-    # Wait up to 6 s for the server to accept connections
-    for _ in range(60):
-        time.sleep(0.1)
+    for attempt in range(5):
+        port = _MCP_PORT + attempt
         try:
-            with socket.create_connection(("127.0.0.1", _LOCAL_MCP_PORT), timeout=0.1):
-                return
+            with socket.create_connection(("127.0.0.1", port), timeout=0.2):
+                pass
+            # Port in use — try next (likely old server with wrong path)
+            continue
         except OSError:
             pass
+
+        def _run(p: int) -> None:
+            subprocess.run(
+                [
+                    sys.executable, "-m", "mcp_travel_helper",
+                    "--transport", "streamable-http",
+                    "--host", "127.0.0.1",
+                    "--port", str(p),
+                ],
+                cwd=str(_app_dir),
+                env=env,
+            )
+
+        threading.Thread(target=_run, args=(port,), daemon=True).start()
+
+        for _ in range(60):
+            time.sleep(0.1)
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=0.1):
+                    _MCP_PORT = port
+                    if attempt > 0:
+                        print(
+                            f"Travel Assistant: Started MCP server on port {port} (data: {_json_path})",
+                            file=sys.stderr,
+                        )
+                    return
+            except OSError:
+                pass
+    print(
+        "Travel Assistant: Could not start MCP server on ports 8001–8005. "
+        f"Ensure data/travel_helper.json exists at {_json_path}",
+        file=sys.stderr,
+    )
 
 # ---------------------------------------------------------------------------
 # Config
@@ -90,16 +176,12 @@ def _start_local_mcp_server() -> None:
 app = Flask(__name__)
 
 # Start the local mcp_travel_helper server (once, at import time)
+_log_data_status()
 _start_local_mcp_server()
 
-# Provider presets — (base_url, model)
-PROVIDERS: dict[str, tuple[str, str]] = {
-    "groq":      ("https://api.groq.com/openai/v1",          "meta-llama/llama-4-scout-17b-16e-instruct"),
-    "together":  ("https://api.together.xyz/v1",             "meta-llama/Llama-4-Scout-17B-16E-Instruct"),
-    "openrouter":("https://openrouter.ai/api/v1",            "meta-llama/llama-4-scout:free"),
-    "nvidia":    ("https://integrate.api.nvidia.com/v1",     "meta/llama-4-scout-17b-16e-instruct"),
-}
-DEFAULT_PROVIDER = "groq"
+# Groq (LLM key from GROQ_API_KEY env only)
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
 SUGGESTED_QUESTIONS = [
     "What's the cheapest deal available?",
@@ -165,7 +247,7 @@ async def _get_all_mcp_data() -> tuple[list[dict], dict[str, dict]]:
     if not _MCP_CLIENT_OK:
         return [], {}
 
-    async with _http_client(_LOCAL_MCP_URL) as streams:
+    async with _http_client(_local_mcp_url()) as streams:
         async with ClientSession(streams[0], streams[1]) as session:
             await session.initialize()
 
@@ -197,22 +279,85 @@ async def _get_all_mcp_data() -> tuple[list[dict], dict[str, dict]]:
     return summary, details
 
 
-def _build_llm_context(summary: list[dict]) -> str:
-    """Build a concise text context from the MCP deals summary for the LLM."""
+def _destination_info_digest(detail: dict) -> str:
+    """Build a short text summary of destination_info so the LLM can answer destination questions."""
+    info = (detail or {}).get("destination_info") or {}
+    if not info or not isinstance(info, dict):
+        return ""
+    parts = []
+    # City profile: coastal, climate, country
+    city = (info.get("city_profile") or {}) if isinstance(info.get("city_profile"), dict) else {}
+    city_data = city.get("city") if isinstance(city.get("city"), dict) else {}
+    if city_data:
+        if city_data.get("is_coastal"):
+            parts.append("coastal")
+        if city_data.get("climate_description"):
+            parts.append(city_data.get("climate_description", ""))
+        if city_data.get("country"):
+            parts.append(f"in {city_data.get('country')}")
+    # Weather (month summary)
+    w = (info.get("weather_month") or {}) if isinstance(info.get("weather_month"), dict) else {}
+    summary = w.get("weather_summary") if isinstance(w.get("weather_summary"), dict) else {}
+    if summary:
+        t = summary.get("avg_temperature_mean")
+        rain = summary.get("total_precipitation_mm")
+        if t is not None:
+            parts.append(f"avg temp ~{t}°C")
+        if rain is not None:
+            parts.append(f"~{rain}mm rain")
+    # Best month
+    best = (info.get("best_months") or {}) if isinstance(info.get("best_months"), dict) else {}
+    if best.get("best_month"):
+        parts.append(f"best month: {best.get('best_month')}")
+    # Top activities (travel_intelligence)
+    ti = (info.get("travel_intelligence") or {}) if isinstance(info.get("travel_intelligence"), dict) else {}
+    top_act = ti.get("top_activities")
+    if isinstance(top_act, list) and top_act:
+        acts = [a.get("activity") for a in top_act[:5] if isinstance(a, dict) and a.get("activity")]
+        if acts:
+            parts.append("activities: " + ", ".join(acts))
+    # Attraction names
+    attr = (info.get("attractions") or {}) if isinstance(info.get("attractions"), dict) else {}
+    attr_list = attr.get("attractions") if isinstance(attr.get("attractions"), list) else []
+    if attr_list:
+        names = [a.get("name") for a in attr_list[:5] if isinstance(a, dict) and a.get("name")]
+        if names:
+            parts.append("attractions: " + ", ".join(names))
+    # Features (e.g. beach_holiday, swimming) from city_profile
+    feats = city.get("features") if isinstance(city.get("features"), list) else []
+    if feats:
+        feature_names = [f.get("feature") for f in feats[:8] if isinstance(f, dict) and f.get("feature")]
+        if feature_names:
+            parts.append("features: " + ", ".join(feature_names))
+    if not parts:
+        return ""
+    return " | ".join(parts)
+
+
+def _build_llm_context(summary: list[dict], all_details: dict[str, dict] | None = None) -> str:
+    """Build context from the MCP deals summary and destination info so the LLM can answer destination questions."""
     if not summary:
         return "No flight deals available at the moment."
+    all_details = all_details or {}
     lines = [
         "Available flight deals departing from Weeze (NRN), Cologne (CGN), and Dortmund (DTM).",
         "Prices are EUR per person, return trip.",
+        "Use the destination info below to answer questions about weather, beaches, activities, attractions.",
         "",
     ]
     for d in summary:
         if not isinstance(d, dict):
             continue
-        lines.append(
-            f"- {d.get('destination')} | {d.get('days')} days / {d.get('nights')} nights"
+        dest_name = d.get("destination")
+        line = (
+            f"- {dest_name} | {d.get('days')} days / {d.get('nights')} nights"
             f" | cheapest from €{d.get('min_total_eur')} | {d.get('num_flights')} flight options"
         )
+        detail = all_details.get(dest_name) if dest_name else None
+        digest = _destination_info_digest(detail) if detail else ""
+        if digest:
+            line += f"\n  Destination info: {digest}"
+        lines.append(line)
     return "\n".join(lines)
 
 
@@ -248,7 +393,8 @@ _TRIVAGO_CSS = """
       background: #fff; border-radius: 1.2rem; border: 1px solid #d9d8d6;
       box-shadow: 0 2px 10px rgba(0,0,0,0.09); flex-shrink: 0; margin-bottom: 1.6rem;
     }
-    .header-bar { display: flex; align-items: center; padding: 1.2rem 2rem; gap: 1.2rem; }
+    .header-bar { display: flex; align-items: center; padding: 1.2rem 2rem 0.6rem; gap: 1.2rem; }
+    .page-header .chips { padding: 0 2rem 1.2rem; }
     .logo { font-size: 2rem; font-weight: 700; color: #0079c2; letter-spacing: -0.02em; flex-shrink: 0; }
     .logo-sub { font-size: 1.2rem; font-weight: 400; color: #8d8d8b; margin-left: 0.6rem; }
     .settings-row { display: flex; align-items: center; gap: 0.8rem; margin-left: auto; flex-wrap: wrap; }
@@ -478,20 +624,8 @@ HTML_TEMPLATE = (
   <div class="page-header">
     <div class="header-bar">
       <div class="logo">Weekend Travel Helper<span class="logo-sub">AI deals assistant</span></div>
-      <div class="settings-row">
-        <select id="provider-select" class="provider-select" onchange="onProviderChange()">
-          <option value="groq">Groq (recommended)</option>
-          <option value="together">Together AI</option>
-          <option value="openrouter">OpenRouter</option>
-          <option value="nvidia">NVIDIA NIM</option>
-        </select>
-        <input id="api-key-input" class="key-input" type="password"
-          placeholder="Paste API key…" autocomplete="off" oninput="saveKey()"/>
-        <a id="get-key-link" class="key-link" href="https://console.groq.com/keys"
-          target="_blank" rel="noreferrer">Get key ↗</a>
-        <span class="key-saved" id="key-saved">✓ saved</span>
-      </div>
     </div>
+    <div class="chips" id="chips-bar"></div>
   </div>
 
   <!-- ── Two-pane layout ── -->
@@ -512,7 +646,7 @@ HTML_TEMPLATE = (
             placeholder="Ask about deals…" autocomplete="off"/>
           <button class="btn-ask" id="ask-btn" onclick="submitQuestion()">Ask</button>
         </div>
-        <div class="chips" id="chips-bar"></div>
+        <div class="chips" id="suggested-chips-bar"></div>
       </div>
     </div>
 
@@ -522,7 +656,10 @@ HTML_TEMPLATE = (
         <div class="icon">✈️</div>
         <div>Ask a question to see deals here.</div>
         <div style="margin-top:0.8rem;font-size:1.2rem;color:#bbbbb9;">
-          Powered by Llama&nbsp;4&nbsp;Scout &bull; answers based strictly on travel_helper.json
+          Powered by Llama&nbsp;4&nbsp;Scout &bull; answers based strictly on data/travel_helper.json
+        </div>
+        <div style="margin-top:0.4rem;font-size:1rem;color:#999;">
+          Each new question uses the latest data — no refresh needed.
         </div>
       </div>
     </div>
@@ -532,47 +669,26 @@ HTML_TEMPLATE = (
 </div><!-- /app -->
 
 <script>
-const SUGGESTED = """ + json.dumps(SUGGESTED_QUESTIONS) + r""";
+const DESTINATION_CHIPS = {{ destination_chips | tojson }};
+const SUGGESTED = {{ suggested_questions | tojson }};
 
-/* ── Provider settings ── */
-const PROVIDER_LINKS = {
-  groq:       'https://console.groq.com/keys',
-  together:   'https://api.together.xyz/settings/api-keys',
-  openrouter: 'https://openrouter.ai/keys',
-  nvidia:     'https://build.nvidia.com/meta/llama-4-scout-17b-16e-instruct',
-};
-(function loadSettings() {
-  const p   = localStorage.getItem('travel_provider') || 'groq';
-  const key = localStorage.getItem('travel_api_key_' + p) || '';
-  document.getElementById('provider-select').value = p;
-  document.getElementById('api-key-input').value = key;
-  document.getElementById('api-key-input').placeholder = p === 'nvidia' ? 'nvapi-…' : 'API key…';
-  document.getElementById('get-key-link').href = PROVIDER_LINKS[p] || '#';
-})();
-function onProviderChange() {
-  const p = document.getElementById('provider-select').value;
-  localStorage.setItem('travel_provider', p);
-  const saved = localStorage.getItem('travel_api_key_' + p) || '';
-  document.getElementById('api-key-input').value = saved;
-  document.getElementById('api-key-input').placeholder = p === 'nvidia' ? 'nvapi-…' : 'API key…';
-  document.getElementById('get-key-link').href = PROVIDER_LINKS[p] || '#';
-}
-function saveKey() {
-  const p = document.getElementById('provider-select').value;
-  localStorage.setItem('travel_api_key_' + p, document.getElementById('api-key-input').value.trim());
-  localStorage.setItem('travel_provider', p);
-  const b = document.getElementById('key-saved');
-  b.classList.add('show'); setTimeout(() => b.classList.remove('show'), 1500);
-}
-
-/* ── Chips ── */
+/* ── Chips: destination chips in header, suggested questions under input ── */
 (function renderChips() {
-  const bar = document.getElementById('chips-bar');
-  SUGGESTED.forEach(q => {
+  const input = document.getElementById('ask-input');
+  const destBar = document.getElementById('chips-bar');
+  DESTINATION_CHIPS.forEach(function(d) {
+    const label = d.destination + ' from €' + (Number(d.min_total_eur) === Math.floor(d.min_total_eur) ? Math.floor(d.min_total_eur) : d.min_total_eur);
+    const c = document.createElement('span');
+    c.className = 'chip'; c.textContent = label;
+    c.onclick = function() { input.value = 'Tell me about ' + d.destination; submitQuestion(); };
+    destBar.appendChild(c);
+  });
+  const suggestedBar = document.getElementById('suggested-chips-bar');
+  SUGGESTED.forEach(function(q) {
     const c = document.createElement('span');
     c.className = 'chip'; c.textContent = q;
-    c.onclick = () => { document.getElementById('ask-input').value = q; submitQuestion(); };
-    bar.appendChild(c);
+    c.onclick = function() { input.value = q; submitQuestion(); };
+    suggestedBar.appendChild(c);
   });
 })();
 document.getElementById('ask-input').addEventListener('keydown', e => {
@@ -802,14 +918,10 @@ async function submitQuestion() {
     }
   }, ASK_TIMEOUT_MS);
 
-  const provider = document.getElementById('provider-select').value;
-  const apiKey   = (document.getElementById('api-key-input').value ||
-                    localStorage.getItem('travel_api_key_' + provider) || '').trim();
-
   try {
     const res = await fetch('/api/ask', {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ question, api_key: apiKey, provider }),
+      body: JSON.stringify({ question }),
       signal: ourAbort.signal,
     });
 
@@ -918,7 +1030,14 @@ def _run_mcp(coro):
 
 @app.route("/")
 def index():
-    html = render_template_string(HTML_TEMPLATE)
+    app_dir = Path(__file__).resolve().parent
+    json_path = app_dir / "data" / "travel_helper.json"
+    destination_chips = _get_destination_chips(json_path)
+    html = render_template_string(
+        HTML_TEMPLATE,
+        destination_chips=destination_chips,
+        suggested_questions=SUGGESTED_QUESTIONS,
+    )
     # Cache-bust: unique comment per request so browser never uses cached HTML/JS
     html = html.replace("</head>", "<!-- v=%s -->\n  </head>" % time.time())
     resp = app.make_response(html)
@@ -934,36 +1053,28 @@ def ask():
     if not question:
         return jsonify({"error": "No question provided"}), 400
 
-    provider_id = (body.get("provider") or DEFAULT_PROVIDER).lower().strip()
-    base_url, model = PROVIDERS.get(provider_id, PROVIDERS[DEFAULT_PROVIDER])
-
-    api_key = (
-        (body.get("api_key") or "").strip()
-        or os.environ.get("NVIDIA_API_KEY")
-        or os.environ.get("OPENAI_API_KEY")
-        or os.environ.get("GROQ_API_KEY")
-        or ""
-    )
+    base_url, model = GROQ_BASE_URL, GROQ_MODEL
+    api_key = (os.environ.get("GROQ_API_KEY") or "").strip()
     if not api_key:
         return jsonify(
-            {"error": "No API key. Paste your key in the ⚙ settings field above."}
+            {"error": "GROQ_API_KEY is not set on the server."}
         ), 400
 
     tid = threading.get_ident()
-    app.logger.info("[ask] Q=%r  thread=%d  provider=%s", question, tid, provider_id)
+    app.logger.info("[ask] Q=%r  thread=%d", question, tid)
 
     # ── Fetch all MCP data in a fresh thread (no asyncio state leakage) ──
     t0 = time.time()
     try:
         summary, all_details = _run_mcp(_get_all_mcp_data())
-        app.logger.info("[ask] MCP done in %.2fs: %d dests, thread=%d",
-                        time.time() - t0, len(summary), tid)
+        app.logger.info("[ask] MCP done in %.2fs: %d dests",
+                        time.time() - t0, len(summary))
     except Exception as exc:
-        app.logger.warning("[ask] MCP FAILED after %.2fs: %s  thread=%d",
-                           time.time() - t0, exc, tid)
+        app.logger.warning("[ask] MCP FAILED after %.2fs: %s",
+                           time.time() - t0, exc)
         summary, all_details = [], {}
 
-    context   = _build_llm_context(summary)
+    context   = _build_llm_context(summary, all_details)
     all_dests = list(all_details.keys())
     use_mock  = (api_key == "MOCK")
     client    = None if use_mock else OpenAI(base_url=base_url, api_key=api_key)
@@ -1070,5 +1181,5 @@ def hotels_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f"Starting Travel Deals Assistant on http://localhost:{port}")
-    print("Set NVIDIA_API_KEY environment variable before starting.")
+    print("Set GROQ_API_KEY (or paste your key in the app) before asking questions.")
     app.run(debug=True, port=port, use_reloader=False, threaded=True)

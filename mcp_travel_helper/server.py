@@ -19,20 +19,39 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response
 
-# Default path: travel_helper.json next to this file or in cwd
-_DEFAULT_JSON = os.environ.get("TRAVEL_HELPER_JSON") or str(
-    Path(__file__).resolve().parent.parent / "travel_helper.json"
-)
+# Paths to try when loading data (first existing wins when resolving at runtime)
+def _json_path_candidates() -> list[Path]:
+    """Return candidate paths for travel_helper.json in order of preference."""
+    candidates = []
+    env_path = os.environ.get("TRAVEL_HELPER_JSON")
+    if env_path:
+        candidates.append(Path(env_path).resolve())
+    # Repo root data/ relative to this file (server.py is in mcp_travel_helper/)
+    repo_data = Path(__file__).resolve().parent.parent / "data" / "travel_helper.json"
+    candidates.append(repo_data)
+    # CWD-relative (e.g. when started from repo root)
+    candidates.append(Path.cwd() / "data" / "travel_helper.json")
+    return candidates
+
+
+def _resolve_json_path() -> str:
+    """Return the path to use for loading JSON (first candidate that exists, or first candidate)."""
+    for p in _json_path_candidates():
+        if p.exists():
+            return str(p)
+    return str(_json_path_candidates()[0])
+
 
 mcp = FastMCP(
     "Travel Helper",
-    instructions="Query flight deals and destination info from travel_helper.json (Weeze/Köln/Dortmund → Europe).",
+    instructions="Query flight deals and destination info from data/travel_helper.json (Weeze/Köln/Dortmund → Europe).",
 )
 
 _DOCS_HTML_PATH = Path(__file__).resolve().parent / "docs.html"
@@ -47,9 +66,11 @@ async def _docs_handler(request: Request) -> Response:
 
 
 def _load_data() -> dict:
-    """Load travel_helper.json. Returns empty structure if file missing or invalid."""
+    """Load data/travel_helper.json from disk. No cache — every tool call reads the file fresh.
+    After you run travel_helper.py --json, the next request sees the new data (no restart needed)."""
+    path = _resolve_json_path()
     try:
-        with open(_DEFAULT_JSON, encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
         return {"_error": str(e), "cheapest_flights": [], "cheapest_flights_with_hotels": []}
@@ -63,22 +84,36 @@ def _deals_list(data: dict) -> list[dict]:
     return []
 
 
+def _file_metadata(path: str) -> dict:
+    """Return mtime_iso and size_bytes for the path, or empty dict if not found."""
+    try:
+        st = os.stat(path)
+        mtime_iso = datetime.fromtimestamp(st.st_mtime).isoformat()
+        return {"file_mtime_iso": mtime_iso, "file_size_bytes": st.st_size}
+    except OSError:
+        return {}
+
+
 @mcp.tool()
 def travel_deals_data_status() -> dict:
     """Return which data file the server is using and how many deal groups are loaded.
-    Use this to troubleshoot empty results: if deals_count is 0, mount or set TRAVEL_HELPER_JSON to your travel_helper.json."""
+    No cache: every request reads the file from disk. Use file_mtime_iso to verify you see the latest run.
+    If deals_count is 0, set TRAVEL_HELPER_JSON to data/travel_helper.json and restart the app."""
+    path = _resolve_json_path()
     data = _load_data()
     deals = _deals_list(data)
-    return {
-        "path": _DEFAULT_JSON,
+    out = {
+        "path": path,
         "deals_count": len(deals),
         "error": data.get("_error"),
     }
+    out.update(_file_metadata(path))
+    return out
 
 
 @mcp.tool()
 def travel_deals_list(limit: int = 50) -> list[dict]:
-    """List all destination deal groups from travel_helper.json.
+    """List all destination deal groups from data/travel_helper.json.
     Each group has destination, days, nights, min_total_eur, and multiple flight options.
     Use limit to cap the number of destinations returned (default 50)."""
     data = _load_data()
@@ -152,7 +187,7 @@ def travel_deals_destination(destination: str, max_flights: int = 10) -> dict:
 @mcp.tool()
 def travel_deals_cheapest(top_n: int = 10) -> list[dict]:
     """Return the top N cheapest deal groups by min_total_eur (ascending).
-    Data is already sorted by min_total in travel_helper.json; this just slices the first top_n."""
+    Data is already sorted by min_total in data/travel_helper.json; this just slices the first top_n."""
     data = _load_data()
     if data.get("_error"):
         return [{"error": data["_error"]}]

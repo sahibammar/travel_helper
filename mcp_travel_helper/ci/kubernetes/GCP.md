@@ -44,7 +44,7 @@ gcloud run deploy travel-helper-mcp \
 
 ### Use your data file (optional)
 
-Upload `travel_helper.json` to Cloud Storage and mount it, or bake it into the image before step 4. Easiest: add a step before the build to copy the file into the build context and add a line in the Dockerfile to COPY it, then run the build again.
+Upload `data/travel_helper.json` to Cloud Storage and mount it, or bake it into the image before step 4. Easiest: add a step before the build to copy the file into the build context and add a line in the Dockerfile to COPY it, then run the build again.
 
 Alternatively, use a **Secret** or **Cloud Storage Fuse** (more setup). For small JSON you can pass as env (base64) or use a startup script that fetches from GCS.
 
@@ -122,7 +122,7 @@ kubectl apply -f mcp_travel_helper/ci/kubernetes/
 
 ### Mount real data
 
-Create a ConfigMap from your `travel_helper.json`, uncomment the volume/volumeMount in `deployment.yaml`, then re-apply. See the main [ci/kubernetes/README.md](README.md).
+Create a ConfigMap from your `data/travel_helper.json`, uncomment the volume/volumeMount in `deployment.yaml`, then re-apply. See the main [ci/kubernetes/README.md](README.md).
 
 ---
 

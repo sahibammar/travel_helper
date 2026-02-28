@@ -33,6 +33,17 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
+# #region agent log
+_DEBUG_LOG = Path(__file__).resolve().parent / ".cursor" / "debug-5cc9a6.log"
+def _debug_log(location: str, message: str, data: dict, hypothesis_id: str) -> None:
+    try:
+        payload = {"sessionId": "5cc9a6", "location": location, "message": message, "data": data, "timestamp": int(time.time() * 1000), "hypothesisId": hypothesis_id}
+        with open(_DEBUG_LOG, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+# #endregion
+
 # Project root on path for trivago package
 if __name__ == "__main__" and __package__ is None:
     _root = Path(__file__).resolve().parent
@@ -702,6 +713,55 @@ _TRIVAGO_CSS = """    body { margin:0; padding:16px; background:#f2f2f1; font-fa
     }"""
 
 
+def _load_geotemp_from_json(json_path: str = "data/travel_helper.json") -> dict[str, dict]:
+    """Load destination -> destination_info from data/travel_helper.json for temperature display."""
+    out: dict[str, dict] = {}
+    try:
+        with open(json_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return out
+    deals = data.get("cheapest_flights_with_hotels") or data.get("cheapest_flights") or []
+    if not isinstance(deals, list):
+        return out
+    for g in deals:
+        if not isinstance(g, dict):
+            continue
+        dest = g.get("destination")
+        info = g.get("destination_info")
+        if dest and isinstance(info, dict):
+            out[dest] = info
+    return out
+
+
+def _temp_str_for_destination(geotemp_by_dest: dict[str, dict] | None, dest: str) -> str:
+    """Return HTML snippet for temperature next to destination name, or empty string."""
+    if not geotemp_by_dest or not dest:
+        return ""
+    info = geotemp_by_dest.get(dest) or {}
+    if not isinstance(info, dict):
+        return ""
+    # Prefer trip-date weather (weather_dates), then month summary (weather_month)
+    temp_val = None
+    w_dates = info.get("weather_dates")
+    if isinstance(w_dates, dict) and w_dates.get("daily_weather"):
+        daily = w_dates["daily_weather"]
+        if isinstance(daily, list) and daily:
+            temps = [d.get("temperature_mean") for d in daily if isinstance(d, dict)]
+            temps = [t for t in temps if t is not None]
+            if temps:
+                temp_val = round(sum(temps) / len(temps))
+    if temp_val is None:
+        w_month = info.get("weather_month")
+        if isinstance(w_month, dict):
+            summary = w_month.get("weather_summary")
+            if isinstance(summary, dict) and "avg_temperature_mean" in summary:
+                temp_val = round(summary["avg_temperature_mean"])
+    if temp_val is None:
+        return ""
+    return f" <span style=\"font-weight:400;opacity:0.9\">{temp_val}°C</span>"
+
+
 def _build_html(
     cheapest_flights: list[tuple[object, object, float]],
     hotel_results: list[dict],
@@ -710,9 +770,11 @@ def _build_html(
     num_cheapest_trips: int = 100,
     days_ahead: int = 90,
     summary_only: bool = False,
+    json_path: str = "data/travel_helper.json",
 ) -> str:
-    """Build results as HTML string (same content as --html file)."""
+    """Build results as HTML string (same content as --html file). Temperature is read from json_path."""
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    geotemp_by_dest = _load_geotemp_from_json(json_path)
     title = "Fly cheap, stay cheap — your daily Ryanair + Trivago deals"
     tagline = f"Top {num_cheapest_trips} round trips from Weeze, Köln & Dortmund (Wed eve / Thu eve / Fri) over the next {days_ahead} days. Lowest hotel rates from Trivago. Weekend getaways in 2–4 nights."
     lines = [
@@ -752,7 +814,8 @@ def _build_html(
             min_total = g["min_total"]
             n = len(g["trips"])
             slug = _anchor_slug(dest_city, days, nights)
-            link = f'<a href="#{html.escape(slug)}" class="deals-summary-link">{html.escape(dest_city)}</a>'
+            temp_str = _temp_str_for_destination(geotemp_by_dest, dest_city)
+            link = f'<a href="#{html.escape(slug)}" class="deals-summary-link">{html.escape(dest_city)}{temp_str}</a>'
             deals_str = f"{n} deal{'s' if n != 1 else ''}"
             summary_rows.append(f"    <tr><td>{link}</td><td>{deals_str}</td><td>{min_total:.2f}€</td></tr>")
         lines.append("  <div class=\"deals-summary-box\">")
@@ -777,9 +840,10 @@ def _build_html(
             lines.append(f'  <div class="trip" id="{html.escape(slug)}">')
             # Destination header — blue bar
             route_info = f"{_display_airport(first['flight'].origin)} &rarr; {_display_airport(first['flight'].destination)} &bull; {days}&nbsp;days, {nights}&nbsp;nights"
+            temp_str = _temp_str_for_destination(geotemp_by_dest, dest_city)
             lines.append('    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0079c2;color:#fff;">')
             lines.append('      <div>')
-            lines.append(f'        <div style="font-size:18px;font-weight:700;line-height:1;">{html.escape(dest_city)}</div>')
+            lines.append(f'        <div style="font-size:18px;font-weight:700;line-height:1;">{html.escape(dest_city)}{temp_str}</div>')
             lines.append(f'        <div style="font-size:12px;opacity:0.75;margin-top:2px;">{route_info} &bull; from &euro;{min_total:.2f}</div>')
             lines.append('      </div>')
             lines.append('    </div>')
@@ -830,7 +894,8 @@ def _build_html(
             min_total = price + ib.price
             n = len(flights)
             slug = _anchor_slug(dest_city, days, nights)
-            link = f'<a href="#{html.escape(slug)}" class="deals-summary-link">{html.escape(dest_city)}</a>'
+            temp_str = _temp_str_for_destination(geotemp_by_dest, dest_city)
+            link = f'<a href="#{html.escape(slug)}" class="deals-summary-link">{html.escape(dest_city)}{temp_str}</a>'
             deals_str = f"{n} deal{'s' if n != 1 else ''}"
             summary_rows.append(f"    <tr><td>{link}</td><td>{deals_str}</td><td>{min_total:.2f}€</td></tr>")
         lines.append("  <div class=\"deals-summary-box\">")
@@ -853,9 +918,10 @@ def _build_html(
             lines.append(f'  <div class="trip" id="{html.escape(slug)}">')
             # Destination header
             route_info = f"{_display_airport(ob.origin)} &rarr; {_display_airport(ob.destination)} &bull; {days}&nbsp;days, {nights}&nbsp;nights"
+            temp_str = _temp_str_for_destination(geotemp_by_dest, dest_city)
             lines.append('    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0079c2;color:#fff;">')
             lines.append('      <div>')
-            lines.append(f'        <div style="font-size:18px;font-weight:700;line-height:1;">{html.escape(dest_city)}</div>')
+            lines.append(f'        <div style="font-size:18px;font-weight:700;line-height:1;">{html.escape(dest_city)}{temp_str}</div>')
             lines.append(f'        <div style="font-size:12px;opacity:0.75;margin-top:2px;">{route_info} &bull; from &euro;{min_total:.2f}</div>')
             lines.append('      </div>')
             lines.append('    </div>')
@@ -914,12 +980,14 @@ def _print_html(
     num_cheapest_trips: int = 100,
     days_ahead: int = 90,
     summary_only: bool = False,
+    json_path: str = "data/travel_helper.json",
 ) -> None:
-    """Write results to travel_helper.html and print path."""
+    """Write results to travel_helper.html and print path. Temperature read from json_path."""
     html_str = _build_html(
         cheapest_flights, hotel_results, adults, timings,
         num_cheapest_trips=num_cheapest_trips, days_ahead=days_ahead,
         summary_only=summary_only,
+        json_path=json_path,
     )
     filename = "travel_helper.html"
     path = Path(filename).resolve()
@@ -1055,6 +1123,11 @@ def run(
 ) -> None:
     t_start = time.perf_counter()
 
+    _geotemp_key = (os.environ.get("GEOTEMP_API_KEY") or "").strip()
+    if not _geotemp_key:
+        print("Error: GEOTEMP_API_KEY is not set. Set it in the environment to fetch destination info (weather, attractions, etc.).", file=sys.stderr)
+        sys.exit(1)
+
     # 1. Collect return trips (only departure restricted: Wed after 6pm / Thu after 5pm / Fri after 11am; return 2–4 nights later, any time)
     print("Fetching flights from Ryanair...", file=sys.stderr)
     t0 = time.perf_counter()
@@ -1085,7 +1158,9 @@ def run(
 
     # 4. GeoTemp API: fetch all available destination info for each destination in the output
     geotemp_by_dest = {}
-    _geotemp_key = (os.environ.get("GEOTEMP_API_KEY") or "").strip()
+    # #region agent log
+    _debug_log("travel_helper.py:geotemp_guard", "GeoTemp block", {"has_geotemp_key": bool(_geotemp_key), "len_cheapest_flights": len(cheapest_flights), "has_hotel_results": bool(hotel_results)}, "A")
+    # #endregion
     if cheapest_flights and _geotemp_key:
         destinations_geotemp = set()
         trip_dates_by_dest = {}
@@ -1112,14 +1187,30 @@ def run(
             except (IndexError, ValueError):
                 pass
         if destinations_geotemp:
+            # #region agent log
+            _debug_log("travel_helper.py:before_fetch", "Before GeoTemp fetch", {"len_destinations_geotemp": len(destinations_geotemp), "sample_dests": list(destinations_geotemp)[:3]}, "B")
+            # #endregion
             print("Fetching destination info (GeoTemp API)...", file=sys.stderr)
             try:
                 geotemp_by_dest = _fetch_geotemp_for_destinations(
                     _geotemp_key, destinations_geotemp, first_month, trip_dates_by_dest,
                 )
+                # #region agent log
+                sample_key = next(iter(geotemp_by_dest), None)
+                sample_val = geotemp_by_dest.get(sample_key, {}) if sample_key else {}
+                has_any = any(v is not None for v in (sample_val or {}).values())
+                _debug_log("travel_helper.py:after_fetch", "After GeoTemp fetch", {"len_geotemp_by_dest": len(geotemp_by_dest), "sample_key": sample_key, "sample_has_any_value": has_any}, "D")
+                # #endregion
                 print(f"GeoTemp: loaded info for {len(geotemp_by_dest)} destinations", file=sys.stderr)
             except Exception as e:
+                # #region agent log
+                _debug_log("travel_helper.py:geotemp_exception", "GeoTemp fetch exception", {"error": str(e)}, "D")
+                # #endregion
                 print(f"GeoTemp fetch failed: {e}", file=sys.stderr)
+        # #region agent log
+        else:
+            _debug_log("travel_helper.py:no_destinations", "destinations_geotemp empty", {"destinations_geotemp_empty": True}, "C")
+        # #endregion
 
     t_total = time.perf_counter() - t_start
     timings = {
@@ -1185,6 +1276,11 @@ def run(
                     continue
                 flights_sorted = future_flights[:1] if summary_only else sorted(future_flights, key=lambda x: x[0].departureTime)
                 ob0, ib0, price0 = flights_sorted[0]
+                dest_info = geotemp_by_dest.get(dest, {})
+                # #region agent log
+                if len(cheapest_flights_list) == 0:
+                    _debug_log("travel_helper.py:no_hotels_first_dest", "First output deal dest vs geotemp key", {"output_dest": dest, "dest_in_geotemp": dest in geotemp_by_dest, "dest_info_non_empty": bool(dest_info and any(v is not None for v in dest_info.values()))}, "E")
+                # #endregion
                 cheapest_flights_list.append({
                     "destination": dest,
                     "days": days,
@@ -1199,16 +1295,20 @@ def run(
                         }
                         for ob, ib, price in flights_sorted
                     ],
-                    "destination_info": geotemp_by_dest.get(dest, {}),
+                    "destination_info": dest_info,
                 })
             out = {"cheapest_flights": cheapest_flights_list}
-        path = json_file if json_file is not None else "travel_helper.json"
+        path = json_file if json_file is not None else "data/travel_helper.json"
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(out, f, indent=2, ensure_ascii=False, default=str)
             f.flush()
+        abs_path = Path(path).resolve()
+        print(f"Wrote JSON to {abs_path} ({len(out.get('cheapest_flights_with_hotels') or out.get('cheapest_flights') or [])} deals)", file=sys.stderr)
         if not output_html:
             return
 
+    json_path_used = json_file if json_file is not None else "data/travel_helper.json"
     if output_html:
         _print_html(
             cheapest_flights=cheapest_flights,
@@ -1218,6 +1318,7 @@ def run(
             num_cheapest_trips=num_cheapest_trips,
             days_ahead=days_ahead or 90,
             summary_only=summary_only,
+            json_path=json_path_used,
         )
         if not email:
             return
@@ -1230,6 +1331,7 @@ def run(
             num_cheapest_trips=num_cheapest_trips,
             days_ahead=days_ahead or 90,
             summary_only=summary_only,
+            json_path=json_path_used,
         )
         _send_email_html(html_str, email)
         if output_html:
@@ -1335,14 +1437,14 @@ def main() -> None:
     parser.add_argument(
         "--json",
         action="store_true",
-        help="Write JSON to travel_helper.json (or --json-file PATH). Can be combined with --html.",
+        help="Write JSON to data/travel_helper.json (or --json-file PATH). Can be combined with --html.",
     )
     parser.add_argument(
         "--json-file",
         type=str,
         default=None,
         metavar="PATH",
-        help="With --json: write JSON to PATH instead of travel_helper.json",
+        help="With --json: write JSON to PATH instead of data/travel_helper.json",
     )
     parser.add_argument(
         "--html",

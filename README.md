@@ -15,6 +15,7 @@ This document is for **developers**: technical details of the Ryanair API, Triva
 5. [GeoTemp MCP Server](#geotemp-mcp-server)
 6. [How to Run](#how-to-run)
 7. [Project Layout](#project-layout)
+8. [Deploy on Render](#deploy-on-render)
 
 ---
 
@@ -195,10 +196,10 @@ Used by `search_by_activity`, `multi_activity_search`, `plan_trip` (among others
 
 ## Travel Helper MCP Server (file-based)
 
-A **local MCP server** that reads **travel_helper.json** (the JSON produced by `travel_helper.py`) and exposes tools to list and search deals — no Trivago/GeoTemp APIs, data comes from the file.
+A **local MCP server** that reads **data/travel_helper.json** (the JSON produced by `travel_helper.py`) and exposes tools to list and search deals — no Trivago/GeoTemp APIs, data comes from the file.
 
 - **Package**: `mcp_travel_helper/` (run with `python -m mcp_travel_helper`).
-- **Data**: `travel_helper.json` (default path; override with `TRAVEL_HELPER_JSON`).
+- **Data**: `data/travel_helper.json` (default path; override with `TRAVEL_HELPER_JSON`).
 - **Tools**: `travel_deals_list`, `travel_deals_search`, `travel_deals_destination`, `travel_deals_cheapest`, `travel_deals_flights_for_destination`.
 
 See [mcp_travel_helper/README.md](mcp_travel_helper/README.md) for tool descriptions and Cursor/VS Code MCP config. **Docker**: [mcp_travel_helper/ci/README.md](mcp_travel_helper/ci/README.md) — build and run the MCP server in a container.
@@ -271,8 +272,9 @@ The generated HTML report is uploaded as an artifact (retention 14 days). To run
 ```
 travel_helper/
 ├── travel_helper.py       # Main script: Ryanair + Trivago + GeoTemp orchestration
-├── travel_helper.json     # Generated JSON (consumed by mcp_travel_helper)
-├── mcp_travel_helper/     # MCP server: reads travel_helper.json, exposes deal tools (stdio + streamable-http)
+├── data/
+│   └── travel_helper.json # Generated JSON (consumed by mcp_travel_helper)
+├── mcp_travel_helper/     # MCP server: reads data/travel_helper.json, exposes deal tools (stdio + streamable-http)
 │   ├── server.py
 │   ├── __main__.py
 │   ├── README.md
@@ -302,6 +304,38 @@ travel_helper/
 | **Ryanair** | REST (`services-api.ryanair.com`) | None | Cheapest return flights NRN/CGN/DTM → Europe |
 | **Trivago MCP** | MCP over Streamable HTTP (`mcp.trivago.com`) | None | Location suggestions + accommodation search |
 | **GeoTemp MCP** | MCP over SSE (`mcp-travel-data.onrender.com/sse`) | None | Weather, attractions, city/destination intelligence, trip ideas |
-| **Travel Helper MCP** | MCP over stdio (local) | None | Query `travel_helper.json`: list/search deals, destination details, cheapest |
+| **Travel Helper MCP** | MCP over stdio (local) | None | Query `data/travel_helper.json`: list/search deals, destination details, cheapest |
 
 All three external services are integrated in `travel_helper.py`; Trivago and GeoTemp are optional and degrade gracefully if the MCP stack is not installed. The Travel Helper MCP server is a separate process that reads the generated JSON.
+
+---
+
+## Deploy on Render
+
+The **Travel Deals Assistant** (Flask app in `travel_assistant.py`) can be deployed as a web service on [Render](https://render.com). Render builds and deploys on every push to your linked branch ([automatic deploys](https://render.com/docs/deploys#automatic-deploys)).
+
+### One-click or Blueprint
+
+1. **Connect the repo** in the [Render Dashboard](https://dashboard.render.com): **New → Web Service**, then connect your GitHub/GitLab/Bitbucket repo.
+2. **Use the Blueprint** (recommended): **New → Blueprint**, then point Render at this repo. It will read `render.yaml` and create the web service with the correct build and start commands.
+3. **Or set manually**:
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 travel_assistant:app`
+
+### Environment variables
+
+Set these in the service **Environment** (Render Dashboard → your service → Environment):
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GROQ_API_KEY` | Yes (for LLM) | Groq API key for the assistant LLM. Users can also paste a key in the app UI. |
+| `TRAVEL_HELPER_JSON` | Optional | Path to deal data JSON; default is `data/travel_helper.json`. On Render the filesystem is ephemeral, so deploy without this to use an empty deal list, or mount a [persistent disk](https://render.com/docs/disks) and set this path. |
+
+### Python version
+
+Render uses the version in `.python-version` (e.g. `3.11.2`) or the `PYTHON_VERSION` environment variable. See [Setting your Python version](https://render.com/docs/python-version).
+
+### Notes
+
+- The app binds to `0.0.0.0` and the port from the `PORT` environment variable ([Render port binding](https://render.com/docs/web-services#port-binding)).
+- The assistant starts the local **mcp_travel_helper** server in a background thread; without `data/travel_helper.json` (or with an empty one), deal listings will be empty until you run `travel_helper.py` and upload the JSON or point `TRAVEL_HELPER_JSON` to a persistent file.

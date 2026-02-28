@@ -2,3 +2,5 @@ requests
 backoff
 flask
 openai
+gunicorn
+mcp[cli]

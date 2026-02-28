@@ -1,4 +1,4 @@
-# Optional: ConfigMap with sample travel_helper.json
+# Optional: ConfigMap with sample data/travel_helper.json
 # Use this to override the image's default empty data, or replace with your own data.
 # To use: uncomment the volumeMounts and volumes in deployment.yaml, then apply this ConfigMap.
 apiVersion: v1

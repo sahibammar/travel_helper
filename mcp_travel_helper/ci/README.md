@@ -10,10 +10,10 @@ From the **repository root**:
 docker build -f mcp_travel_helper/ci/Dockerfile -t travel-helper-mcp .
 ```
 
-To bake in your own `travel_helper.json`, ensure it exists at the repo root and add to the Dockerfile before the final `COPY`:
+To bake in your own `data/travel_helper.json`, ensure it exists in the repo and add to the Dockerfile before the final `COPY`:
 
 ```dockerfile
-COPY travel_helper.json /app/travel_helper.json
+COPY data/travel_helper.json /app/data/travel_helper.json
 ```
 
 (or use a multi-stage build that generates it).
@@ -28,7 +28,7 @@ docker run -p 8000:8000 travel-helper-mcp
 With your own data file:
 
 ```bash
-docker run -p 8000:8000 -v /path/to/travel_helper.json:/app/travel_helper.json travel-helper-mcp
+docker run -p 8000:8000 -v /path/to/data/travel_helper.json:/app/data/travel_helper.json travel-helper-mcp
 ```
 
 ## Use
@@ -50,10 +50,10 @@ Manifests in **ci/kubernetes/** deploy the server to a cluster:
 kubectl apply -f mcp_travel_helper/ci/kubernetes/
 ```
 
-See [ci/kubernetes/README.md](kubernetes/README.md) for image build, port-forward, and mounting `travel_helper.json`.
+See [ci/kubernetes/README.md](kubernetes/README.md) for image build, port-forward, and mounting `data/travel_helper.json`.
 
 ## Image
 
 - **Base**: `python:3.12-slim`
 - **Install**: `mcp[cli]` only (no Ryanair/Trivago/GeoTemp deps)
-- **Default data**: empty deal list (`mcp_travel_helper/ci/travel_helper.json.sample`); mount real JSON at runtime if needed.
+- **Default data**: empty deal list (`mcp_travel_helper/ci/travel_helper.json.sample`); mount real JSON at `/app/data/travel_helper.json` at runtime if needed.
