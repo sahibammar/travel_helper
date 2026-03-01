@@ -393,8 +393,7 @@ _TRIVAGO_CSS = """
       background: #fff; border-radius: 1.2rem; border: 1px solid #d9d8d6;
       box-shadow: 0 2px 10px rgba(0,0,0,0.09); flex-shrink: 0; margin-bottom: 1.6rem;
     }
-    .header-bar { display: flex; align-items: center; padding: 1.2rem 2rem 0.6rem; gap: 1.2rem; }
-    .page-header .chips { padding: 0 2rem 1.2rem; }
+    .header-bar { display: flex; align-items: center; padding: 1.2rem 2rem; gap: 1.2rem; }
     .logo { font-size: 2rem; font-weight: 700; color: #0079c2; letter-spacing: -0.02em; flex-shrink: 0; }
     .logo-sub { font-size: 1.2rem; font-weight: 400; color: #8d8d8b; margin-left: 0.6rem; }
     .settings-row { display: flex; align-items: center; gap: 0.8rem; margin-left: auto; flex-wrap: wrap; }
@@ -461,10 +460,10 @@ _TRIVAGO_CSS = """
     .btn-ask:disabled { background: #bbbbb9; cursor: not-allowed; }
     .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
     .chip {
-      font-size: 1.1rem; color: #0079c2; background: #e5f5ff; border: 1px solid #bde7ff;
+      font-size: 1.1rem; color: #0079c2; background: #fff; border: 1px solid #bde7ff;
       border-radius: 10rem; padding: 0.3rem 1rem; cursor: pointer; transition: background 0.15s; white-space: nowrap;
     }
-    .chip:hover { background: #bde7ff; }
+    .chip:hover { background: #e5f5ff; }
 
     /* ── RIGHT: Results pane ── */
     .results-pane { flex: 1; overflow-y: auto; min-width: 0; }
@@ -625,7 +624,6 @@ HTML_TEMPLATE = (
     <div class="header-bar">
       <div class="logo">Weekend Travel Helper<span class="logo-sub">AI deals assistant</span></div>
     </div>
-    <div class="chips" id="chips-bar"></div>
   </div>
 
   <!-- ── Two-pane layout ── -->
@@ -669,20 +667,11 @@ HTML_TEMPLATE = (
 </div><!-- /app -->
 
 <script>
-const DESTINATION_CHIPS = {{ destination_chips | tojson }};
 const SUGGESTED = {{ suggested_questions | tojson }};
 
-/* ── Chips: destination chips in header, suggested questions under input ── */
+/* ── Chips: suggested questions under input ── */
 (function renderChips() {
   const input = document.getElementById('ask-input');
-  const destBar = document.getElementById('chips-bar');
-  DESTINATION_CHIPS.forEach(function(d) {
-    const label = d.destination + ' from €' + (Number(d.min_total_eur) === Math.floor(d.min_total_eur) ? Math.floor(d.min_total_eur) : d.min_total_eur);
-    const c = document.createElement('span');
-    c.className = 'chip'; c.textContent = label;
-    c.onclick = function() { input.value = 'Tell me about ' + d.destination; submitQuestion(); };
-    destBar.appendChild(c);
-  });
   const suggestedBar = document.getElementById('suggested-chips-bar');
   SUGGESTED.forEach(function(q) {
     const c = document.createElement('span');
@@ -1030,12 +1019,8 @@ def _run_mcp(coro):
 
 @app.route("/")
 def index():
-    app_dir = Path(__file__).resolve().parent
-    json_path = app_dir / "data" / "travel_helper.json"
-    destination_chips = _get_destination_chips(json_path)
     html = render_template_string(
         HTML_TEMPLATE,
-        destination_chips=destination_chips,
         suggested_questions=SUGGESTED_QUESTIONS,
     )
     # Cache-bust: unique comment per request so browser never uses cached HTML/JS
@@ -1048,6 +1033,7 @@ def index():
 
 @app.route("/api/ask", methods=["POST"])
 def ask():
+    t_ask_start = time.time()
     body = request.get_json(silent=True) or {}
     question = (body.get("question") or "").strip()
     if not question:
@@ -1128,6 +1114,8 @@ def ask():
         # ── Step 2: look up pre-fetched deal details (no async, instant) ──
         mentioned = _find_relevant_dests(full_answer, all_dests)
         deals = [all_details[dest] for dest in mentioned if dest in all_details]
+        response_time = time.time() - t_ask_start
+        app.logger.info("response time %.1f seconds", response_time)
         app.logger.info("[gen] DONE sent  deals=%d  thread=%d",
                         len(deals), threading.get_ident())
         yield f"data: {json.dumps({'done': True, 'deals': deals})}\n\n"

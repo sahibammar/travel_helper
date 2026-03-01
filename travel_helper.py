@@ -1065,6 +1065,7 @@ def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object
                     ob._origin_airport = t._origin_airport
                     ob._origin_code = t._origin_code
                     outbound.append((ob, t.inbound, ob.price))
+                    print(f"\r  Flights: {len(outbound)}", file=sys.stderr, end="")
 
     # 2) Open-jaw: outbound from A, return to B (A != B)
     airport_list = list(ORIGIN_AIRPORTS)
@@ -1104,7 +1105,9 @@ def collect_outbound_flights(days_ahead: int | None = None) -> list[tuple[object
                         ob._origin_airport = out_name
                         ob._origin_code = out_code
                         outbound.append((ob, ret, ob.price))
+                        print(f"\r  Flights: {len(outbound)}", file=sys.stderr, end="")
 
+    print(file=sys.stderr)
     outbound.sort(key=lambda x: (x[2] + x[1].price, x[0].departureTime.date(), x[0].destination))
     return outbound
 
@@ -1135,7 +1138,7 @@ def run(
     t_flights = time.perf_counter() - t0
     same_airport = sum(1 for ob, ret, _ in outbound_flights if ob.origin == ret.destination)
     different_airport = len(outbound_flights) - same_airport
-    print(f"{len(outbound_flights)} flights fetched (same airport ({same_airport}) - different airport ({different_airport}))", file=sys.stderr)
+    print(f"{len(outbound_flights)} flights fetched (same airport ({same_airport}) - different airport ({different_airport})) - took {t_flights:.1f} seconds", file=sys.stderr)
     # 2. Already sorted by price; take the N cheapest
     cheapest_flights = outbound_flights[:num_cheapest_trips]
 
@@ -1236,56 +1239,59 @@ def run(
             }
             return leg
 
-        # Prefer hotel_results when present; otherwise output flight-only from cheapest_flights (aggregated by dest, days, nights).
-        # Only include flights with outbound date >= today so booking links work on Ryanair.
+        # One deal per trip (no grouping by destination + days + nights). Only include outbound date >= today.
         json_today = datetime.today().date()
         if hotel_results:
-            agg = _aggregate_hotel_results(hotel_results)
             cheapest_with_hotels = []
-            for g in agg:
-                future_trips = [r for r in g["trips"] if r["flight"].departureTime.date() >= json_today]
-                if not future_trips:
+            for r in hotel_results:
+                if r["flight"].departureTime.date() < json_today:
                     continue
-                trips_sorted = future_trips[:1] if summary_only else sorted(future_trips, key=lambda r: r["flight"].departureTime)
+                ret = r["return_flight"]
+                outbound = r["flight"]
+                ret_date = ret.departureTime.date()
+                out_date = outbound.departureTime.date()
+                nights = (ret_date - out_date).days
+                days = nights + 1
+                total_eur = round(r["price"] + ret.price, 2)
                 cheapest_with_hotels.append({
-                    "destination": g["destination"],
-                    "days": g["days"],
-                    "nights": g["nights"],
-                    "min_total_eur": round(g["min_total"], 2),
+                    "destination": r["destination"],
+                    "days": days,
+                    "nights": nights,
+                    "min_total_eur": total_eur,
                     "flights": [
                         {
-                            "outbound": _flight_leg_json(r["flight"], r["price"]),
-                            "return": _flight_leg_json(r["return_flight"]),
-                            **_booking_urls_for_trip(r["flight"], r["return_flight"], adults),
+                            "outbound": _flight_leg_json(outbound, r["price"]),
+                            "return": _flight_leg_json(ret),
+                            **_booking_urls_for_trip(outbound, ret, adults),
                             "hotel_arrival": r["arrival"],
                             "hotel_departure": r["departure"],
                             "hotels": r["hotels"],
-                            "total_eur": round(r["price"] + r["return_flight"].price, 2),
+                            "total_eur": total_eur,
                         }
-                        for r in trips_sorted
                     ],
-                    "destination_info": geotemp_by_dest.get(g["destination"], {}),
+                    "destination_info": geotemp_by_dest.get(r["destination"], {}),
                 })
+                print(f"\r  Deals: {len(cheapest_with_hotels)}", file=sys.stderr, end="")
+            print(file=sys.stderr)
             out = {"cheapest_flights_with_hotels": cheapest_with_hotels}
         else:
-            agg = _aggregate_cheapest_flights(cheapest_flights)
             cheapest_flights_list = []
-            for dest, days, nights, flights in agg:
-                future_flights = [(ob, ib, price) for ob, ib, price in flights if ob.departureTime.date() >= json_today]
-                if not future_flights:
+            for ob, ib, price in cheapest_flights:
+                if ob.departureTime.date() < json_today:
                     continue
-                flights_sorted = future_flights[:1] if summary_only else sorted(future_flights, key=lambda x: x[0].departureTime)
-                ob0, ib0, price0 = flights_sorted[0]
+                dest = _dest_city_from_flight(ob)
+                ret_date = ib.departureTime.date()
+                out_date = ob.departureTime.date()
+                nights = (ret_date - out_date).days
+                days = nights + 1
                 dest_info = geotemp_by_dest.get(dest, {})
-                # #region agent log
                 if len(cheapest_flights_list) == 0:
                     _debug_log("travel_helper.py:no_hotels_first_dest", "First output deal dest vs geotemp key", {"output_dest": dest, "dest_in_geotemp": dest in geotemp_by_dest, "dest_info_non_empty": bool(dest_info and any(v is not None for v in dest_info.values()))}, "E")
-                # #endregion
                 cheapest_flights_list.append({
                     "destination": dest,
                     "days": days,
                     "nights": nights,
-                    "min_total_eur": round(price0 + ib0.price, 2),
+                    "min_total_eur": round(price + ib.price, 2),
                     "flights": [
                         {
                             "outbound": _flight_leg_json(ob, None),
@@ -1293,18 +1299,23 @@ def run(
                             **_booking_urls_for_trip(ob, ib, adults),
                             "total_eur": round(price + ib.price, 2),
                         }
-                        for ob, ib, price in flights_sorted
                     ],
                     "destination_info": dest_info,
                 })
+                print(f"\r  Deals: {len(cheapest_flights_list)}", file=sys.stderr, end="")
+            print(file=sys.stderr)
             out = {"cheapest_flights": cheapest_flights_list}
         path = json_file if json_file is not None else "data/travel_helper.json"
         Path(path).parent.mkdir(parents=True, exist_ok=True)
+        deals_list = out.get("cheapest_flights_with_hotels") or out.get("cheapest_flights") or []
+        num_deals = len(deals_list)
+        if not hotel_results and cheapest_flights:
+            print(f"Deals: {num_deals} (one per trip, no grouping)", file=sys.stderr)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(out, f, indent=2, ensure_ascii=False, default=str)
             f.flush()
         abs_path = Path(path).resolve()
-        print(f"Wrote JSON to {abs_path} ({len(out.get('cheapest_flights_with_hotels') or out.get('cheapest_flights') or [])} deals)", file=sys.stderr)
+        print(f"Wrote JSON to {abs_path} ({num_deals} deals)", file=sys.stderr)
         if not output_html:
             return
 
